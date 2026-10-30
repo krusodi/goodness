@@ -1,0 +1,93 @@
+{
+  "entities": {
+    "Student": {
+      "title": "Student",
+      "description": "Student roster item containing identification and class info",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Unique identifier" },
+        "student_no": { "type": "number", "description": "Student number in classroom" },
+        "student_name": { "type": "string", "description": "Student full name with prefix" },
+        "student_class": { "type": "string", "description": "Class grade and section" },
+        "created_at": { "type": "string", "description": "ISO timestamp of creation" }
+      },
+      "required": ["id", "student_no", "student_name", "student_class"]
+    },
+    "BehaviorRecord": {
+      "title": "BehaviorRecord",
+      "description": "A merit or demerit event recorded for a student",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Unique record identifier" },
+        "student_id": { "type": "string", "description": "Target student ID" },
+        "student_no": { "type": "number", "description": "Student number" },
+        "student_name": { "type": "string", "description": "Student name" },
+        "category": { "type": "string", "enum": ["merit", "demerit"], "description": "Record type" },
+        "behavior": { "type": "string", "description": "Description of the behavior" },
+        "score": { "type": "number", "description": "Points value (positive integer)" },
+        "record_date": { "type": "string", "description": "Date in YYYY-MM-DD format" },
+        "record_time": { "type": "string", "description": "Time in HH:MM format" },
+        "recorded_by": { "type": "string", "description": "Name or role of recorder" },
+        "created_at": { "type": "string", "description": "Creation timestamp" }
+      },
+      "required": ["id", "student_id", "student_no", "student_name", "category", "behavior", "score", "record_date", "record_time", "recorded_by"]
+    },
+    "SystemSettings": {
+      "title": "SystemSettings",
+      "description": "School and application configuration",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Fixed setting document ID" },
+        "school_name": { "type": "string", "description": "Official school name" },
+        "system_name": { "type": "string", "description": "System title" },
+        "academic_year": { "type": "string", "description": "Academic year" },
+        "updated_at": { "type": "string", "description": "Last update timestamp" }
+      },
+      "required": ["school_name", "system_name", "academic_year"]
+    },
+    "UserAccount": {
+      "title": "UserAccount",
+      "description": "Teacher and staff user account",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "User ID" },
+        "username": { "type": "string", "description": "Login username" },
+        "password": { "type": "string", "description": "Account password" },
+        "full_name": { "type": "string", "description": "Display name" },
+        "role": { "type": "string", "enum": ["admin", "teacher"], "description": "Access level" },
+        "created_at": { "type": "string", "description": "Account creation time" }
+      },
+      "required": ["id", "username", "password", "full_name", "role"]
+    },
+    "TestDoc": {
+      "title": "TestDoc",
+      "description": "Connection test document",
+      "type": "object",
+      "properties": {
+        "status": { "type": "string" }
+      }
+    }
+  },
+  "firestore": {
+    "/students/{studentId}": {
+      "schema": "Student",
+      "description": "Collection of enrolled students"
+    },
+    "/records/{recordId}": {
+      "schema": "BehaviorRecord",
+      "description": "Collection of merit and demerit records"
+    },
+    "/settings/{settingId}": {
+      "schema": "SystemSettings",
+      "description": "System-wide settings"
+    },
+    "/users/{userId}": {
+      "schema": "UserAccount",
+      "description": "System user profiles"
+    },
+    "/test/{testId}": {
+      "schema": "TestDoc",
+      "description": "Test connection endpoint"
+    }
+  }
+}

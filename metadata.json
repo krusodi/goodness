@@ -1,0 +1,6 @@
+{
+  "name": "ระบบบันทึกความดีนักเรียน โรงเรียนบ้านยะบะ(อุปการวิทยา)",
+  "description": "ระบบบันทึกความดีและหักคะแนนนักเรียน ป.5/1 พร้อมตารางอันดับ เหรียญรางวัล รายงาน และระบบจัดการข้อมูล",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
