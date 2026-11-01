@@ -306,29 +306,29 @@ export const ReportsView: React.FC<ReportsViewProps> = ({ initialStudentId }) =>
                 </div>
 
                 {/* Score Breakdown Strip */}
-                <div className="grid grid-cols-3 gap-3 pt-4">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-4">
                   <div className="p-3 bg-amber-50/60 border border-amber-200/60 rounded-xl text-center">
-                    <div className="text-xs font-semibold text-amber-800">✅ คะแนนความดี (+)</div>
+                    <div className="text-xs font-semibold text-amber-800 whitespace-nowrap">✅ คะแนนความดี (+)</div>
                     <div className="text-xl font-bold text-emerald-600 mt-1 tabular-nums">
                       +{studentMeritScore}
                     </div>
-                    <div className="text-[11px] text-slate-500">จาก {studentMerits.length} รายการ</div>
+                    <div className="text-[11px] text-slate-500 whitespace-nowrap">จาก {studentMerits.length} รายการ</div>
                   </div>
 
                   <div className="p-3 bg-rose-50/60 border border-rose-200/60 rounded-xl text-center">
-                    <div className="text-xs font-semibold text-rose-800">❌ คะแนนที่ถูกหัก (-)</div>
+                    <div className="text-xs font-semibold text-rose-800 whitespace-nowrap">❌ คะแนนที่ถูกหัก (-)</div>
                     <div className="text-xl font-bold text-rose-600 mt-1 tabular-nums">
                       -{studentDemeritScore}
                     </div>
-                    <div className="text-[11px] text-slate-500">จาก {studentDemerits.length} รายการ</div>
+                    <div className="text-[11px] text-slate-500 whitespace-nowrap">จาก {studentDemerits.length} รายการ</div>
                   </div>
 
                   <div className="p-3 bg-emerald-50/60 border border-emerald-200/60 rounded-xl text-center">
-                    <div className="text-xs font-semibold text-emerald-900">📈 คะแนนสุทธิ</div>
+                    <div className="text-xs font-semibold text-emerald-900 whitespace-nowrap">📈 คะแนนสุทธิ</div>
                     <div className="text-xl font-bold text-emerald-700 mt-1 tabular-nums">
                       {studentNetScore}
                     </div>
-                    <div className="text-[11px] text-slate-500">
+                    <div className="text-[11px] text-slate-500 whitespace-nowrap">
                       {studentNetScore >= 20 ? 'ระดับดีเยี่ยม' : studentNetScore >= 10 ? 'ระดับดีมาก' : 'ระดับปกติ'}
                     </div>
                   </div>
@@ -490,16 +490,16 @@ export const ReportsView: React.FC<ReportsViewProps> = ({ initialStudentId }) =>
           {/* Daily Table */}
           <div className="bg-white rounded-2xl border border-slate-100 shadow-xs overflow-hidden">
             <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs sm:text-sm">
+              <table className="w-full min-w-[700px] text-left text-xs sm:text-sm">
                 <thead className="bg-slate-50 text-slate-600 border-b border-slate-100 font-semibold">
                   <tr>
-                    <th className="py-2.5 px-3 w-20">เวลา</th>
-                    <th className="py-2.5 px-3 w-16 text-center">เลขที่</th>
-                    <th className="py-2.5 px-4">ชื่อ - นามสกุล</th>
-                    <th className="py-2.5 px-3 text-center w-24">ประเภท</th>
-                    <th className="py-2.5 px-4">พฤติกรรม</th>
-                    <th className="py-2.5 px-3 text-right">คะแนน</th>
-                    <th className="py-2.5 px-4">ผู้บันทึก</th>
+                    <th className="py-2.5 px-3 w-20 whitespace-nowrap">เวลา</th>
+                    <th className="py-2.5 px-3 w-16 text-center whitespace-nowrap">เลขที่</th>
+                    <th className="py-2.5 px-4 whitespace-nowrap">ชื่อ - นามสกุล</th>
+                    <th className="py-2.5 px-3 text-center w-24 whitespace-nowrap">ประเภท</th>
+                    <th className="py-2.5 px-4 min-w-[180px]">พฤติกรรม</th>
+                    <th className="py-2.5 px-3 text-right whitespace-nowrap">คะแนน</th>
+                    <th className="py-2.5 px-4 whitespace-nowrap">ผู้บันทึก</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100">
@@ -617,16 +617,16 @@ export const ReportsView: React.FC<ReportsViewProps> = ({ initialStudentId }) =>
           {/* Monthly Table */}
           <div className="bg-white rounded-2xl border border-slate-100 shadow-xs overflow-hidden">
             <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs sm:text-sm">
+              <table className="w-full min-w-[700px] text-left text-xs sm:text-sm">
                 <thead className="bg-slate-50 text-slate-600 border-b border-slate-100 font-semibold">
                   <tr>
-                    <th className="py-2.5 px-3 w-24">วันที่</th>
-                    <th className="py-2.5 px-3 w-16 text-center">เลขที่</th>
-                    <th className="py-2.5 px-4">ชื่อ - นามสกุล</th>
-                    <th className="py-2.5 px-3 text-center w-24">ประเภท</th>
-                    <th className="py-2.5 px-4">พฤติกรรม</th>
-                    <th className="py-2.5 px-3 text-right">คะแนน</th>
-                    <th className="py-2.5 px-4">ผู้บันทึก</th>
+                    <th className="py-2.5 px-3 w-24 whitespace-nowrap">วันที่</th>
+                    <th className="py-2.5 px-3 w-16 text-center whitespace-nowrap">เลขที่</th>
+                    <th className="py-2.5 px-4 whitespace-nowrap">ชื่อ - นามสกุล</th>
+                    <th className="py-2.5 px-3 text-center w-24 whitespace-nowrap">ประเภท</th>
+                    <th className="py-2.5 px-4 min-w-[180px]">พฤติกรรม</th>
+                    <th className="py-2.5 px-3 text-right whitespace-nowrap">คะแนน</th>
+                    <th className="py-2.5 px-4 whitespace-nowrap">ผู้บันทึก</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100">
@@ -728,17 +728,17 @@ export const ReportsView: React.FC<ReportsViewProps> = ({ initialStudentId }) =>
           {/* Monthly Leaderboard Table */}
           <div className="bg-white rounded-2xl border border-slate-100 shadow-xs overflow-hidden">
             <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs sm:text-sm">
+              <table className="w-full min-w-[780px] text-left text-xs sm:text-sm">
                 <thead className="bg-slate-50 text-slate-600 border-b border-slate-100 font-semibold">
                   <tr>
-                    <th className="py-3 px-4 text-center w-24">อันดับ</th>
-                    <th className="py-3 px-3 text-center w-16">เลขที่</th>
-                    <th className="py-3 px-4">ชื่อ - นามสกุล</th>
-                    <th className="py-3 px-3 text-center w-16">ชั้น</th>
-                    <th className="py-3 px-3 text-right text-emerald-700">ความดี (+)</th>
-                    <th className="py-3 px-3 text-right text-rose-700">หักคะแนน (-)</th>
-                    <th className="py-3 px-4 text-right font-bold text-slate-900">คะแนนสุทธิ</th>
-                    <th className="py-3 px-4 text-center">ระดับผลการประเมิน</th>
+                    <th className="py-3 px-4 text-center w-24 whitespace-nowrap">อันดับ</th>
+                    <th className="py-3 px-3 text-center w-16 whitespace-nowrap">เลขที่</th>
+                    <th className="py-3 px-4 min-w-[200px] whitespace-nowrap">ชื่อ - นามสกุล</th>
+                    <th className="py-3 px-3 text-center w-16 whitespace-nowrap">ชั้น</th>
+                    <th className="py-3 px-3 text-right text-emerald-700 whitespace-nowrap">ความดี (+)</th>
+                    <th className="py-3 px-3 text-right text-rose-700 whitespace-nowrap">หักคะแนน (-)</th>
+                    <th className="py-3 px-4 text-right font-bold text-slate-900 whitespace-nowrap">คะแนนสุทธิ</th>
+                    <th className="py-3 px-4 text-center whitespace-nowrap">ระดับผลการประเมิน</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100">

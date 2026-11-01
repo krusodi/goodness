@@ -72,19 +72,19 @@ export const Navbar: React.FC = () => {
         <div className="flex items-center justify-between h-16 gap-4">
           
           {/* Brand & School */}
-          <div className="flex items-center gap-3 shrink-0">
+          <div className="flex items-center gap-3 shrink min-w-0">
             <button
               onClick={() => setActiveTab('dashboard')}
-              className="flex items-center gap-2.5 text-left focus:outline-none"
+              className="flex items-center gap-2.5 text-left focus:outline-none min-w-0"
             >
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-600 to-green-500 flex items-center justify-center text-white shadow-sm ring-2 ring-emerald-200">
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-600 to-green-500 flex items-center justify-center text-white shadow-sm ring-2 ring-emerald-200 shrink-0">
                 <Award className="w-5 h-5" />
               </div>
-              <div className="leading-tight">
-                <div className="font-bold text-emerald-950 text-base sm:text-lg tracking-tight">
+              <div className="leading-tight min-w-0">
+                <div className="font-bold text-emerald-950 text-sm sm:text-base md:text-lg tracking-tight truncate max-w-[150px] sm:max-w-[240px] md:max-w-none">
                   {settings.system_name}
                 </div>
-                <div className="text-xs text-emerald-700 font-medium">
+                <div className="text-[11px] sm:text-xs text-emerald-700 font-medium truncate max-w-[150px] sm:max-w-[240px] md:max-w-none">
                   {settings.school_name}
                 </div>
               </div>

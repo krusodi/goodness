@@ -438,13 +438,13 @@ export const StudentManagementView: React.FC = () => {
       {/* Student List Table */}
       <div className="bg-white rounded-2xl border border-slate-100 shadow-xs overflow-hidden">
         <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs sm:text-sm">
+          <table className="w-full min-w-[580px] text-left text-xs sm:text-sm">
             <thead className="bg-slate-50 text-slate-600 border-b border-slate-100 font-semibold">
               <tr>
-                <th className="py-3 px-4 w-20 text-center">เลขที่</th>
-                <th className="py-3 px-4">ชื่อ - นามสกุล</th>
-                <th className="py-3 px-4 w-28 text-center">ชั้นเรียน</th>
-                <th className="py-3 px-4 w-32 text-right">การจัดการ</th>
+                <th className="py-3 px-4 w-20 text-center whitespace-nowrap">เลขที่</th>
+                <th className="py-3 px-4 min-w-[220px] whitespace-nowrap">ชื่อ - นามสกุล</th>
+                <th className="py-3 px-4 w-28 text-center whitespace-nowrap">ชั้นเรียน</th>
+                <th className="py-3 px-4 w-32 text-right whitespace-nowrap">การจัดการ</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
@@ -461,14 +461,14 @@ export const StudentManagementView: React.FC = () => {
 
                   return (
                     <tr key={st.id} className="hover:bg-slate-50 transition-colors">
-                      <td className="py-3 px-4 text-center">
+                      <td className="py-3 px-4 text-center whitespace-nowrap">
                         <span className={`inline-flex items-center justify-center w-7 h-7 rounded-lg font-mono font-bold text-xs ${gs.noBadgeClass}`}>
                           {st.student_no}
                         </span>
                       </td>
-                      <td className="py-3 px-4">
+                      <td className="py-3 px-4 whitespace-nowrap">
                         <div className="flex items-center gap-2">
-                          <span className={`inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-semibold border ${gs.badgeClass}`}>
+                          <span className={`inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-semibold border shrink-0 ${gs.badgeClass}`}>
                             {gs.icon} {gs.label}
                           </span>
                           <span className={`font-semibold ${gs.textClass}`}>
@@ -476,10 +476,10 @@ export const StudentManagementView: React.FC = () => {
                           </span>
                         </div>
                       </td>
-                    <td className="py-3 px-4 text-center text-slate-600">
+                    <td className="py-3 px-4 text-center text-slate-600 whitespace-nowrap">
                       {st.student_class}
                     </td>
-                    <td className="py-3 px-4 text-right">
+                    <td className="py-3 px-4 text-right whitespace-nowrap">
                       <div className="inline-flex items-center gap-1.5">
                         {/* Edit Button */}
                         <button
@@ -502,7 +502,7 @@ export const StudentManagementView: React.FC = () => {
                         >
                           <Trash2 className="w-3.5 h-3.5" />
                           {deleteConfirmId === st.id && (
-                            <span className="text-[10px]">ยืนยันลบ?</span>
+                            <span className="text-[10px] whitespace-nowrap">ยืนยันลบ?</span>
                           )}
                         </button>
                       </div>

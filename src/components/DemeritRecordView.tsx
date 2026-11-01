@@ -284,8 +284,8 @@ export const DemeritRecordView: React.FC = () => {
             </div>
           </div>
 
-          {/* Student Grid with Gender-Colored Chips */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2 max-h-56 overflow-y-auto p-1.5 border border-slate-100 rounded-xl bg-slate-50/50">
+          {/* Student Grid / Gender-Colored Chips */}
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2 max-h-60 overflow-y-auto p-2 border border-slate-100 rounded-xl bg-slate-50/50">
             {filteredStudents.map((st) => {
               const isSelected = selectedStudentIds.includes(st.id);
               const gender = getStudentGender(st.student_name);
@@ -296,23 +296,24 @@ export const DemeritRecordView: React.FC = () => {
                   key={st.id}
                   type="button"
                   onClick={() => toggleStudent(st.id)}
-                  className={`p-2 rounded-xl text-left border text-xs transition-all flex items-start gap-2 ${
+                  title={st.student_name}
+                  className={`p-2.5 rounded-xl text-left border text-xs transition-all flex items-start gap-2 ${
                     isSelected
                       ? 'bg-rose-600 border-rose-700 text-white font-bold shadow-xs ring-2 ring-rose-400'
                       : gs.chipInactive
                   }`}
                 >
-                  <div className={`w-5 h-5 rounded-md flex items-center justify-center shrink-0 text-[11px] font-mono font-bold ${
+                  <div className={`w-5 h-5 rounded-md flex items-center justify-center shrink-0 text-[11px] font-mono font-bold mt-0.5 ${
                     isSelected ? 'bg-white text-rose-700' : gs.avatarClass
                   }`}>
                     {isSelected ? '✓' : st.student_no}
                   </div>
-                  <div className="truncate min-w-0">
-                    <div className="truncate text-xs leading-tight flex items-center gap-1">
-                      <span>{gs.icon}</span>
+                  <div className="min-w-0 flex-1">
+                    <div className="text-xs leading-snug flex items-center gap-1 font-semibold">
+                      <span className="shrink-0">{gs.icon}</span>
                       <span className="truncate">{st.student_name}</span>
                     </div>
-                    <div className={`text-[10px] ${isSelected ? 'text-rose-100' : 'text-slate-400'}`}>
+                    <div className={`text-[10px] mt-0.5 ${isSelected ? 'text-rose-100' : 'text-slate-400'}`}>
                       เลขที่ {st.student_no} · {gs.label}
                     </div>
                   </div>
@@ -339,7 +340,7 @@ export const DemeritRecordView: React.FC = () => {
           </div>
 
           {!isCustom ? (
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-1.5">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2">
               {PRESET_DEMERIT_BEHAVIORS.map((beh) => {
                 const isChosen = selectedBehavior === beh;
                 return (
@@ -347,13 +348,14 @@ export const DemeritRecordView: React.FC = () => {
                     key={beh}
                     type="button"
                     onClick={() => setSelectedBehavior(beh)}
-                    className={`px-2.5 py-2 rounded-xl text-xs font-medium text-left transition-all border ${
+                    className={`p-2.5 rounded-xl text-xs font-medium text-left transition-all border flex items-center gap-1.5 leading-snug break-words min-h-[46px] ${
                       isChosen
-                        ? 'bg-rose-600 text-white border-rose-700 shadow-xs font-semibold'
-                        : 'bg-white text-slate-700 border-slate-200 hover:bg-rose-50/50 hover:border-rose-200'
+                        ? 'bg-rose-600 text-white border-rose-700 shadow-xs font-semibold ring-2 ring-rose-300'
+                        : 'bg-white text-slate-700 border-slate-200 hover:bg-rose-50/60 hover:border-rose-300'
                     }`}
                   >
-                    ⚠️ {beh}
+                    <span className="shrink-0">⚠️</span>
+                    <span className="break-words leading-snug flex-1">{beh}</span>
                   </button>
                 );
               })}
@@ -365,7 +367,7 @@ export const DemeritRecordView: React.FC = () => {
                 value={customBehavior}
                 onChange={(e) => setCustomBehavior(e.target.value)}
                 placeholder="พิมพ์พฤติกรรมที่ต้องการหักคะแนน..."
-                className="w-full px-3 py-2 text-sm bg-white border border-rose-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-rose-500"
+                className="w-full px-3.5 py-2.5 text-sm bg-white border border-rose-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-rose-500"
               />
               <p className="text-[11px] text-slate-400">
                 หากพฤติกรรมไม่มีใน 21 รายการ สามารถพิมพ์ระบุได้อิสระ
@@ -389,7 +391,7 @@ export const DemeritRecordView: React.FC = () => {
                   key={quickScore}
                   type="button"
                   onClick={() => setScore(quickScore)}
-                  className={`px-3 py-1.5 text-xs rounded-lg font-bold border transition-all ${
+                  className={`px-3 py-2 text-xs rounded-lg font-bold border transition-all ${
                     score === quickScore
                       ? 'bg-rose-600 text-white border-rose-600'
                       : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100'
@@ -406,9 +408,9 @@ export const DemeritRecordView: React.FC = () => {
                   max={100}
                   value={score}
                   onChange={(e) => setScore(parseInt(e.target.value, 10) || 5)}
-                  className="w-full px-3 py-1.5 text-sm font-bold text-center bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-rose-500"
+                  className="w-full pl-3 pr-11 py-2 text-sm font-bold text-center bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-rose-500"
                 />
-                <span className="absolute right-2.5 top-1/2 -translate-y-1/2 text-xs text-slate-400">
+                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-slate-400 pointer-events-none font-medium">
                   แต้ม
                 </span>
               </div>
@@ -425,7 +427,7 @@ export const DemeritRecordView: React.FC = () => {
               type="date"
               value={recordDate}
               onChange={(e) => setRecordDate(e.target.value)}
-              className="w-full px-3 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-rose-500"
+              className="w-full px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-rose-500"
             />
           </div>
 
@@ -439,7 +441,7 @@ export const DemeritRecordView: React.FC = () => {
               type="time"
               value={recordTime}
               onChange={(e) => setRecordTime(e.target.value)}
-              className="w-full px-3 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-rose-500"
+              className="w-full px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-rose-500"
             />
           </div>
         </div>
@@ -490,16 +492,16 @@ export const DemeritRecordView: React.FC = () => {
         </div>
 
         <div className="overflow-x-auto max-h-96 overflow-y-auto">
-          <table className="w-full text-left text-xs sm:text-sm">
+          <table className="w-full min-w-[680px] text-left text-xs sm:text-sm">
             <thead className="bg-slate-50 text-slate-600 border-b border-slate-100 sticky top-0 font-semibold">
               <tr>
-                <th className="py-2.5 px-4 w-28">วันที่ / เวลา</th>
-                <th className="py-2.5 px-3 w-16 text-center">เลขที่</th>
-                <th className="py-2.5 px-4">ชื่อ - นามสกุล</th>
-                <th className="py-2.5 px-4">พฤติกรรมที่หักคะแนน</th>
-                <th className="py-2.5 px-3 text-right">คะแนน</th>
-                <th className="py-2.5 px-4">ผู้บันทึก</th>
-                <th className="py-2.5 px-3 w-20 text-center">จัดการ</th>
+                <th className="py-2.5 px-4 w-28 whitespace-nowrap">วันที่ / เวลา</th>
+                <th className="py-2.5 px-3 w-16 text-center whitespace-nowrap">เลขที่</th>
+                <th className="py-2.5 px-4 whitespace-nowrap">ชื่อ - นามสกุล</th>
+                <th className="py-2.5 px-4 min-w-[160px]">พฤติกรรมที่หักคะแนน</th>
+                <th className="py-2.5 px-3 text-right whitespace-nowrap">คะแนน</th>
+                <th className="py-2.5 px-4 whitespace-nowrap">ผู้บันทึก</th>
+                <th className="py-2.5 px-3 w-20 text-center whitespace-nowrap">จัดการ</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
@@ -518,12 +520,12 @@ export const DemeritRecordView: React.FC = () => {
                         <div>{rec.record_date}</div>
                         <div className="text-[11px] text-slate-400">{rec.record_time} น.</div>
                       </td>
-                      <td className="py-2.5 px-3 text-center">
+                      <td className="py-2.5 px-3 text-center whitespace-nowrap">
                         <span className={`inline-flex items-center justify-center w-6 h-6 rounded-md font-mono font-bold text-xs ${gs.noBadgeClass}`}>
                           {rec.student_no}
                         </span>
                       </td>
-                      <td className="py-2.5 px-4">
+                      <td className="py-2.5 px-4 whitespace-nowrap">
                         <div className="flex items-center gap-1.5">
                           <span className={`inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-semibold border ${gs.badgeClass}`}>
                             {gs.icon} {gs.label}
@@ -534,15 +536,15 @@ export const DemeritRecordView: React.FC = () => {
                         </div>
                       </td>
                     <td className="py-2.5 px-4">
-                      <span className="inline-flex items-center gap-1 font-medium text-rose-900">
-                        <AlertTriangle className="w-3.5 h-3.5 text-rose-500" />
-                        {rec.behavior}
+                      <span className="inline-flex items-center gap-1 font-medium text-rose-900 break-words leading-snug">
+                        <AlertTriangle className="w-3.5 h-3.5 text-rose-500 shrink-0" />
+                        <span>{rec.behavior}</span>
                       </span>
                     </td>
-                    <td className="py-2.5 px-3 text-right font-bold text-rose-600 tabular-nums">
+                    <td className="py-2.5 px-3 text-right font-bold text-rose-600 tabular-nums whitespace-nowrap">
                       -{rec.score}
                     </td>
-                    <td className="py-2.5 px-4 text-xs text-slate-500">
+                    <td className="py-2.5 px-4 text-xs text-slate-500 whitespace-nowrap">
                       {rec.recorded_by}
                     </td>
                     <td className="py-2.5 px-3 text-center">

@@ -392,18 +392,18 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onSelectStudent })
 
         {/* Responsive Table */}
         <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs sm:text-sm">
+          <table className="w-full min-w-[800px] text-left text-xs sm:text-sm">
             <thead className="bg-slate-50 text-slate-600 border-b border-slate-100 font-semibold">
               <tr>
-                <th className="py-3 px-4 text-center w-20">อันดับ</th>
-                <th className="py-3 px-3 text-center w-16">เลขที่</th>
-                <th className="py-3 px-4">ชื่อ - นามสกุล</th>
-                <th className="py-3 px-3 text-center w-16">ชั้น</th>
-                <th className="py-3 px-3 text-right text-emerald-700">ความดี (+)</th>
-                <th className="py-3 px-3 text-right text-rose-700">หักคะแนน (-)</th>
-                <th className="py-3 px-4 text-right font-bold text-slate-900">คะแนนสุทธิ</th>
-                <th className="py-3 px-4 text-center">ระดับพฤติกรรม</th>
-                <th className="py-3 px-3 text-center w-20 no-print">จัดการ</th>
+                <th className="py-3 px-4 text-center w-20 whitespace-nowrap">อันดับ</th>
+                <th className="py-3 px-3 text-center w-16 whitespace-nowrap">เลขที่</th>
+                <th className="py-3 px-4 min-w-[200px] whitespace-nowrap">ชื่อ - นามสกุล</th>
+                <th className="py-3 px-3 text-center w-16 whitespace-nowrap">ชั้น</th>
+                <th className="py-3 px-3 text-right text-emerald-700 whitespace-nowrap">ความดี (+)</th>
+                <th className="py-3 px-3 text-right text-rose-700 whitespace-nowrap">หักคะแนน (-)</th>
+                <th className="py-3 px-4 text-right font-bold text-slate-900 whitespace-nowrap">คะแนนสุทธิ</th>
+                <th className="py-3 px-4 text-center min-w-[120px] whitespace-nowrap">ระดับพฤติกรรม</th>
+                <th className="py-3 px-3 text-center w-20 whitespace-nowrap no-print">จัดการ</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
@@ -424,17 +424,17 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onSelectStudent })
                       key={item.student.id}
                       className="hover:bg-slate-50/80 transition-colors group"
                     >
-                      <td className="py-3 px-4 text-center font-bold">
+                      <td className="py-3 px-4 text-center font-bold whitespace-nowrap">
                         {getRankBadge(item.rank)}
                       </td>
-                      <td className="py-3 px-3 text-center">
+                      <td className="py-3 px-3 text-center whitespace-nowrap">
                         <span className={`inline-flex items-center justify-center w-7 h-7 rounded-lg font-mono font-bold text-xs ${gs.noBadgeClass}`}>
                           {item.student.student_no}
                         </span>
                       </td>
-                      <td className="py-3 px-4">
+                      <td className="py-3 px-4 whitespace-nowrap">
                         <div className="flex items-center gap-2">
-                          <span className={`inline-flex items-center gap-0.5 px-2 py-0.5 rounded-md text-[11px] font-semibold border ${gs.badgeClass}`}>
+                          <span className={`inline-flex items-center gap-0.5 px-2 py-0.5 rounded-md text-[11px] font-semibold border shrink-0 ${gs.badgeClass}`}>
                             <span>{gs.icon}</span>
                             <span>{gs.label}</span>
                           </span>
@@ -443,28 +443,28 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onSelectStudent })
                           </span>
                         </div>
                       </td>
-                      <td className="py-3 px-3 text-center text-slate-500">
+                      <td className="py-3 px-3 text-center text-slate-500 whitespace-nowrap">
                         {item.student.student_class}
                       </td>
-                      <td className="py-3 px-3 text-right tabular-nums font-semibold text-emerald-600">
+                      <td className="py-3 px-3 text-right tabular-nums font-semibold text-emerald-600 whitespace-nowrap">
                         +{item.merit_score}
                         <span className="text-[10px] text-slate-400 ml-1">({item.merit_count})</span>
                       </td>
-                      <td className="py-3 px-3 text-right tabular-nums font-semibold text-rose-600">
+                      <td className="py-3 px-3 text-right tabular-nums font-semibold text-rose-600 whitespace-nowrap">
                         {item.demerit_score > 0 ? `-${item.demerit_score}` : '0'}
                         <span className="text-[10px] text-slate-400 ml-1">({item.demerit_count})</span>
                       </td>
-                      <td className="py-3 px-4 text-right tabular-nums font-bold text-base">
+                      <td className="py-3 px-4 text-right tabular-nums font-bold text-base whitespace-nowrap">
                         <span className={item.net_score >= 0 ? 'text-emerald-700' : 'text-rose-700'}>
                           {item.net_score}
                         </span>
                       </td>
-                      <td className="py-3 px-4 text-center">
-                        <span className={`inline-block px-2.5 py-0.5 rounded-full text-xs font-medium border ${status.color}`}>
+                      <td className="py-3 px-4 text-center whitespace-nowrap">
+                        <span className={`inline-block px-2.5 py-0.5 rounded-full text-xs font-medium border whitespace-nowrap ${status.color}`}>
                           {status.label}
                         </span>
                       </td>
-                      <td className="py-3 px-3 text-center no-print">
+                      <td className="py-3 px-3 text-center no-print whitespace-nowrap">
                         <button
                           onClick={() => {
                             if (onSelectStudent) {
@@ -529,15 +529,15 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onSelectStudent })
         {/* Recent Items List / Table */}
         <div className="overflow-x-auto max-h-96 overflow-y-auto">
           {activeRecentTab === 'merit' ? (
-            <table className="w-full text-left text-xs sm:text-sm">
-              <thead className="bg-slate-50 text-slate-600 border-b border-slate-100 sticky top-0">
+            <table className="w-full min-w-[700px] text-left text-xs sm:text-sm">
+              <thead className="bg-slate-50 text-slate-600 border-b border-slate-100 sticky top-0 font-semibold">
                 <tr>
-                  <th className="py-2.5 px-4 w-28">วันที่ / เวลา</th>
-                  <th className="py-2.5 px-3 w-16 text-center">เลขที่</th>
-                  <th className="py-2.5 px-4">ชื่อ - นามสกุล</th>
-                  <th className="py-2.5 px-4">พฤติกรรมความดี</th>
-                  <th className="py-2.5 px-3 text-right">คะแนน</th>
-                  <th className="py-2.5 px-4">ผู้บันทึก</th>
+                  <th className="py-2.5 px-4 w-28 whitespace-nowrap">วันที่ / เวลา</th>
+                  <th className="py-2.5 px-3 w-16 text-center whitespace-nowrap">เลขที่</th>
+                  <th className="py-2.5 px-4 whitespace-nowrap">ชื่อ - นามสกุล</th>
+                  <th className="py-2.5 px-4 min-w-[180px]">พฤติกรรมความดี</th>
+                  <th className="py-2.5 px-3 text-right whitespace-nowrap">คะแนน</th>
+                  <th className="py-2.5 px-4 whitespace-nowrap">ผู้บันทึก</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
@@ -554,19 +554,19 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onSelectStudent })
                       <tr key={rec.id} className="hover:bg-amber-50/40 transition-colors">
                         <td className="py-2.5 px-4 text-slate-500 whitespace-nowrap text-xs">
                           <div className="flex items-center gap-1">
-                            <Calendar className="w-3 h-3 text-slate-400" />
+                            <Calendar className="w-3 h-3 text-slate-400 shrink-0" />
                             <span>{rec.record_date}</span>
                           </div>
                           <div className="text-[11px] text-slate-400">{rec.record_time} น.</div>
                         </td>
-                        <td className="py-2.5 px-3 text-center">
+                        <td className="py-2.5 px-3 text-center whitespace-nowrap">
                           <span className={`inline-flex items-center justify-center w-6 h-6 rounded-md font-mono font-bold text-xs ${gs.noBadgeClass}`}>
                             {rec.student_no}
                           </span>
                         </td>
-                        <td className="py-2.5 px-4">
+                        <td className="py-2.5 px-4 whitespace-nowrap">
                           <div className="flex items-center gap-1.5">
-                            <span className={`inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-semibold border ${gs.badgeClass}`}>
+                            <span className={`inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-semibold border shrink-0 ${gs.badgeClass}`}>
                               {gs.icon} {gs.label}
                             </span>
                             <span className={`font-semibold ${gs.textClass}`}>
@@ -575,15 +575,15 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onSelectStudent })
                           </div>
                         </td>
                         <td className="py-2.5 px-4">
-                          <span className="inline-flex items-center gap-1 text-slate-800 font-medium">
-                            <Star className="w-3.5 h-3.5 text-amber-500 fill-amber-500" />
-                            {rec.behavior}
+                          <span className="inline-flex items-center gap-1 text-slate-800 font-medium break-words leading-snug">
+                            <Star className="w-3.5 h-3.5 text-amber-500 fill-amber-500 shrink-0" />
+                            <span>{rec.behavior}</span>
                           </span>
                         </td>
-                        <td className="py-2.5 px-3 text-right font-bold text-emerald-600 tabular-nums">
+                        <td className="py-2.5 px-3 text-right font-bold text-emerald-600 tabular-nums whitespace-nowrap">
                           +{rec.score}
                         </td>
-                        <td className="py-2.5 px-4 text-xs text-slate-500">
+                        <td className="py-2.5 px-4 text-xs text-slate-500 whitespace-nowrap">
                           {rec.recorded_by}
                         </td>
                       </tr>
@@ -593,15 +593,15 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onSelectStudent })
               </tbody>
             </table>
           ) : (
-            <table className="w-full text-left text-xs sm:text-sm">
-              <thead className="bg-slate-50 text-slate-600 border-b border-slate-100 sticky top-0">
+            <table className="w-full min-w-[700px] text-left text-xs sm:text-sm">
+              <thead className="bg-slate-50 text-slate-600 border-b border-slate-100 sticky top-0 font-semibold">
                 <tr>
-                  <th className="py-2.5 px-4 w-28">วันที่ / เวลา</th>
-                  <th className="py-2.5 px-3 w-16 text-center">เลขที่</th>
-                  <th className="py-2.5 px-4">ชื่อ - นามสกุล</th>
-                  <th className="py-2.5 px-4">พฤติกรรมที่หักคะแนน</th>
-                  <th className="py-2.5 px-3 text-right">คะแนน</th>
-                  <th className="py-2.5 px-4">ผู้บันทึก</th>
+                  <th className="py-2.5 px-4 w-28 whitespace-nowrap">วันที่ / เวลา</th>
+                  <th className="py-2.5 px-3 w-16 text-center whitespace-nowrap">เลขที่</th>
+                  <th className="py-2.5 px-4 whitespace-nowrap">ชื่อ - นามสกุล</th>
+                  <th className="py-2.5 px-4 min-w-[180px]">พฤติกรรมที่หักคะแนน</th>
+                  <th className="py-2.5 px-3 text-right whitespace-nowrap">คะแนน</th>
+                  <th className="py-2.5 px-4 whitespace-nowrap">ผู้บันทึก</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
@@ -618,19 +618,19 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onSelectStudent })
                       <tr key={rec.id} className="hover:bg-rose-50/40 transition-colors">
                         <td className="py-2.5 px-4 text-slate-500 whitespace-nowrap text-xs">
                           <div className="flex items-center gap-1">
-                            <Calendar className="w-3 h-3 text-slate-400" />
+                            <Calendar className="w-3 h-3 text-slate-400 shrink-0" />
                             <span>{rec.record_date}</span>
                           </div>
                           <div className="text-[11px] text-slate-400">{rec.record_time} น.</div>
                         </td>
-                        <td className="py-2.5 px-3 text-center">
+                        <td className="py-2.5 px-3 text-center whitespace-nowrap">
                           <span className={`inline-flex items-center justify-center w-6 h-6 rounded-md font-mono font-bold text-xs ${gs.noBadgeClass}`}>
                             {rec.student_no}
                           </span>
                         </td>
-                        <td className="py-2.5 px-4">
+                        <td className="py-2.5 px-4 whitespace-nowrap">
                           <div className="flex items-center gap-1.5">
-                            <span className={`inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-semibold border ${gs.badgeClass}`}>
+                            <span className={`inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-semibold border shrink-0 ${gs.badgeClass}`}>
                               {gs.icon} {gs.label}
                             </span>
                             <span className={`font-semibold ${gs.textClass}`}>
@@ -639,15 +639,15 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onSelectStudent })
                           </div>
                         </td>
                         <td className="py-2.5 px-4">
-                          <span className="inline-flex items-center gap-1 text-slate-800 font-medium">
-                            <AlertTriangle className="w-3.5 h-3.5 text-rose-500" />
-                            {rec.behavior}
+                          <span className="inline-flex items-center gap-1 text-slate-800 font-medium break-words leading-snug">
+                            <AlertTriangle className="w-3.5 h-3.5 text-rose-500 shrink-0" />
+                            <span>{rec.behavior}</span>
                           </span>
                         </td>
-                        <td className="py-2.5 px-3 text-right font-bold text-rose-600 tabular-nums">
+                        <td className="py-2.5 px-3 text-right font-bold text-rose-600 tabular-nums whitespace-nowrap">
                           -{rec.score}
                         </td>
-                        <td className="py-2.5 px-4 text-xs text-slate-500">
+                        <td className="py-2.5 px-4 text-xs text-slate-500 whitespace-nowrap">
                           {rec.recorded_by}
                         </td>
                       </tr>

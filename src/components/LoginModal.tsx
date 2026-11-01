@@ -127,24 +127,24 @@ export const LoginModal: React.FC = () => {
               <button
                 type="button"
                 onClick={handleQuickFillAdmin}
-                className="px-2.5 py-1.5 text-xs text-left bg-emerald-50 hover:bg-emerald-100 text-emerald-900 border border-emerald-200 rounded-lg transition-colors flex items-center gap-1.5"
+                className="px-2.5 py-2 text-xs text-left bg-emerald-50 hover:bg-emerald-100 text-emerald-900 border border-emerald-200 rounded-xl transition-colors flex items-center gap-2 min-w-0"
               >
-                <KeyRound className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
-                <div className="truncate">
-                  <div className="font-semibold text-[11px]">Admin (สิทธิ์เต็ม)</div>
-                  <div className="text-[10px] text-emerald-700 font-mono">Admin / kruyb</div>
+                <KeyRound className="w-4 h-4 text-emerald-600 shrink-0" />
+                <div className="min-w-0 flex-1">
+                  <div className="font-bold text-[11px] text-emerald-950 truncate">Admin (สิทธิ์เต็ม)</div>
+                  <div className="text-[10px] text-emerald-700 font-mono truncate">Admin / kruyb</div>
                 </div>
               </button>
 
               <button
                 type="button"
                 onClick={handleQuickFillTeacher}
-                className="px-2.5 py-1.5 text-xs text-left bg-blue-50 hover:bg-blue-100 text-blue-900 border border-blue-200 rounded-lg transition-colors flex items-center gap-1.5"
+                className="px-2.5 py-2 text-xs text-left bg-blue-50 hover:bg-blue-100 text-blue-900 border border-blue-200 rounded-xl transition-colors flex items-center gap-2 min-w-0"
               >
-                <KeyRound className="w-3.5 h-3.5 text-blue-600 shrink-0" />
-                <div className="truncate">
-                  <div className="font-semibold text-[11px]">ครูประจำชั้น (ผู้บันทึก)</div>
-                  <div className="text-[10px] text-blue-700 font-mono">kru_somchai / 123</div>
+                <KeyRound className="w-4 h-4 text-blue-600 shrink-0" />
+                <div className="min-w-0 flex-1">
+                  <div className="font-bold text-[11px] text-blue-950 truncate">ครูประจำชั้น</div>
+                  <div className="text-[10px] text-blue-700 font-mono truncate">kru_somchai / 123</div>
                 </div>
               </button>
             </div>
