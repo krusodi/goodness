@@ -91,6 +91,10 @@ interface AppContextType {
   academicYearModalOpen: boolean;
   setAcademicYearModalOpen: (open: boolean) => void;
 
+  // Top 3 Customization Modal
+  top3ColorModalOpen: boolean;
+  setTop3ColorModalOpen: (open: boolean) => void;
+
   // Cloud & Firebase status
   isFirebaseConnected: boolean;
   firebaseProjectId: string;
@@ -174,6 +178,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [activeTab, setActiveTab] = useState<'dashboard' | 'students' | 'merit' | 'demerit' | 'reports' | 'admin'>('dashboard');
   const [loginModalOpen, setLoginModalOpen] = useState(false);
   const [academicYearModalOpen, setAcademicYearModalOpen] = useState(false);
+  const [top3ColorModalOpen, setTop3ColorModalOpen] = useState(false);
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' | 'info' } | null>(null);
 
   const showToast = (message: string, type: 'success' | 'error' | 'info' = 'success') => {
@@ -1035,6 +1040,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         deleteAcademicYear,
         academicYearModalOpen,
         setAcademicYearModalOpen,
+        top3ColorModalOpen,
+        setTop3ColorModalOpen,
         users,
         currentUser,
         login,

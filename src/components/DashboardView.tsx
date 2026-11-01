@@ -13,9 +13,11 @@ import {
   Calendar,
   Sparkles,
   Users,
-  Settings2
+  Settings2,
+  Palette
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
+import { getTop3Style } from '../utils/top3Color';
 
 interface DashboardViewProps {
   onSelectStudent?: (studentId: string) => void;
@@ -30,8 +32,11 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onSelectStudent })
     setActiveTab,
     academicYears,
     academicYearModalOpen,
-    setAcademicYearModalOpen
+    setAcademicYearModalOpen,
+    setTop3ColorModalOpen
   } = useApp();
+
+  const top3Style = getTop3Style(settings);
 
   const [selectedYear, setSelectedYear] = useState<string>('all');
   const [selectedMonth, setSelectedMonth] = useState<string>('all');
@@ -159,17 +164,34 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onSelectStudent })
 
       {/* Top 3 Podium Highlights */}
       {summaries.length > 0 && (
-        <div className="bg-gradient-to-b from-emerald-900 to-emerald-950 rounded-2xl p-5 sm:p-6 text-white shadow-md relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
+        <div
+          style={top3Style.backgroundStyle}
+          className="rounded-2xl p-5 sm:p-6 text-white shadow-md relative overflow-hidden transition-all duration-300"
+        >
+          <div
+            style={{ backgroundColor: top3Style.glowColor }}
+            className="absolute top-0 right-0 w-64 h-64 rounded-full blur-3xl pointer-events-none"
+          />
 
-          <div className="flex items-center justify-between mb-6">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6 relative z-10">
             <div className="flex items-center gap-2">
               <Trophy className="w-5 h-5 text-amber-400" />
               <h2 className="text-lg font-bold">สุดยอดคนดีประจำชั้น (Top 3)</h2>
             </div>
-            <span className="text-xs text-emerald-200 bg-emerald-800/60 px-3 py-1 rounded-full border border-emerald-700/50 font-medium">
-              {selectedMonth !== 'all' ? `คะแนนรวมประจำเดือน ${THAI_MONTHS.find(m => m.value === selectedMonth)?.label}` : 'คะแนนรวมตลอดเดือน'}
-            </span>
+            <div className="flex items-center gap-2 flex-wrap">
+              <button
+                type="button"
+                onClick={() => setTop3ColorModalOpen(true)}
+                title="ตั้งค่าเปลี่ยนสีพื้นหลัง Top 3"
+                className="inline-flex items-center gap-1.5 text-xs text-white/95 hover:text-white bg-white/15 hover:bg-white/25 px-2.5 py-1 rounded-full border border-white/25 transition-all backdrop-blur-xs font-semibold cursor-pointer shadow-2xs hover:scale-105 active:scale-95"
+              >
+                <Palette className="w-3.5 h-3.5 text-amber-300" />
+                <span>เปลี่ยนสีพื้นหลัง</span>
+              </button>
+              <span className={`text-xs px-3 py-1 rounded-full border font-medium ${top3Style.badgeClass}`}>
+                {selectedMonth !== 'all' ? `คะแนนรวมประจำเดือน ${THAI_MONTHS.find(m => m.value === selectedMonth)?.label}` : 'คะแนนรวมตลอดเดือน'}
+              </span>
+            </div>
           </div>
 
           {summaries.length === 0 ? (

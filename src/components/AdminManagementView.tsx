@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { useApp } from '../context/AppContext';
-import { UserRole } from '../types';
+import { UserRole, TOP3_COLOR_PRESETS } from '../types';
 import {
   Settings,
   Users,
@@ -43,7 +43,8 @@ export const AdminManagementView: React.FC = () => {
     setLoginModalOpen,
     showToast,
     academicYears,
-    setAcademicYearModalOpen
+    setAcademicYearModalOpen,
+    setTop3ColorModalOpen
   } = useApp();
 
   // Active Admin Tab
@@ -831,6 +832,67 @@ export const AdminManagementView: React.FC = () => {
                     <span>เพิ่ม/ลบ/แก้ไขปี</span>
                   </button>
                 </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Top 3 Background Customization Section */}
+          <div className="bg-white rounded-2xl p-5 sm:p-6 border border-slate-100 shadow-xs space-y-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div>
+                <h2 className="text-base font-bold text-slate-900 flex items-center gap-2">
+                  <Palette className="w-5 h-5 text-amber-500" />
+                  <span>สีพื้นหลังสุดยอดคนดีประจำชั้น (Top 3 Background Color)</span>
+                </h2>
+                <p className="text-xs text-slate-500 mt-0.5">
+                  ปรับแต่งโทนสีพื้นหลังการ์ด Top 3 บนหน้ากระดานสรุปคะแนน (Dashboard)
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setTop3ColorModalOpen(true)}
+                className="px-4 py-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 rounded-xl text-xs font-bold transition-all shadow-2xs flex items-center gap-1.5 self-start sm:self-auto"
+              >
+                <Palette className="w-3.5 h-3.5 text-emerald-600" />
+                <span>เปิดตัวเลือกสีและปรับแต่งขั้นสูง</span>
+              </button>
+            </div>
+
+            {/* Quick Presets Selector in Admin Tab 4 */}
+            <div className="space-y-1.5 pt-1">
+              <span className="text-[11px] font-semibold text-slate-500">เลือกชุดสีด่วน (Quick Presets):</span>
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2.5">
+                {TOP3_COLOR_PRESETS.map((preset) => {
+                  const isSelected = (settings.top3_bg_type === 'preset' || !settings.top3_bg_type) && settings.top3_bg_preset === preset.id;
+                  return (
+                    <button
+                      key={preset.id}
+                      type="button"
+                      onClick={() => {
+                        updateSettings({
+                          top3_bg_type: 'preset',
+                          top3_bg_preset: preset.id,
+                          top3_bg_color: preset.fromColor,
+                          top3_bg_color_end: preset.toColor
+                        });
+                        showToast(`เปลี่ยนสีพื้นหลัง Top 3 เป็น "${preset.name}" แล้ว`, 'success');
+                      }}
+                      className={`p-2.5 rounded-xl border text-left flex flex-col gap-2 transition-all ${
+                        isSelected
+                          ? 'border-emerald-600 bg-emerald-50/70 ring-2 ring-emerald-500/20 shadow-xs'
+                          : 'border-slate-200 hover:border-slate-300 bg-white'
+                      }`}
+                    >
+                      <div
+                        style={{ background: `linear-gradient(135deg, ${preset.fromColor}, ${preset.toColor})` }}
+                        className="w-full h-8 rounded-lg shadow-2xs flex items-center justify-center text-white text-xs"
+                      >
+                        {isSelected && <Check className="w-4 h-4 text-white" />}
+                      </div>
+                      <div className="text-[11px] font-bold text-slate-800 truncate">{preset.name}</div>
+                    </button>
+                  );
+                })}
               </div>
             </div>
           </div>

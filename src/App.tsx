@@ -9,10 +9,18 @@ import { ReportsView } from './components/ReportsView';
 import { AdminManagementView } from './components/AdminManagementView';
 import { LoginModal } from './components/LoginModal';
 import { AcademicYearModal } from './components/AcademicYearModal';
+import { Top3ColorModal } from './components/Top3ColorModal';
 import { Toast } from './components/Toast';
 
 const MainContent: React.FC = () => {
-  const { activeTab, settings, academicYearModalOpen, setAcademicYearModalOpen } = useApp();
+  const {
+    activeTab,
+    settings,
+    academicYearModalOpen,
+    setAcademicYearModalOpen,
+    top3ColorModalOpen,
+    setTop3ColorModalOpen
+  } = useApp();
   const [selectedStudentForReport, setSelectedStudentForReport] = useState<string | null>(null);
 
   return (
@@ -50,6 +58,10 @@ const MainContent: React.FC = () => {
       <AcademicYearModal
         isOpen={academicYearModalOpen}
         onClose={() => setAcademicYearModalOpen(false)}
+      />
+      <Top3ColorModal
+        isOpen={top3ColorModalOpen}
+        onClose={() => setTop3ColorModalOpen(false)}
       />
       <Toast />
     </div>

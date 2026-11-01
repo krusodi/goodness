@@ -11,7 +11,11 @@ export const INITIAL_SETTINGS: AppSettings = {
   text_color: '#14532d',
   primary_color: '#16a34a',
   secondary_color: '#22c55e',
-  font_size: 16
+  font_size: 16,
+  top3_bg_type: 'preset',
+  top3_bg_preset: 'emerald',
+  top3_bg_color: '#064e3b',
+  top3_bg_color_end: '#022c22'
 };
 
 export const INITIAL_USERS: UserAccount[] = [
