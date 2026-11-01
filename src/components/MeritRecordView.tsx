@@ -443,7 +443,7 @@ export const MeritRecordView: React.FC = () => {
               type="date"
               value={recordDate}
               onChange={(e) => setRecordDate(e.target.value)}
-              className="w-full px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-emerald-500"
+              className="w-full min-w-[145px] px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-emerald-500 font-mono whitespace-nowrap"
             />
           </div>
 
@@ -511,7 +511,7 @@ export const MeritRecordView: React.FC = () => {
           <table className="w-full min-w-[680px] text-left text-xs sm:text-sm">
             <thead className="bg-slate-50 text-slate-600 border-b border-slate-100 sticky top-0 font-semibold">
               <tr>
-                <th className="py-2.5 px-4 w-28 whitespace-nowrap">วันที่ / เวลา</th>
+                <th className="py-2.5 px-4 w-36 min-w-[130px] whitespace-nowrap">วันที่ / เวลา</th>
                 <th className="py-2.5 px-3 w-16 text-center whitespace-nowrap">เลขที่</th>
                 <th className="py-2.5 px-4 whitespace-nowrap">ชื่อ - นามสกุล</th>
                 <th className="py-2.5 px-4 min-w-[160px]">พฤติกรรมความดี</th>
@@ -532,9 +532,9 @@ export const MeritRecordView: React.FC = () => {
                   const gs = getGenderStyles(getStudentGender(rec.student_name));
                   return (
                     <tr key={rec.id} className="hover:bg-amber-50/30 transition-colors">
-                      <td className="py-2.5 px-4 text-slate-500 whitespace-nowrap text-xs">
-                        <div>{rec.record_date}</div>
-                        <div className="text-[11px] text-slate-400">{rec.record_time} น.</div>
+                      <td className="py-2.5 px-4 text-slate-500 whitespace-nowrap text-xs min-w-[130px]">
+                        <div className="font-mono whitespace-nowrap text-xs">{rec.record_date}</div>
+                        <div className="text-[11px] text-slate-400 whitespace-nowrap">{rec.record_time} น.</div>
                       </td>
                       <td className="py-2.5 px-3 text-center whitespace-nowrap">
                         <span className={`inline-flex items-center justify-center w-6 h-6 rounded-md font-mono font-bold text-xs ${gs.noBadgeClass}`}>
@@ -644,7 +644,7 @@ export const MeritRecordView: React.FC = () => {
                     type="date"
                     value={editDate}
                     onChange={(e) => setEditDate(e.target.value)}
-                    className="w-full px-3 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-lg"
+                    className="w-full min-w-[145px] px-3 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-lg font-mono whitespace-nowrap"
                   />
                 </div>
                 <div>

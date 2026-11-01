@@ -374,7 +374,7 @@ export const ReportsView: React.FC<ReportsViewProps> = ({ initialStudentId }) =>
                     <table className="w-full text-left text-xs">
                       <thead className="bg-slate-50 text-slate-600 border-b border-slate-100 sticky top-0 font-semibold">
                         <tr>
-                          <th className="py-2 px-3 w-24">วันที่</th>
+                          <th className="py-2 px-3 w-32 min-w-[125px] whitespace-nowrap">วันที่ / เวลา</th>
                           <th className="py-2 px-3">พฤติกรรมความดี</th>
                           <th className="py-2 px-2 text-right">คะแนน</th>
                           <th className="py-2 px-3">ผู้บันทึก</th>
@@ -390,9 +390,9 @@ export const ReportsView: React.FC<ReportsViewProps> = ({ initialStudentId }) =>
                         ) : (
                           studentMerits.map((m) => (
                             <tr key={m.id} className="hover:bg-slate-50">
-                              <td className="py-2 px-3 text-slate-500 whitespace-nowrap">
-                                <div>{m.record_date}</div>
-                                <div className="text-[10px] text-slate-400">{m.record_time} น.</div>
+                              <td className="py-2 px-3 text-slate-500 whitespace-nowrap min-w-[125px]">
+                                <div className="font-mono whitespace-nowrap text-xs">{m.record_date}</div>
+                                <div className="text-[10px] text-slate-400 whitespace-nowrap">{m.record_time} น.</div>
                               </td>
                               <td className="py-2 px-3 font-medium text-slate-800">
                                 {m.behavior}
@@ -425,7 +425,7 @@ export const ReportsView: React.FC<ReportsViewProps> = ({ initialStudentId }) =>
                     <table className="w-full text-left text-xs">
                       <thead className="bg-slate-50 text-slate-600 border-b border-slate-100 sticky top-0 font-semibold">
                         <tr>
-                          <th className="py-2 px-3 w-24">วันที่</th>
+                          <th className="py-2 px-3 w-32 min-w-[125px] whitespace-nowrap">วันที่ / เวลา</th>
                           <th className="py-2 px-3">พฤติกรรมที่หักคะแนน</th>
                           <th className="py-2 px-2 text-right">คะแนน</th>
                           <th className="py-2 px-3">ผู้บันทึก</th>
@@ -441,9 +441,9 @@ export const ReportsView: React.FC<ReportsViewProps> = ({ initialStudentId }) =>
                         ) : (
                           studentDemerits.map((d) => (
                             <tr key={d.id} className="hover:bg-slate-50">
-                              <td className="py-2 px-3 text-slate-500 whitespace-nowrap">
-                                <div>{d.record_date}</div>
-                                <div className="text-[10px] text-slate-400">{d.record_time} น.</div>
+                              <td className="py-2 px-3 text-slate-500 whitespace-nowrap min-w-[125px]">
+                                <div className="font-mono whitespace-nowrap text-xs">{d.record_date}</div>
+                                <div className="text-[10px] text-slate-400 whitespace-nowrap">{d.record_time} น.</div>
                               </td>
                               <td className="py-2 px-3 font-medium text-slate-800">
                                 {d.behavior}
@@ -490,7 +490,7 @@ export const ReportsView: React.FC<ReportsViewProps> = ({ initialStudentId }) =>
                   type="date"
                   value={dailyDate}
                   onChange={(e) => setDailyDate(e.target.value)}
-                  className="text-xs px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-slate-800 focus:outline-none focus:ring-1 focus:ring-emerald-500"
+                  className="text-xs px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-slate-800 focus:outline-none focus:ring-1 focus:ring-emerald-500 min-w-[145px] font-mono whitespace-nowrap"
                 />
               </div>
 
@@ -674,7 +674,7 @@ export const ReportsView: React.FC<ReportsViewProps> = ({ initialStudentId }) =>
               <table className="w-full min-w-[700px] text-left text-xs sm:text-sm">
                 <thead className="bg-slate-50 text-slate-600 border-b border-slate-100 font-semibold">
                   <tr>
-                    <th className="py-2.5 px-3 w-24 whitespace-nowrap">วันที่</th>
+                    <th className="py-2.5 px-3 w-32 min-w-[125px] whitespace-nowrap">วันที่</th>
                     <th className="py-2.5 px-3 w-16 text-center whitespace-nowrap">เลขที่</th>
                     <th className="py-2.5 px-4 whitespace-nowrap">ชื่อ - นามสกุล</th>
                     <th className="py-2.5 px-3 text-center w-24 whitespace-nowrap">ประเภท</th>
@@ -695,7 +695,7 @@ export const ReportsView: React.FC<ReportsViewProps> = ({ initialStudentId }) =>
                       const gs = getGenderStyles(getStudentGender(r.student_name));
                       return (
                         <tr key={r.id} className="hover:bg-slate-50">
-                          <td className="py-2.5 px-3 font-mono text-slate-500">{r.record_date}</td>
+                          <td className="py-2.5 px-3 font-mono text-slate-600 whitespace-nowrap min-w-[125px]">{r.record_date}</td>
                           <td className="py-2.5 px-3 text-center">
                             <span className={`inline-flex items-center justify-center w-6 h-6 rounded-md font-mono font-bold text-xs ${gs.noBadgeClass}`}>
                               {r.student_no}

@@ -588,7 +588,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onSelectStudent })
             <table className="w-full min-w-[700px] text-left text-xs sm:text-sm">
               <thead className="bg-slate-50 text-slate-600 border-b border-slate-100 sticky top-0 font-semibold">
                 <tr>
-                  <th className="py-2.5 px-4 w-28 whitespace-nowrap">วันที่ / เวลา</th>
+                  <th className="py-2.5 px-4 w-36 min-w-[130px] whitespace-nowrap">วันที่ / เวลา</th>
                   <th className="py-2.5 px-3 w-16 text-center whitespace-nowrap">เลขที่</th>
                   <th className="py-2.5 px-4 whitespace-nowrap">ชื่อ - นามสกุล</th>
                   <th className="py-2.5 px-4 min-w-[180px]">พฤติกรรมความดี</th>
@@ -608,12 +608,12 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onSelectStudent })
                     const gs = getGenderStyles(getStudentGender(rec.student_name));
                     return (
                       <tr key={rec.id} className="hover:bg-amber-50/40 transition-colors">
-                        <td className="py-2.5 px-4 text-slate-500 whitespace-nowrap text-xs">
-                          <div className="flex items-center gap-1">
+                        <td className="py-2.5 px-4 text-slate-500 whitespace-nowrap text-xs min-w-[130px]">
+                          <div className="flex items-center gap-1 font-mono">
                             <Calendar className="w-3 h-3 text-slate-400 shrink-0" />
-                            <span>{rec.record_date}</span>
+                            <span className="whitespace-nowrap">{rec.record_date}</span>
                           </div>
-                          <div className="text-[11px] text-slate-400">{rec.record_time} น.</div>
+                          <div className="text-[11px] text-slate-400 whitespace-nowrap">{rec.record_time} น.</div>
                         </td>
                         <td className="py-2.5 px-3 text-center whitespace-nowrap">
                           <span className={`inline-flex items-center justify-center w-6 h-6 rounded-md font-mono font-bold text-xs ${gs.noBadgeClass}`}>
@@ -652,7 +652,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onSelectStudent })
             <table className="w-full min-w-[700px] text-left text-xs sm:text-sm">
               <thead className="bg-slate-50 text-slate-600 border-b border-slate-100 sticky top-0 font-semibold">
                 <tr>
-                  <th className="py-2.5 px-4 w-28 whitespace-nowrap">วันที่ / เวลา</th>
+                  <th className="py-2.5 px-4 w-36 min-w-[130px] whitespace-nowrap">วันที่ / เวลา</th>
                   <th className="py-2.5 px-3 w-16 text-center whitespace-nowrap">เลขที่</th>
                   <th className="py-2.5 px-4 whitespace-nowrap">ชื่อ - นามสกุล</th>
                   <th className="py-2.5 px-4 min-w-[180px]">พฤติกรรมที่หักคะแนน</th>
@@ -672,12 +672,12 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onSelectStudent })
                     const gs = getGenderStyles(getStudentGender(rec.student_name));
                     return (
                       <tr key={rec.id} className="hover:bg-rose-50/40 transition-colors">
-                        <td className="py-2.5 px-4 text-slate-500 whitespace-nowrap text-xs">
-                          <div className="flex items-center gap-1">
+                        <td className="py-2.5 px-4 text-slate-500 whitespace-nowrap text-xs min-w-[130px]">
+                          <div className="flex items-center gap-1 font-mono">
                             <Calendar className="w-3 h-3 text-slate-400 shrink-0" />
-                            <span>{rec.record_date}</span>
+                            <span className="whitespace-nowrap">{rec.record_date}</span>
                           </div>
-                          <div className="text-[11px] text-slate-400">{rec.record_time} น.</div>
+                          <div className="text-[11px] text-slate-400 whitespace-nowrap">{rec.record_time} น.</div>
                         </td>
                         <td className="py-2.5 px-3 text-center whitespace-nowrap">
                           <span className={`inline-flex items-center justify-center w-6 h-6 rounded-md font-mono font-bold text-xs ${gs.noBadgeClass}`}>
