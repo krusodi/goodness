@@ -32,7 +32,9 @@ export const ReportsView: React.FC<ReportsViewProps> = ({ initialStudentId }) =>
     addMeritBatch,
     addDemeritBatch,
     getSummaries,
-    showToast
+    showToast,
+    academicYears,
+    setAcademicYearModalOpen
   } = useApp();
 
   // Active Report Sub-tab:
@@ -57,12 +59,12 @@ export const ReportsView: React.FC<ReportsViewProps> = ({ initialStudentId }) =>
   const [dailyStudentFilter, setDailyStudentFilter] = useState<string>('all');
 
   // Monthly Report State
-  const [monthlyYear, setMonthlyYear] = useState<string>('2569');
+  const [monthlyYear, setMonthlyYear] = useState<string>(settings.academic_year || '2569');
   const [monthlyMonth, setMonthlyMonth] = useState<string>('10');
   const [monthlyStudentFilter, setMonthlyStudentFilter] = useState<string>('all');
 
   // Monthly Summary Leaderboard State
-  const [summaryYear, setSummaryYear] = useState<string>('2569');
+  const [summaryYear, setSummaryYear] = useState<string>(settings.academic_year || '2569');
   const [summaryMonth, setSummaryMonth] = useState<string>('10');
 
   // Current selected student
@@ -578,14 +580,34 @@ export const ReportsView: React.FC<ReportsViewProps> = ({ initialStudentId }) =>
               <div className="flex items-center gap-1.5">
                 <CalendarDays className="w-4 h-4 text-emerald-600" />
                 <label className="text-xs font-semibold text-slate-700">ปีการศึกษา:</label>
-                <select
-                  value={monthlyYear}
-                  onChange={(e) => setMonthlyYear(e.target.value)}
-                  className="text-xs px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-slate-800 focus:outline-none focus:ring-1 focus:ring-emerald-500"
-                >
-                  <option value="2569">2569 (2026)</option>
-                  <option value="2568">2568 (2025)</option>
-                </select>
+                <div className="flex items-center gap-1">
+                  <select
+                    value={monthlyYear}
+                    onChange={(e) => {
+                      if (e.target.value === '__manage__') {
+                        setAcademicYearModalOpen(true);
+                      } else {
+                        setMonthlyYear(e.target.value);
+                      }
+                    }}
+                    className="text-xs px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-slate-800 focus:outline-none focus:ring-1 focus:ring-emerald-500 font-medium"
+                  >
+                    {academicYears.map((yr) => (
+                      <option key={yr} value={yr}>
+                        ปีการศึกษา {yr}
+                      </option>
+                    ))}
+                    <option value="__manage__">⚙️ + จัดการปีการศึกษา...</option>
+                  </select>
+                  <button
+                    type="button"
+                    onClick={() => setAcademicYearModalOpen(true)}
+                    title="จัดการตัวกรองปีการศึกษา"
+                    className="p-1.5 text-slate-500 hover:text-emerald-700 hover:bg-emerald-50 border border-slate-200 rounded-lg transition-colors"
+                  >
+                    <Calendar className="w-3.5 h-3.5 text-emerald-600" />
+                  </button>
+                </div>
               </div>
 
               <div className="flex items-center gap-1.5">
@@ -705,14 +727,34 @@ export const ReportsView: React.FC<ReportsViewProps> = ({ initialStudentId }) =>
               <div className="flex items-center gap-1.5">
                 <Trophy className="w-4 h-4 text-emerald-600" />
                 <label className="text-xs font-semibold text-slate-700">ปีการศึกษา:</label>
-                <select
-                  value={summaryYear}
-                  onChange={(e) => setSummaryYear(e.target.value)}
-                  className="text-xs px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-slate-800 focus:outline-none focus:ring-1 focus:ring-emerald-500"
-                >
-                  <option value="2569">2569 (2026)</option>
-                  <option value="2568">2568 (2025)</option>
-                </select>
+                <div className="flex items-center gap-1">
+                  <select
+                    value={summaryYear}
+                    onChange={(e) => {
+                      if (e.target.value === '__manage__') {
+                        setAcademicYearModalOpen(true);
+                      } else {
+                        setSummaryYear(e.target.value);
+                      }
+                    }}
+                    className="text-xs px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-slate-800 focus:outline-none focus:ring-1 focus:ring-emerald-500 font-medium"
+                  >
+                    {academicYears.map((yr) => (
+                      <option key={yr} value={yr}>
+                        ปีการศึกษา {yr}
+                      </option>
+                    ))}
+                    <option value="__manage__">⚙️ + จัดการปีการศึกษา...</option>
+                  </select>
+                  <button
+                    type="button"
+                    onClick={() => setAcademicYearModalOpen(true)}
+                    title="จัดการตัวกรองปีการศึกษา"
+                    className="p-1.5 text-slate-500 hover:text-emerald-700 hover:bg-emerald-50 border border-slate-200 rounded-lg transition-colors"
+                  >
+                    <Calendar className="w-3.5 h-3.5 text-emerald-600" />
+                  </button>
+                </div>
               </div>
 
               <div className="flex items-center gap-1.5">

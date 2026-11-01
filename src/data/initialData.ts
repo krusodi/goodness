@@ -4,6 +4,7 @@ export const INITIAL_SETTINGS: AppSettings = {
   system_name: 'ระบบบันทึกความดีนักเรียน ป.5/1',
   school_name: 'โรงเรียนบ้านยะบะ(อุปการวิทยา)',
   academic_year: '2569',
+  academic_years: ['2570', '2569', '2568', '2567'],
   academic_term: '1',
   bg_color: '#f0fdf4',
   surface_color: '#ffffff',

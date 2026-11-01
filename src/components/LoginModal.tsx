@@ -3,12 +3,15 @@ import { useApp } from '../context/AppContext';
 import { LogIn, X, Lock, User, Eye, EyeOff, ShieldCheck, KeyRound } from 'lucide-react';
 
 export const LoginModal: React.FC = () => {
-  const { loginModalOpen, setLoginModalOpen, login } = useApp();
+  const { loginModalOpen, setLoginModalOpen, login, users } = useApp();
   const [username, setUsername] = useState('Admin');
   const [password, setPassword] = useState('kruyb');
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+
+  const adminUser = users.find((u) => u.username.toLowerCase() === 'admin') || users.find((u) => u.role === 'admin');
+  const teacherUser = users.find((u) => u.username.toLowerCase() === 'kru_somchai') || users.find((u) => u.role === 'user');
 
   if (!loginModalOpen) return null;
 
@@ -27,14 +30,14 @@ export const LoginModal: React.FC = () => {
   };
 
   const handleQuickFillAdmin = () => {
-    setUsername('Admin');
-    setPassword('kruyb');
+    setUsername(adminUser ? adminUser.username : 'Admin');
+    setPassword(adminUser ? adminUser.password : 'kruyb');
     setError(null);
   };
 
   const handleQuickFillTeacher = () => {
-    setUsername('kru_somchai');
-    setPassword('123');
+    setUsername(teacherUser ? teacherUser.username : 'kru_somchai');
+    setPassword(teacherUser ? teacherUser.password : '123');
     setError(null);
   };
 
@@ -131,8 +134,12 @@ export const LoginModal: React.FC = () => {
               >
                 <KeyRound className="w-4 h-4 text-emerald-600 shrink-0" />
                 <div className="min-w-0 flex-1">
-                  <div className="font-bold text-[11px] text-emerald-950 truncate">Admin (สิทธิ์เต็ม)</div>
-                  <div className="text-[10px] text-emerald-700 font-mono truncate">Admin / kruyb</div>
+                  <div className="font-bold text-[11px] text-emerald-950 truncate">
+                    {adminUser ? adminUser.name : 'Admin (สิทธิ์เต็ม)'}
+                  </div>
+                  <div className="text-[10px] text-emerald-700 font-mono truncate">
+                    {adminUser ? `${adminUser.username} / ${adminUser.password}` : 'Admin / kruyb'}
+                  </div>
                 </div>
               </button>
 
@@ -143,8 +150,12 @@ export const LoginModal: React.FC = () => {
               >
                 <KeyRound className="w-4 h-4 text-blue-600 shrink-0" />
                 <div className="min-w-0 flex-1">
-                  <div className="font-bold text-[11px] text-blue-950 truncate">ครูประจำชั้น</div>
-                  <div className="text-[10px] text-blue-700 font-mono truncate">kru_somchai / 123</div>
+                  <div className="font-bold text-[11px] text-blue-950 truncate">
+                    {teacherUser ? teacherUser.name : 'ครูประจำชั้น'}
+                  </div>
+                  <div className="text-[10px] text-blue-700 font-mono truncate">
+                    {teacherUser ? `${teacherUser.username} / ${teacherUser.password}` : 'kru_somchai / 123'}
+                  </div>
                 </div>
               </button>
             </div>

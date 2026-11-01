@@ -57,6 +57,7 @@ interface AppContextType {
   logout: () => void;
   addUser: (data: { username: string; password: string; role: UserRole; name: string }) => { success: boolean; message?: string };
   updateUserPassword: (userId: string, newPass: string) => { success: boolean; message?: string };
+  updateUserProfile: (userId: string, data: { name: string; username?: string }) => { success: boolean; message?: string };
   deleteUser: (userId: string) => { success: boolean; message?: string };
   
   students: Student[];
@@ -82,6 +83,14 @@ interface AppContextType {
   // Summaries & calculations
   getSummaries: (monthFilter?: string, yearFilter?: string) => StudentScoreSummary[];
   
+  // Academic years
+  academicYears: string[];
+  addAcademicYear: (year: string) => { success: boolean; message?: string };
+  updateAcademicYear: (oldYear: string, newYear: string) => { success: boolean; message?: string };
+  deleteAcademicYear: (year: string) => { success: boolean; message?: string };
+  academicYearModalOpen: boolean;
+  setAcademicYearModalOpen: (open: boolean) => void;
+
   // Cloud & Firebase status
   isFirebaseConnected: boolean;
   firebaseProjectId: string;
@@ -164,6 +173,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   // UI state
   const [activeTab, setActiveTab] = useState<'dashboard' | 'students' | 'merit' | 'demerit' | 'reports' | 'admin'>('dashboard');
   const [loginModalOpen, setLoginModalOpen] = useState(false);
+  const [academicYearModalOpen, setAcademicYearModalOpen] = useState(false);
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' | 'info' } | null>(null);
 
   const showToast = (message: string, type: 'success' | 'error' | 'info' = 'success') => {
@@ -422,32 +432,82 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       return { success: false, message: 'รหัสผ่านต้องไม่ว่างเปล่า' };
     }
     const target = users.find((u) => u.id === userId);
-    if (target?.is_default_admin) {
-      return { success: false, message: 'ไม่สามารถเปลี่ยนรหัสผ่านของ Admin ระบบเริ่มต้นได้' };
+    if (!target) {
+      return { success: false, message: 'ไม่พบผู้ใช้ในระบบ' };
     }
 
+    const updatedUser: UserAccount = { ...target, password: newPass.trim() };
+
     setUsers((prev) =>
-      prev.map((u) => (u.id === userId ? { ...u, password: newPass.trim() } : u))
+      prev.map((u) => (u.id === userId ? updatedUser : u))
     );
 
     if (currentUser && currentUser.id === userId) {
-      setCurrentUser((prev) => (prev ? { ...prev, password: newPass.trim() } : null));
+      setCurrentUser(updatedUser);
     }
 
     // Update in Firestore
-    updateDoc(doc(db, 'users', userId), { password: newPass.trim() }).catch((err) => {
+    setDoc(doc(db, 'users', userId), updatedUser, { merge: true }).catch((err) => {
       console.warn('Firestore update password note:', err);
     });
 
-    showToast('เปลี่ยนรหัสผ่านสำเร็จ', 'success');
+    showToast(`เปลี่ยนรหัสผ่านของ "${target.name}" สำเร็จ`, 'success');
+    return { success: true };
+  };
+
+  const updateUserProfile = (userId: string, data: { name: string; username?: string }) => {
+    const cleanName = data.name.trim();
+    if (!cleanName) {
+      return { success: false, message: 'กรุณากรอกชื่อ - นามสกุล' };
+    }
+    const target = users.find((u) => u.id === userId);
+    if (!target) {
+      return { success: false, message: 'ไม่พบผู้ใช้ในระบบ' };
+    }
+
+    let updatedUsername = target.username;
+    if (data.username && data.username.trim()) {
+      const cleanUser = data.username.trim();
+      if (cleanUser.toLowerCase() !== target.username.toLowerCase()) {
+        if (users.some((u) => u.id !== userId && u.username.toLowerCase() === cleanUser.toLowerCase())) {
+          return { success: false, message: 'ชื่อผู้ใช้นี้มีในระบบแล้ว กรุณาเลือกชื่ออื่น' };
+        }
+      }
+      updatedUsername = cleanUser;
+    }
+
+    const updatedUser: UserAccount = {
+      ...target,
+      name: cleanName,
+      username: updatedUsername
+    };
+
+    setUsers((prev) =>
+      prev.map((u) => (u.id === userId ? updatedUser : u))
+    );
+
+    if (currentUser && currentUser.id === userId) {
+      setCurrentUser(updatedUser);
+    }
+
+    // Save to Firestore
+    setDoc(doc(db, 'users', userId), updatedUser, { merge: true }).catch((err) => {
+      console.warn('Firestore update user profile note:', err);
+    });
+
+    showToast(`แก้ไขข้อมูลของ "${cleanName}" เรียบร้อยแล้ว`, 'success');
     return { success: true };
   };
 
   const deleteUser = (userId: string) => {
     const target = users.find((u) => u.id === userId);
     if (!target) return { success: false, message: 'ไม่พบผู้ใช้' };
-    if (target.is_default_admin || target.username.toLowerCase() === 'admin') {
-      return { success: false, message: 'ไม่สามารถลบ Admin ระบบเริ่มต้นได้' };
+    if (currentUser && currentUser.id === userId) {
+      return { success: false, message: 'ไม่สามารถลบบัญชีที่กำลังเข้าสู่ระบบอยู่ได้' };
+    }
+    const adminCount = users.filter((u) => u.role === 'admin').length;
+    if (target.role === 'admin' && adminCount <= 1) {
+      return { success: false, message: 'ไม่สามารถลบได้ เนื่องจากต้องมีผู้ดูแลระบบ (Admin) อย่างน้อย 1 บัญชี' };
     }
 
     setUsers((prev) => prev.filter((u) => u.id !== userId));
@@ -850,6 +910,66 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     showToast('รีเซ็ตการตั้งค่าเป็นค่าเริ่มต้นแล้ว', 'info');
   };
 
+  // Academic year management
+  const academicYears = (settings.academic_years && settings.academic_years.length > 0)
+    ? settings.academic_years
+    : ['2570', '2569', '2568', '2567'];
+
+  const addAcademicYear = (year: string) => {
+    const trimmed = year.trim();
+    if (!trimmed) {
+      return { success: false, message: 'กรุณาระบุปีการศึกษา' };
+    }
+    const current = settings.academic_years || ['2570', '2569', '2568', '2567'];
+    if (current.includes(trimmed)) {
+      return { success: false, message: `มีปีการศึกษา ${trimmed} อยู่ในระบบแล้ว` };
+    }
+    const updated = [trimmed, ...current].sort((a, b) => {
+      const numA = parseInt(a, 10);
+      const numB = parseInt(b, 10);
+      if (!isNaN(numA) && !isNaN(numB)) return numB - numA;
+      return b.localeCompare(a);
+    });
+
+    updateSettings({ academic_years: updated });
+    showToast(`เพิ่มปีการศึกษา ${trimmed} สำเร็จ`, 'success');
+    return { success: true };
+  };
+
+  const updateAcademicYear = (oldYear: string, newYear: string) => {
+    const trimmed = newYear.trim();
+    if (!trimmed) {
+      return { success: false, message: 'กรุณาระบุปีการศึกษาใหม่' };
+    }
+    const current = settings.academic_years || ['2570', '2569', '2568', '2567'];
+    if (trimmed !== oldYear && current.includes(trimmed)) {
+      return { success: false, message: `มีปีการศึกษา ${trimmed} อยู่ในระบบแล้ว` };
+    }
+    const updated = current.map((y) => (y === oldYear ? trimmed : y));
+    const newSettings: Partial<AppSettings> = { academic_years: updated };
+    if (settings.academic_year === oldYear) {
+      newSettings.academic_year = trimmed;
+    }
+    updateSettings(newSettings);
+    showToast(`แก้ไขปีการศึกษา ${oldYear} เป็น ${trimmed} เรียบร้อย`, 'success');
+    return { success: true };
+  };
+
+  const deleteAcademicYear = (year: string) => {
+    const current = settings.academic_years || ['2570', '2569', '2568', '2567'];
+    if (current.length <= 1) {
+      return { success: false, message: 'ไม่สามารถลบได้ เนื่องจากต้องมีปีการศึกษาอย่างน้อย 1 รายการ' };
+    }
+    const updated = current.filter((y) => y !== year);
+    const newSettings: Partial<AppSettings> = { academic_years: updated };
+    if (settings.academic_year === year) {
+      newSettings.academic_year = updated[0];
+    }
+    updateSettings(newSettings);
+    showToast(`ลบปีการศึกษา ${year} เรียบร้อย`, 'info');
+    return { success: true };
+  };
+
   // Summaries calculation (Leaderboard calculation)
   const getSummaries = (monthFilter?: string, yearFilter?: string): StudentScoreSummary[] => {
     return students.map((student) => {
@@ -909,12 +1029,19 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         settings,
         updateSettings,
         resetSettings,
+        academicYears,
+        addAcademicYear,
+        updateAcademicYear,
+        deleteAcademicYear,
+        academicYearModalOpen,
+        setAcademicYearModalOpen,
         users,
         currentUser,
         login,
         logout,
         addUser,
         updateUserPassword,
+        updateUserProfile,
         deleteUser,
         students,
         addStudent,

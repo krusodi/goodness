@@ -14,8 +14,10 @@ import {
   UserCheck,
   Menu,
   X,
-  Cloud
+  Cloud,
+  Edit2
 } from 'lucide-react';
+import { ProfileModal } from './ProfileModal';
 
 export const Navbar: React.FC = () => {
   const {
@@ -30,6 +32,7 @@ export const Navbar: React.FC = () => {
   } = useApp();
 
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [profileModalOpen, setProfileModalOpen] = useState(false);
 
   interface NavItem {
     id: 'dashboard' | 'students' | 'merit' | 'demerit' | 'reports' | 'admin';
@@ -157,19 +160,25 @@ export const Navbar: React.FC = () => {
 
             {currentUser ? (
               <div className="flex items-center gap-2 pl-2 border-l border-slate-200">
-                <div className="hidden md:flex flex-col text-right">
-                  <span className="text-xs font-semibold text-slate-800 flex items-center justify-end gap-1">
+                <button
+                  type="button"
+                  onClick={() => setProfileModalOpen(true)}
+                  className="hidden md:flex flex-col text-right hover:opacity-80 transition-all group focus:outline-none cursor-pointer"
+                  title="คลิกเพื่อแก้ไขชื่อ-นามสกุล หรือเปลี่ยนรหัสผ่าน"
+                >
+                  <span className="text-xs font-semibold text-slate-800 flex items-center justify-end gap-1 group-hover:text-emerald-700">
                     {currentUser.role === 'admin' ? (
                       <ShieldCheck className="w-3.5 h-3.5 text-emerald-600 inline" />
                     ) : (
                       <UserCheck className="w-3.5 h-3.5 text-blue-600 inline" />
                     )}
-                    {currentUser.name}
+                    <span>{currentUser.name}</span>
+                    <Edit2 className="w-3 h-3 text-slate-400 group-hover:text-emerald-600 ml-0.5" />
                   </span>
-                  <span className="text-[11px] text-slate-500">
-                    {currentUser.role === 'admin' ? 'ผู้ดูแลระบบ' : 'ผู้บันทึกข้อมูล'}
+                  <span className="text-[11px] text-slate-500 group-hover:text-emerald-600">
+                    {currentUser.role === 'admin' ? 'ผู้ดูแลระบบ (คลิกแก้ไข)' : 'ผู้บันทึก (คลิกแก้ไข)'}
                   </span>
-                </div>
+                </button>
                 <button
                   onClick={logout}
                   className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-rose-700 bg-rose-50 hover:bg-rose-100 rounded-lg border border-rose-200 transition-colors"
@@ -203,6 +212,25 @@ export const Navbar: React.FC = () => {
         {/* Mobile Navigation Drawer */}
         {mobileMenuOpen && (
           <div className="lg:hidden py-3 px-2 border-t border-emerald-100 space-y-1">
+            {currentUser && (
+              <div className="pb-2 mb-2 border-b border-slate-100">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setProfileModalOpen(true);
+                    setMobileMenuOpen(false);
+                  }}
+                  className="w-full flex items-center justify-between px-3 py-2 text-xs font-semibold text-emerald-800 bg-emerald-50 hover:bg-emerald-100 rounded-lg border border-emerald-200 transition-colors"
+                >
+                  <div className="flex items-center gap-2">
+                    <Edit2 className="w-3.5 h-3.5 text-emerald-600" />
+                    <span>แก้ไขชื่อ / เปลี่ยนรหัสผ่าน ({currentUser.name})</span>
+                  </div>
+                  <span className="text-[10px] bg-white px-1.5 py-0.5 rounded text-emerald-700">คลิก</span>
+                </button>
+              </div>
+            )}
+
             {navItems.map((item) => {
               const Icon = item.icon;
               const isActive = activeTab === item.id;
@@ -239,6 +267,12 @@ export const Navbar: React.FC = () => {
           </div>
         )}
       </div>
+
+      {/* Profile & Password Modal */}
+      <ProfileModal
+        isOpen={profileModalOpen}
+        onClose={() => setProfileModalOpen(false)}
+      />
     </header>
   );
 };

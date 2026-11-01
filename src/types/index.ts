@@ -41,6 +41,7 @@ export interface AppSettings {
   system_name: string;
   school_name: string;
   academic_year: string;
+  academic_years?: string[];
   academic_term: string;
   bg_color: string;
   surface_color: string;

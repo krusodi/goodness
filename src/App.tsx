@@ -8,10 +8,11 @@ import { DemeritRecordView } from './components/DemeritRecordView';
 import { ReportsView } from './components/ReportsView';
 import { AdminManagementView } from './components/AdminManagementView';
 import { LoginModal } from './components/LoginModal';
+import { AcademicYearModal } from './components/AcademicYearModal';
 import { Toast } from './components/Toast';
 
 const MainContent: React.FC = () => {
-  const { activeTab, settings } = useApp();
+  const { activeTab, settings, academicYearModalOpen, setAcademicYearModalOpen } = useApp();
   const [selectedStudentForReport, setSelectedStudentForReport] = useState<string | null>(null);
 
   return (
@@ -46,6 +47,10 @@ const MainContent: React.FC = () => {
       </footer>
 
       <LoginModal />
+      <AcademicYearModal
+        isOpen={academicYearModalOpen}
+        onClose={() => setAcademicYearModalOpen(false)}
+      />
       <Toast />
     </div>
   );

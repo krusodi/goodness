@@ -12,7 +12,8 @@ import {
   ChevronRight,
   Calendar,
   Sparkles,
-  Users
+  Users,
+  Settings2
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 
@@ -26,7 +27,10 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onSelectStudent })
     students,
     records,
     getSummaries,
-    setActiveTab
+    setActiveTab,
+    academicYears,
+    academicYearModalOpen,
+    setAcademicYearModalOpen
   } = useApp();
 
   const [selectedYear, setSelectedYear] = useState<string>('all');
@@ -285,15 +289,36 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onSelectStudent })
           </div>
 
           {/* Academic Year Filter */}
-          <select
-            value={selectedYear}
-            onChange={(e) => setSelectedYear(e.target.value)}
-            className="text-xs px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-slate-700 focus:outline-none focus:ring-1 focus:ring-emerald-500"
-          >
-            <option value="all">ปีการศึกษาทั้งหมด</option>
-            <option value="2569">ปีการศึกษา 2569 (2026)</option>
-            <option value="2568">ปีการศึกษา 2568 (2025)</option>
-          </select>
+          <div className="flex items-center gap-1.5">
+            <select
+              value={selectedYear}
+              onChange={(e) => {
+                if (e.target.value === '__manage__') {
+                  setAcademicYearModalOpen(true);
+                } else {
+                  setSelectedYear(e.target.value);
+                }
+              }}
+              className="text-xs px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-slate-700 focus:outline-none focus:ring-1 focus:ring-emerald-500 font-medium"
+            >
+              <option value="all">ปีการศึกษาทั้งหมด</option>
+              {academicYears.map((yr) => (
+                <option key={yr} value={yr}>
+                  ปีการศึกษา {yr}
+                </option>
+              ))}
+              <option value="__manage__">⚙️ + จัดการปีการศึกษา...</option>
+            </select>
+            <button
+              type="button"
+              onClick={() => setAcademicYearModalOpen(true)}
+              title="จัดการตัวกรองปีการศึกษา (เพิ่ม ลบ แก้ไข)"
+              className="px-2 py-1.5 text-xs text-emerald-800 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 rounded-lg transition-colors flex items-center gap-1 font-medium shadow-2xs"
+            >
+              <Calendar className="w-3.5 h-3.5 text-emerald-600" />
+              <span className="hidden sm:inline text-[11px]">จัดการปี</span>
+            </button>
+          </div>
 
           {/* Month Filter */}
           <select

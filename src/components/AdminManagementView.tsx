@@ -17,7 +17,10 @@ import {
   RotateCcw,
   UserPlus,
   Lock,
-  X
+  X,
+  Edit2,
+  User,
+  Calendar
 } from 'lucide-react';
 
 export const AdminManagementView: React.FC = () => {
@@ -26,6 +29,7 @@ export const AdminManagementView: React.FC = () => {
     users,
     addUser,
     updateUserPassword,
+    updateUserProfile,
     deleteUser,
     settings,
     updateSettings,
@@ -37,7 +41,9 @@ export const AdminManagementView: React.FC = () => {
     exportJSON,
     importJSON,
     setLoginModalOpen,
-    showToast
+    showToast,
+    academicYears,
+    setAcademicYearModalOpen
   } = useApp();
 
   // Active Admin Tab
@@ -53,11 +59,18 @@ export const AdminManagementView: React.FC = () => {
   // User Delete 2-step confirm tracker
   const [deleteUserConfirmId, setDeleteUserConfirmId] = useState<string | null>(null);
 
+  // Edit User Profile (Name / Username) Modal State
+  const [editingUser, setEditingUser] = useState<{ id: string; name: string; username: string } | null>(null);
+  const [editUserName, setEditUserName] = useState('');
+  const [editUserUsername, setEditUserUsername] = useState('');
+
   // Change Password for any user Modal State
   const [changingPassUser, setChangingPassUser] = useState<{ id: string; name: string } | null>(null);
   const [targetNewPass, setTargetNewPass] = useState('');
+  const [targetConfirmPass, setTargetConfirmPass] = useState('');
 
-  // Change My Password State
+  // Change My Profile & Password State (Tab 2)
+  const [myNewName, setMyNewName] = useState(currentUser?.name || '');
   const [myNewPassword, setMyNewPassword] = useState('');
   const [myConfirmPassword, setMyConfirmPassword] = useState('');
 
@@ -132,21 +145,50 @@ export const AdminManagementView: React.FC = () => {
     }
   };
 
+  // Handle Save Edited User Profile (Name / Username)
+  const handleSaveEditUser = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingUser || !editUserName.trim()) return;
+    const res = updateUserProfile(editingUser.id, {
+      name: editUserName,
+      username: editUserUsername
+    });
+    if (res.success) {
+      setEditingUser(null);
+    }
+  };
+
   // Handle Save User Password
-  const handleSaveUserPassword = () => {
+  const handleSaveUserPassword = (e: React.FormEvent) => {
+    e.preventDefault();
     if (!changingPassUser || !targetNewPass.trim()) return;
+    if (targetConfirmPass && targetNewPass !== targetConfirmPass) {
+      showToast('รหัสผ่านใหม่และการยืนยันไม่ตรงกัน', 'error');
+      return;
+    }
     const res = updateUserPassword(changingPassUser.id, targetNewPass);
     if (res.success) {
       setChangingPassUser(null);
       setTargetNewPass('');
+      setTargetConfirmPass('');
     }
   };
 
-  // Handle Change My Password
+  // Handle Save My Name
+  const handleSaveMyProfile = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!myNewName.trim()) {
+      showToast('กรุณากรอกชื่อ - นามสกุล', 'error');
+      return;
+    }
+    updateUserProfile(currentUser.id, { name: myNewName });
+  };
+
+  // Handle Change My Password (Allowed for all users, including Admin)
   const handleSaveMyPassword = (e: React.FormEvent) => {
     e.preventDefault();
-    if (currentUser.is_default_admin || currentUser.username.toLowerCase() === 'admin') {
-      showToast('ไม่สามารถเปลี่ยนรหัสผ่านของ Admin ระบบเริ่มต้นได้ (ตามข้อกำหนด)', 'error');
+    if (!myNewPassword.trim()) {
+      showToast('กรุณากรอกรหัสผ่านใหม่', 'error');
       return;
     }
     if (myNewPassword !== myConfirmPassword) {
@@ -266,7 +308,7 @@ export const AdminManagementView: React.FC = () => {
           }`}
         >
           <KeyRound className="w-4 h-4" />
-          <span>2. เปลี่ยนรหัสผ่านของฉัน</span>
+          <span>2. ข้อมูลส่วนตัว & รหัสผ่าน</span>
         </button>
 
         <button
@@ -416,14 +458,14 @@ export const AdminManagementView: React.FC = () => {
                 </thead>
                 <tbody className="divide-y divide-slate-100">
                   {users.map((u) => {
-                    const isHardcodedAdmin = u.is_default_admin || u.username.toLowerCase() === 'admin';
+                    const isCurrentUser = currentUser.id === u.id;
                     return (
                       <tr key={u.id} className="hover:bg-slate-50 transition-colors">
                         <td className="py-3 px-4 font-semibold text-slate-900">
                           {u.name}
-                          {isHardcodedAdmin && (
+                          {isCurrentUser && (
                             <span className="text-[10px] ml-2 font-normal text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
-                              ระบบเริ่มต้น
+                              บัญชีของคุณ
                             </span>
                           )}
                         </td>
@@ -440,24 +482,37 @@ export const AdminManagementView: React.FC = () => {
                           </span>
                         </td>
                         <td className="py-3 px-4 text-right">
-                          <div className="inline-flex items-center gap-2">
-                            {/* Change Password for User */}
-                            {!isHardcodedAdmin && (
-                              <button
-                                onClick={() => {
-                                  setChangingPassUser({ id: u.id, name: u.name });
-                                  setTargetNewPass('');
-                                }}
-                                className="px-2.5 py-1 text-xs text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-lg border border-slate-200 flex items-center gap-1"
-                                title="เปลี่ยนรหัสผ่าน"
-                              >
-                                <KeyRound className="w-3 h-3 text-slate-500" />
-                                <span>เปลี่ยนรหัส</span>
-                              </button>
-                            )}
+                          <div className="inline-flex items-center gap-1.5 justify-end">
+                            {/* Edit Name & Username */}
+                            <button
+                              onClick={() => {
+                                setEditingUser({ id: u.id, name: u.name, username: u.username });
+                                setEditUserName(u.name);
+                                setEditUserUsername(u.username);
+                              }}
+                              className="px-2.5 py-1 text-xs text-emerald-800 bg-emerald-50 hover:bg-emerald-100 rounded-lg border border-emerald-200 flex items-center gap-1 font-medium transition-colors"
+                              title="แก้ไข ชื่อ - นามสกุล"
+                            >
+                              <Edit2 className="w-3 h-3 text-emerald-600" />
+                              <span>แก้ไขชื่อ</span>
+                            </button>
+
+                            {/* Change Password */}
+                            <button
+                              onClick={() => {
+                                setChangingPassUser({ id: u.id, name: u.name });
+                                setTargetNewPass('');
+                                setTargetConfirmPass('');
+                              }}
+                              className="px-2.5 py-1 text-xs text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-lg border border-slate-200 flex items-center gap-1 font-medium transition-colors"
+                              title="เปลี่ยนรหัสผ่าน"
+                            >
+                              <KeyRound className="w-3 h-3 text-slate-500" />
+                              <span>เปลี่ยนรหัส</span>
+                            </button>
 
                             {/* Delete User (2 clicks) */}
-                            {!isHardcodedAdmin ? (
+                            {!isCurrentUser && (u.role !== 'admin' || users.filter((usr) => usr.role === 'admin').length > 1) ? (
                               <button
                                 onClick={() => handleDeleteUserClick(u.id)}
                                 className={`px-2 py-1 rounded-lg text-xs transition-all flex items-center gap-1 ${
@@ -471,7 +526,9 @@ export const AdminManagementView: React.FC = () => {
                                 {deleteUserConfirmId === u.id && <span>ยืนยันลบ?</span>}
                               </button>
                             ) : (
-                              <span className="text-[11px] text-slate-400 italic">ไม่สามารถลบได้</span>
+                              <span className="text-[11px] text-slate-400 italic px-1">
+                                {isCurrentUser ? 'คุณใช้งานอยู่' : 'Admin หลัก'}
+                              </span>
                             )}
                           </div>
                         </td>
@@ -485,25 +542,63 @@ export const AdminManagementView: React.FC = () => {
         </div>
       )}
 
-      {/* ---------------- TAB 2: CHANGE MY PASSWORD ---------------- */}
+      {/* ---------------- TAB 2: MY PROFILE & PASSWORD ---------------- */}
       {adminTab === 'security' && (
-        <div className="max-w-md bg-white rounded-2xl p-6 border border-slate-100 shadow-xs space-y-4">
-          <div className="flex items-center gap-2 text-sm font-bold text-slate-900 pb-2 border-b border-slate-100">
-            <KeyRound className="w-4 h-4 text-emerald-600" />
-            <span>เปลี่ยนรหัสผ่านของฉัน ({currentUser.name})</span>
+        <div className="max-w-xl space-y-6">
+          {/* Card 1: My Profile (Name - Surname) */}
+          <div className="bg-white rounded-2xl p-6 border border-slate-100 shadow-xs space-y-4">
+            <div className="flex items-center gap-2 text-sm font-bold text-slate-900 pb-2 border-b border-slate-100">
+              <User className="w-4 h-4 text-emerald-600" />
+              <span>แก้ไข ชื่อ - นามสกุล ของฉัน ({currentUser.role === 'admin' ? 'ผู้ดูแลระบบ Admin' : 'ผู้บันทึกข้อมูล'})</span>
+            </div>
+
+            <form onSubmit={handleSaveMyProfile} className="space-y-4">
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 mb-1">
+                  ชื่อผู้ใช้ (Username)
+                </label>
+                <input
+                  type="text"
+                  disabled
+                  value={currentUser.username}
+                  className="w-full px-3 py-2 text-sm bg-slate-100 border border-slate-200 rounded-lg text-slate-500 font-mono cursor-not-allowed"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 mb-1">
+                  ชื่อ - นามสกุล / ตำแหน่งที่แสดง
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={myNewName}
+                  onChange={(e) => setMyNewName(e.target.value)}
+                  placeholder="กรอกชื่อ - นามสกุล"
+                  className="w-full px-3 py-2 text-sm bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-emerald-500"
+                />
+                <p className="text-[11px] text-slate-400 mt-1">
+                  ชื่อนี้จะแสดงในส่วนหัวระบบ ใบรายงาน และประวัติผู้บันทึกคะแนน
+                </p>
+              </div>
+
+              <button
+                type="submit"
+                className="py-2 px-5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl shadow-xs transition-colors flex items-center gap-1.5"
+              >
+                <Check className="w-3.5 h-3.5" />
+                <span>บันทึกชื่อ - นามสกุล</span>
+              </button>
+            </form>
           </div>
 
-          {currentUser.is_default_admin || currentUser.username.toLowerCase() === 'admin' ? (
-            <div className="p-3 bg-amber-50 border border-amber-200 rounded-xl text-xs text-amber-900 space-y-1">
-              <div className="font-bold flex items-center gap-1.5">
-                <AlertTriangle className="w-4 h-4 text-amber-600" />
-                <span>ข้อจำกัด Admin ระบบเริ่มต้น</span>
-              </div>
-              <p>
-                Admin ระบบเริ่มต้น (ชื่อ: Admin, รหัส: kruyb) ถูกล็อกไว้ตามข้อกำหนดระบบเพื่อป้องกันการลืมรหัสผ่านหลัก
-              </p>
+          {/* Card 2: Change My Password */}
+          <div className="bg-white rounded-2xl p-6 border border-slate-100 shadow-xs space-y-4">
+            <div className="flex items-center gap-2 text-sm font-bold text-slate-900 pb-2 border-b border-slate-100">
+              <KeyRound className="w-4 h-4 text-emerald-600" />
+              <span>เปลี่ยนรหัสผ่านของฉัน ({currentUser.name})</span>
             </div>
-          ) : (
+
             <form onSubmit={handleSaveMyPassword} className="space-y-4">
               <div>
                 <label className="block text-xs font-semibold text-slate-700 mb-1">
@@ -535,12 +630,13 @@ export const AdminManagementView: React.FC = () => {
 
               <button
                 type="submit"
-                className="w-full py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl shadow-xs"
+                className="py-2 px-5 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs rounded-xl shadow-xs transition-colors flex items-center gap-1.5"
               >
-                ยืนยันการเปลี่ยนรหัสผ่าน
+                <Check className="w-3.5 h-3.5" />
+                <span>ยืนยันการเปลี่ยนรหัสผ่าน</span>
               </button>
             </form>
-          )}
+          </div>
         </div>
       )}
 
@@ -700,15 +796,41 @@ export const AdminManagementView: React.FC = () => {
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1">
-                  ปีการศึกษา
-                </label>
-                <input
-                  type="text"
-                  value={academicYear}
-                  onChange={(e) => setAcademicYear(e.target.value)}
-                  className="w-full px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-emerald-500"
-                />
+                <div className="flex items-center justify-between mb-1">
+                  <label className="block text-xs font-semibold text-slate-700">
+                    ปีการศึกษาหลัก (ปัจจุบัน)
+                  </label>
+                  <button
+                    type="button"
+                    onClick={() => setAcademicYearModalOpen(true)}
+                    className="text-[11px] font-semibold text-emerald-700 hover:text-emerald-900 flex items-center gap-1 hover:underline"
+                  >
+                    <Calendar className="w-3 h-3 text-emerald-600" />
+                    <span>จัดการรายการตัวกรองปีการศึกษา</span>
+                  </button>
+                </div>
+                <div className="flex items-center gap-2">
+                  <select
+                    value={academicYear}
+                    onChange={(e) => setAcademicYear(e.target.value)}
+                    className="flex-1 px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-emerald-500 font-medium text-slate-800"
+                  >
+                    {academicYears.map((yr) => (
+                      <option key={yr} value={yr}>
+                        ปีการศึกษา {yr}
+                      </option>
+                    ))}
+                  </select>
+                  <button
+                    type="button"
+                    onClick={() => setAcademicYearModalOpen(true)}
+                    className="px-3 py-2 text-xs font-medium text-emerald-800 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 rounded-lg transition-colors flex items-center gap-1 shrink-0"
+                    title="เพิ่ม ลบ แก้ไขตัวกรองปีการศึกษา"
+                  >
+                    <Calendar className="w-3.5 h-3.5 text-emerald-600" />
+                    <span>เพิ่ม/ลบ/แก้ไขปี</span>
+                  </button>
+                </div>
               </div>
             </div>
           </div>
@@ -926,13 +1048,78 @@ export const AdminManagementView: React.FC = () => {
         </div>
       )}
 
+      {/* Edit User Profile (Name / Username) Modal */}
+      {editingUser && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs">
+          <div className="w-full max-w-sm bg-white rounded-2xl shadow-xl border border-slate-100 overflow-hidden">
+            <div className="bg-slate-900 px-6 py-4 text-white flex items-center justify-between">
+              <h3 className="font-bold text-sm">แก้ไขข้อมูลผู้ใช้งาน</h3>
+              <button
+                type="button"
+                onClick={() => setEditingUser(null)}
+                className="text-white/80 hover:text-white"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <form onSubmit={handleSaveEditUser} className="p-6 space-y-4">
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 mb-1">
+                  ชื่อ - นามสกุล / ตำแหน่ง
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={editUserName}
+                  onChange={(e) => setEditUserName(e.target.value)}
+                  placeholder="เช่น ครูสมชาย สว่างจิตต์ หรือ ผู้ดูแลระบบ"
+                  className="w-full px-3 py-2 text-sm bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-emerald-500"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 mb-1">
+                  ชื่อผู้ใช้ (Username)
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={editUserUsername}
+                  onChange={(e) => setEditUserUsername(e.target.value)}
+                  placeholder="ชื่อผู้ใช้สำหรับเข้าสู่ระบบ"
+                  className="w-full px-3 py-2 text-sm bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-emerald-500 font-mono"
+                />
+              </div>
+
+              <div className="flex items-center justify-end gap-2 pt-2 border-t border-slate-100">
+                <button
+                  type="button"
+                  onClick={() => setEditingUser(null)}
+                  className="px-3 py-1.5 text-xs text-slate-600 hover:bg-slate-100 rounded-lg"
+                >
+                  ยกเลิก
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-1.5 text-xs font-semibold bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg shadow-xs"
+                >
+                  บันทึกข้อมูล
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
       {/* Change Password for User Modal */}
       {changingPassUser && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs">
           <div className="w-full max-w-sm bg-white rounded-2xl shadow-xl border border-slate-100 overflow-hidden">
             <div className="bg-slate-900 px-6 py-4 text-white flex items-center justify-between">
-              <h3 className="font-bold text-sm">เปลี่ยนรหัสผ่านผู้ใช้</h3>
+              <h3 className="font-bold text-sm">เปลี่ยนรหัสผ่าน: {changingPassUser.name}</h3>
               <button
+                type="button"
                 onClick={() => setChangingPassUser(null)}
                 className="text-white/80 hover:text-white"
               >
@@ -940,17 +1127,14 @@ export const AdminManagementView: React.FC = () => {
               </button>
             </div>
 
-            <div className="p-6 space-y-4">
-              <div className="text-xs text-slate-600">
-                ผู้ใช้: <strong>{changingPassUser.name}</strong>
-              </div>
-
+            <form onSubmit={handleSaveUserPassword} className="p-6 space-y-4">
               <div>
                 <label className="block text-xs font-semibold text-slate-700 mb-1">
                   รหัสผ่านใหม่
                 </label>
                 <input
-                  type="text"
+                  type="password"
+                  required
                   value={targetNewPass}
                   onChange={(e) => setTargetNewPass(e.target.value)}
                   placeholder="กรอกรหัสผ่านใหม่"
@@ -958,21 +1142,36 @@ export const AdminManagementView: React.FC = () => {
                 />
               </div>
 
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 mb-1">
+                  ยืนยันรหัสผ่านใหม่
+                </label>
+                <input
+                  type="password"
+                  required
+                  value={targetConfirmPass}
+                  onChange={(e) => setTargetConfirmPass(e.target.value)}
+                  placeholder="กรอกรหัสผ่านใหม่อีกครั้ง"
+                  className="w-full px-3 py-2 text-sm bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-emerald-500"
+                />
+              </div>
+
               <div className="flex items-center justify-end gap-2 pt-2 border-t border-slate-100">
                 <button
+                  type="button"
                   onClick={() => setChangingPassUser(null)}
                   className="px-3 py-1.5 text-xs text-slate-600 hover:bg-slate-100 rounded-lg"
                 >
                   ยกเลิก
                 </button>
                 <button
-                  onClick={handleSaveUserPassword}
-                  className="px-4 py-1.5 text-xs font-semibold bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg"
+                  type="submit"
+                  className="px-4 py-1.5 text-xs font-semibold bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg shadow-xs"
                 >
                   บันทึกรหัสผ่านใหม่
                 </button>
               </div>
-            </div>
+            </form>
           </div>
         </div>
       )}
