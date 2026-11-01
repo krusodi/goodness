@@ -16,8 +16,11 @@ import {
   Clock,
   TrendingUp,
   Download,
-  Filter
+  Filter,
+  PenTool,
+  Edit2
 } from 'lucide-react';
+import { SignatureSettingsModal } from './SignatureSettingsModal';
 
 interface ReportsViewProps {
   initialStudentId?: string | null;
@@ -43,6 +46,9 @@ export const ReportsView: React.FC<ReportsViewProps> = ({ initialStudentId }) =>
   // 3: monthly (รายงานรายเดือน)
   // 4: monthly_summary (สรุปคะแนนประจำเดือน - อันดับ)
   const [reportType, setReportType] = useState<'individual' | 'daily' | 'monthly' | 'monthly_summary'>('individual');
+
+  // Signature Settings Modal State
+  const [signatureModalOpen, setSignatureModalOpen] = useState(false);
 
   // Individual Report State
   const [selectedStudentId, setSelectedStudentId] = useState<string>(
@@ -145,13 +151,24 @@ export const ReportsView: React.FC<ReportsViewProps> = ({ initialStudentId }) =>
           </p>
         </div>
 
-        <button
-          onClick={handlePrint}
-          className="inline-flex items-center gap-1.5 px-4 py-2 text-xs sm:text-sm font-semibold text-white bg-slate-800 hover:bg-slate-900 rounded-xl shadow-xs transition-all self-start md:self-center"
-        >
-          <Printer className="w-4 h-4" />
-          <span>พิมพ์รายงาน (Print / PDF)</span>
-        </button>
+        <div className="flex flex-wrap items-center gap-2 self-start md:self-center">
+          <button
+            onClick={() => setSignatureModalOpen(true)}
+            className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs sm:text-sm font-semibold text-emerald-800 bg-white hover:bg-emerald-50 border border-emerald-200 rounded-xl shadow-xs transition-all"
+            title="กำหนดและแก้ไขชื่อผู้ลงนามท้ายกระดาษรายงาน"
+          >
+            <PenTool className="w-4 h-4 text-emerald-600" />
+            <span>กำหนดชื่อผู้ลงนาม</span>
+          </button>
+
+          <button
+            onClick={handlePrint}
+            className="inline-flex items-center gap-1.5 px-4 py-2 text-xs sm:text-sm font-semibold text-white bg-slate-800 hover:bg-slate-900 rounded-xl shadow-xs transition-all"
+          >
+            <Printer className="w-4 h-4" />
+            <span>พิมพ์รายงาน (Print / PDF)</span>
+          </button>
+        </div>
       </div>
 
       {/* Report Sub-Tabs (No-Print) */}
@@ -844,24 +861,64 @@ export const ReportsView: React.FC<ReportsViewProps> = ({ initialStudentId }) =>
         </div>
       )}
 
-      {/* Official Signatures Printed at the Footer */}
-      <div className="hidden print:grid grid-cols-3 gap-6 pt-16 mt-8 text-center text-xs page-break-avoid">
-        <div>
-          <div className="mb-8">ลงชื่อ ......................................................</div>
-          <div className="font-bold">( ...................................................... )</div>
-          <div className="text-slate-600">ครูประจำชั้น ป.5/1</div>
+      {/* Official Signatures Section (Preview on screen and printed on paper) */}
+      <div className="pt-8 mt-10 border-t border-slate-200/80 page-break-avoid">
+        {/* On-screen control bar over signatures */}
+        <div className="no-print flex items-center justify-between pb-3 mb-4 border-b border-slate-100">
+          <div className="flex items-center gap-2 text-xs font-bold text-slate-700">
+            <PenTool className="w-3.5 h-3.5 text-emerald-600" />
+            <span>ส่วนลงนามท้ายเอกสารรายงาน (พิมพ์ท้ายกระดาษทุกรายงาน)</span>
+          </div>
+          <button
+            type="button"
+            onClick={() => setSignatureModalOpen(true)}
+            className="inline-flex items-center gap-1.5 px-3 py-1 text-xs font-semibold text-emerald-800 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 rounded-lg transition-colors shadow-2xs"
+          >
+            <Edit2 className="w-3 h-3 text-emerald-600" />
+            <span>แก้ไขชื่อและตำแหน่งผู้ลงนาม</span>
+          </button>
         </div>
 
-        <div>
-          <div className="mb-8">ลงชื่อ ......................................................</div>
-          <div className="font-bold">( ...................................................... )</div>
-          <div className="text-slate-600">หัวหน้ากลุ่มงานกิจการนักเรียน</div>
-        </div>
+        {/* 3 Signatures Layout */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 text-center text-xs print:grid-cols-3">
+          {/* Signatory 1: ครูประจำชั้น */}
+          <div className="p-4 rounded-xl border border-dashed border-slate-200 bg-slate-50/40 print:border-none print:bg-transparent print:p-0">
+            <div className="mb-6 font-medium text-slate-700">
+              ลงชื่อ ......................................................
+            </div>
+            <div className="font-bold text-slate-900 mb-1">
+              ( {settings.signatory1_name?.trim() ? settings.signatory1_name.trim() : '......................................................'} )
+            </div>
+            <div className="text-slate-600 font-medium">
+              {settings.signatory1_title?.trim() || 'ครูประจำชั้น ป.5/1'}
+            </div>
+          </div>
 
-        <div>
-          <div className="mb-8">ลงชื่อ ......................................................</div>
-          <div className="font-bold">( ...................................................... )</div>
-          <div className="text-slate-600">ผู้อำนวยการโรงเรียนบ้านยะบะ(อุปการวิทยา)</div>
+          {/* Signatory 2: หัวหน้ากลุ่มงานกิจการนักเรียน */}
+          <div className="p-4 rounded-xl border border-dashed border-slate-200 bg-slate-50/40 print:border-none print:bg-transparent print:p-0">
+            <div className="mb-6 font-medium text-slate-700">
+              ลงชื่อ ......................................................
+            </div>
+            <div className="font-bold text-slate-900 mb-1">
+              ( {settings.signatory2_name?.trim() ? settings.signatory2_name.trim() : '......................................................'} )
+            </div>
+            <div className="text-slate-600 font-medium">
+              {settings.signatory2_title?.trim() || 'หัวหน้ากลุ่มงานกิจการนักเรียน'}
+            </div>
+          </div>
+
+          {/* Signatory 3: ผู้อำนวยการโรงเรียน */}
+          <div className="p-4 rounded-xl border border-dashed border-slate-200 bg-slate-50/40 print:border-none print:bg-transparent print:p-0">
+            <div className="mb-6 font-medium text-slate-700">
+              ลงชื่อ ......................................................
+            </div>
+            <div className="font-bold text-slate-900 mb-1">
+              ( {settings.signatory3_name?.trim() ? settings.signatory3_name.trim() : '......................................................'} )
+            </div>
+            <div className="text-slate-600 font-medium">
+              {settings.signatory3_title?.trim() || 'ผู้อำนวยการโรงเรียนบ้านยะบะ(อุปการวิทยา)'}
+            </div>
+          </div>
         </div>
       </div>
 
@@ -939,6 +996,11 @@ export const ReportsView: React.FC<ReportsViewProps> = ({ initialStudentId }) =>
           </div>
         </div>
       )}
+      {/* Signature Settings Modal */}
+      <SignatureSettingsModal
+        isOpen={signatureModalOpen}
+        onClose={() => setSignatureModalOpen(false)}
+      />
     </div>
   );
 };

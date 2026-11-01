@@ -15,7 +15,13 @@ export const INITIAL_SETTINGS: AppSettings = {
   top3_bg_type: 'preset',
   top3_bg_preset: 'emerald',
   top3_bg_color: '#064e3b',
-  top3_bg_color_end: '#022c22'
+  top3_bg_color_end: '#022c22',
+  signatory1_title: 'ครูประจำชั้น ป.5/1',
+  signatory1_name: '',
+  signatory2_title: 'หัวหน้ากลุ่มงานกิจการนักเรียน',
+  signatory2_name: '',
+  signatory3_title: 'ผู้อำนวยการโรงเรียนบ้านยะบะ(อุปการวิทยา)',
+  signatory3_name: ''
 };
 
 export const INITIAL_USERS: UserAccount[] = [

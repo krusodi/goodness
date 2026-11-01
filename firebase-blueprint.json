@@ -41,6 +41,12 @@
         "school_name": { "type": "string", "description": "Official school name" },
         "system_name": { "type": "string", "description": "System title" },
         "academic_year": { "type": "string", "description": "Academic year" },
+        "signatory1_title": { "type": "string", "description": "Classroom teacher title" },
+        "signatory1_name": { "type": "string", "description": "Classroom teacher name" },
+        "signatory2_title": { "type": "string", "description": "Student affairs head title" },
+        "signatory2_name": { "type": "string", "description": "Student affairs head name" },
+        "signatory3_title": { "type": "string", "description": "School director title" },
+        "signatory3_name": { "type": "string", "description": "School director name" },
         "updated_at": { "type": "string", "description": "Last update timestamp" }
       },
       "required": ["school_name", "system_name", "academic_year"]

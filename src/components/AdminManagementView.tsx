@@ -20,7 +20,10 @@ import {
   X,
   Edit2,
   User,
-  Calendar
+  Calendar,
+  PenTool,
+  UserCheck,
+  Building
 } from 'lucide-react';
 
 export const AdminManagementView: React.FC = () => {
@@ -90,6 +93,14 @@ export const AdminManagementView: React.FC = () => {
   const [primaryColor, setPrimaryColor] = useState(settings.primary_color);
   const [secondaryColor, setSecondaryColor] = useState(settings.secondary_color);
   const [fontSize, setFontSize] = useState<number>(settings.font_size);
+
+  // Report Signatures State
+  const [sig1Title, setSig1Title] = useState(settings.signatory1_title || 'ครูประจำชั้น ป.5/1');
+  const [sig1Name, setSig1Name] = useState(settings.signatory1_name || '');
+  const [sig2Title, setSig2Title] = useState(settings.signatory2_title || 'หัวหน้ากลุ่มงานกิจการนักเรียน');
+  const [sig2Name, setSig2Name] = useState(settings.signatory2_name || '');
+  const [sig3Title, setSig3Title] = useState(settings.signatory3_title || 'ผู้อำนวยการโรงเรียนบ้านยะบะ(อุปการวิทยา)');
+  const [sig3Name, setSig3Name] = useState(settings.signatory3_name || '');
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -249,8 +260,15 @@ export const AdminManagementView: React.FC = () => {
       text_color: textColor,
       primary_color: primaryColor,
       secondary_color: secondaryColor,
-      font_size: fontSize
+      font_size: fontSize,
+      signatory1_title: sig1Title.trim() || 'ครูประจำชั้น ป.5/1',
+      signatory1_name: sig1Name.trim(),
+      signatory2_title: sig2Title.trim() || 'หัวหน้ากลุ่มงานกิจการนักเรียน',
+      signatory2_name: sig2Name.trim(),
+      signatory3_title: sig3Title.trim() || 'ผู้อำนวยการโรงเรียนบ้านยะบะ(อุปการวิทยา)',
+      signatory3_name: sig3Name.trim()
     });
+    showToast('บันทึกการตั้งค่าระบบและผู้ลงนามสำเร็จ', 'success');
   };
 
   const handleResetColors = () => {
@@ -260,6 +278,12 @@ export const AdminManagementView: React.FC = () => {
     setPrimaryColor('#16a34a');
     setSecondaryColor('#22c55e');
     setFontSize(16);
+    setSig1Title('ครูประจำชั้น ป.5/1');
+    setSig1Name('');
+    setSig2Title('หัวหน้ากลุ่มงานกิจการนักเรียน');
+    setSig2Name('');
+    setSig3Title('ผู้อำนวยการโรงเรียนบ้านยะบะ(อุปการวิทยา)');
+    setSig3Name('');
     resetSettings();
   };
 
@@ -1018,6 +1042,106 @@ export const AdminManagementView: React.FC = () => {
                     {size}px
                   </button>
                 ))}
+              </div>
+            </div>
+            {/* Report Signatures Settings Section */}
+            <div className="pt-6 border-t border-slate-200/80 space-y-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h4 className="text-sm font-bold text-slate-800 flex items-center gap-2">
+                    <PenTool className="w-4 h-4 text-emerald-600" />
+                    <span>ผู้ลงนามในกระดาษรายงาน (3 ตำแหน่ง)</span>
+                  </h4>
+                  <p className="text-xs text-slate-500 mt-0.5">
+                    กำหนดตำแหน่งและชื่อ-นามสกุลสำหรับพิมพ์ท้ายกระดาษรายงาน (หากเว้นว่างชื่อ จะแสดงเป็นเส้นประ)
+                  </p>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {/* Signatory 1 */}
+                <div className="p-3.5 rounded-xl border border-slate-200 bg-slate-50/50 space-y-2.5">
+                  <div className="text-xs font-bold text-emerald-800 flex items-center gap-1.5">
+                    <UserCheck className="w-3.5 h-3.5 text-emerald-600" />
+                    <span>ผู้ลงนาม 1: ครูประจำชั้น</span>
+                  </div>
+                  <div>
+                    <label className="block text-[11px] font-semibold text-slate-600 mb-1">ตำแหน่ง</label>
+                    <input
+                      type="text"
+                      value={sig1Title}
+                      onChange={(e) => setSig1Title(e.target.value)}
+                      placeholder="เช่น ครูประจำชั้น ป.5/1"
+                      className="w-full px-2.5 py-1.5 text-xs bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-emerald-500 font-medium"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[11px] font-semibold text-slate-600 mb-1">ชื่อ - นามสกุล</label>
+                    <input
+                      type="text"
+                      value={sig1Name}
+                      onChange={(e) => setSig1Name(e.target.value)}
+                      placeholder="เว้นว่าง = เส้นประ"
+                      className="w-full px-2.5 py-1.5 text-xs bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-emerald-500"
+                    />
+                  </div>
+                </div>
+
+                {/* Signatory 2 */}
+                <div className="p-3.5 rounded-xl border border-slate-200 bg-slate-50/50 space-y-2.5">
+                  <div className="text-xs font-bold text-indigo-800 flex items-center gap-1.5">
+                    <Shield className="w-3.5 h-3.5 text-indigo-600" />
+                    <span>ผู้ลงนาม 2: กิจการนักเรียน</span>
+                  </div>
+                  <div>
+                    <label className="block text-[11px] font-semibold text-slate-600 mb-1">ตำแหน่ง</label>
+                    <input
+                      type="text"
+                      value={sig2Title}
+                      onChange={(e) => setSig2Title(e.target.value)}
+                      placeholder="เช่น หัวหน้ากลุ่มงานกิจการนักเรียน"
+                      className="w-full px-2.5 py-1.5 text-xs bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-emerald-500 font-medium"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[11px] font-semibold text-slate-600 mb-1">ชื่อ - นามสกุล</label>
+                    <input
+                      type="text"
+                      value={sig2Name}
+                      onChange={(e) => setSig2Name(e.target.value)}
+                      placeholder="เว้นว่าง = เส้นประ"
+                      className="w-full px-2.5 py-1.5 text-xs bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-emerald-500"
+                    />
+                  </div>
+                </div>
+
+                {/* Signatory 3 */}
+                <div className="p-3.5 rounded-xl border border-slate-200 bg-slate-50/50 space-y-2.5">
+                  <div className="text-xs font-bold text-amber-800 flex items-center gap-1.5">
+                    <Building className="w-3.5 h-3.5 text-amber-600" />
+                    <span>ผู้ลงนาม 3: ผู้อำนวยการ</span>
+                  </div>
+                  <div>
+                    <label className="block text-[11px] font-semibold text-slate-600 mb-1">ตำแหน่ง</label>
+                    <input
+                      type="text"
+                      value={sig3Title}
+                      onChange={(e) => setSig3Title(e.target.value)}
+                      placeholder="เช่น ผู้อำนวยการโรงเรียนบ้านยะบะ(อุปการวิทยา)"
+                      className="w-full px-2.5 py-1.5 text-xs bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-emerald-500 font-medium"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[11px] font-semibold text-slate-600 mb-1">ชื่อ - นามสกุล</label>
+                    <input
+                      type="text"
+                      value={sig3Name}
+                      onChange={(e) => setSig3Name(e.target.value)}
+                      placeholder="เว้นว่าง = เส้นประ"
+                      className="w-full px-2.5 py-1.5 text-xs bg-white border border-slate-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-emerald-500"
+                    />
+                  </div>
+                </div>
               </div>
             </div>
 

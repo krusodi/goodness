@@ -53,6 +53,12 @@ export interface AppSettings {
   top3_bg_preset?: string;
   top3_bg_color?: string;
   top3_bg_color_end?: string;
+  signatory1_title?: string;
+  signatory1_name?: string;
+  signatory2_title?: string;
+  signatory2_name?: string;
+  signatory3_title?: string;
+  signatory3_name?: string;
 }
 
 export interface Top3ColorPreset {
