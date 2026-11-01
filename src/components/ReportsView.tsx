@@ -286,7 +286,7 @@ export const ReportsView: React.FC<ReportsViewProps> = ({ initialStudentId }) =>
                     <div>
                       <div className="flex items-center gap-2">
                         <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold border ${csStyles.badgeClass}`}>
-                          {csStyles.icon} {csStyles.label}
+                          {csStyles.label}
                         </span>
                         <h2 className={`text-xl font-bold ${csStyles.textClass}`}>
                           {currentStudent.student_name}
@@ -536,7 +536,7 @@ export const ReportsView: React.FC<ReportsViewProps> = ({ initialStudentId }) =>
                           <td className="py-2.5 px-4">
                             <div className="flex items-center gap-1.5">
                               <span className={`inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-semibold border ${gs.badgeClass}`}>
-                                {gs.icon} {gs.label}
+                                {gs.label}
                               </span>
                               <span className={`font-semibold ${gs.textClass}`}>
                                 {r.student_name}
@@ -633,11 +633,15 @@ export const ReportsView: React.FC<ReportsViewProps> = ({ initialStudentId }) =>
                   className="text-xs px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-slate-800 focus:outline-none focus:ring-1 focus:ring-emerald-500"
                 >
                   <option value="all">ทุกคน</option>
-                  {students.map((st) => (
-                    <option key={st.id} value={st.id}>
-                      {getGenderStyles(getStudentGender(st.student_name)).icon} เลขที่ {st.student_no} - {st.student_name}
-                    </option>
-                  ))}
+                  {students.map((st) => {
+                    const g = getStudentGender(st.student_name);
+                    const tag = g === 'male' ? '[ชาย]' : g === 'female' ? '[หญิง]' : '';
+                    return (
+                      <option key={st.id} value={st.id}>
+                        {tag} เลขที่ {st.student_no} - {st.student_name}
+                      </option>
+                    );
+                  })}
                 </select>
               </div>
             </div>
@@ -683,7 +687,7 @@ export const ReportsView: React.FC<ReportsViewProps> = ({ initialStudentId }) =>
                           <td className="py-2.5 px-4">
                             <div className="flex items-center gap-1.5">
                               <span className={`inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-semibold border ${gs.badgeClass}`}>
-                                {gs.icon} {gs.label}
+                                {gs.label}
                               </span>
                               <span className={`font-semibold ${gs.textClass}`}>
                                 {r.student_name}
@@ -808,9 +812,9 @@ export const ReportsView: React.FC<ReportsViewProps> = ({ initialStudentId }) =>
                           </span>
                         </td>
                         <td className="py-3 px-4">
-                          <div className="flex items-center gap-1.5">
-                            <span className={`inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-semibold border ${gs.badgeClass}`}>
-                              {gs.icon} {gs.label}
+                          <div className="flex items-center gap-2">
+                            <span className={`inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-semibold border shrink-0 ${gs.badgeClass}`}>
+                              {gs.label}
                             </span>
                             <span className={`font-semibold ${gs.textClass}`}>
                               {item.student.student_name}

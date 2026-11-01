@@ -31,20 +31,8 @@ const STORAGE_KEYS = {
   USERS: 'merit_system_users_v1',
   STUDENTS: 'merit_system_students_v1',
   RECORDS: 'merit_system_records_v1',
-  CURRENT_USER: 'merit_system_current_user_v1',
-  PURGE_FLAG: 'merit_system_purged_mock_v4'
+  CURRENT_USER: 'merit_system_current_user_v1'
 };
-
-// One-time purge of sample data from localStorage
-try {
-  if (typeof window !== 'undefined' && localStorage.getItem(STORAGE_KEYS.PURGE_FLAG) !== 'true') {
-    localStorage.removeItem(STORAGE_KEYS.STUDENTS);
-    localStorage.removeItem(STORAGE_KEYS.RECORDS);
-    localStorage.setItem(STORAGE_KEYS.PURGE_FLAG, 'true');
-  }
-} catch {
-  // ignore
-}
 
 interface AppContextType {
   settings: AppSettings;
@@ -199,24 +187,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       const ok = await testConnection();
       setIsFirebaseConnected(ok);
 
-      // One-time purge of any old mock data from Firestore
-      try {
-        if (typeof window !== 'undefined' && sessionStorage.getItem('firestore_purged_mock_v4') !== 'true') {
-          sessionStorage.setItem('firestore_purged_mock_v4', 'true');
-          const stdSnap = await getDocs(collection(db, 'students'));
-          const recSnap = await getDocs(collection(db, 'records'));
-          if (!stdSnap.empty || !recSnap.empty) {
-            const batch = writeBatch(db);
-            stdSnap.forEach((d) => batch.delete(d.ref));
-            recSnap.forEach((d) => batch.delete(d.ref));
-            await batch.commit();
-          }
-        }
-      } catch (err) {
-        console.warn('Firestore initial purge note:', err);
-      }
-
-      // Listen to Students collection
+      // Listen to Students collection (Real-time sync)
       const studentsPath = 'students';
       unsubscribeStudents = onSnapshot(
         collection(db, studentsPath),
@@ -228,16 +199,38 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
             });
             list.sort((a, b) => a.student_no - b.student_no);
             setStudents(list);
+            try {
+              localStorage.setItem(STORAGE_KEYS.STUDENTS, JSON.stringify(list));
+            } catch (e) {
+              console.warn(e);
+            }
           } else {
+            // If cloud snapshot is empty, check local cache first before assuming empty
+            try {
+              const saved = localStorage.getItem(STORAGE_KEYS.STUDENTS);
+              if (saved) {
+                const parsed: Student[] = JSON.parse(saved);
+                if (Array.isArray(parsed) && parsed.length > 0) {
+                  setStudents(parsed);
+                  // Safely upload local students to Firestore so cloud has the data
+                  const batch = writeBatch(db);
+                  parsed.forEach((st) => batch.set(doc(db, 'students', st.id), st));
+                  batch.commit().catch((err) => console.warn('Sync local students to cloud note:', err));
+                  return;
+                }
+              }
+            } catch {
+              // ignore
+            }
             setStudents([]);
           }
         },
         (error) => {
-          handleFirestoreError(error, OperationType.GET, studentsPath);
+          console.warn('Firestore students listener warning:', error);
         }
       );
 
-      // Listen to Records collection
+      // Listen to Records collection (Real-time sync)
       const recordsPath = 'records';
       unsubscribeRecords = onSnapshot(
         collection(db, recordsPath),
@@ -249,12 +242,34 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
             });
             list.sort((a, b) => (b.created_at || 0) - (a.created_at || 0));
             setRecords(list);
+            try {
+              localStorage.setItem(STORAGE_KEYS.RECORDS, JSON.stringify(list));
+            } catch (e) {
+              console.warn(e);
+            }
           } else {
+            // If cloud snapshot is empty, check local cache first before assuming empty
+            try {
+              const saved = localStorage.getItem(STORAGE_KEYS.RECORDS);
+              if (saved) {
+                const parsed: BehaviorRecord[] = JSON.parse(saved);
+                if (Array.isArray(parsed) && parsed.length > 0) {
+                  setRecords(parsed);
+                  // Safely upload local records to Firestore so cloud has the data
+                  const batch = writeBatch(db);
+                  parsed.forEach((rec) => batch.set(doc(db, 'records', rec.id), rec));
+                  batch.commit().catch((err) => console.warn('Sync local records to cloud note:', err));
+                  return;
+                }
+              }
+            } catch {
+              // ignore
+            }
             setRecords([]);
           }
         },
         (error) => {
-          handleFirestoreError(error, OperationType.GET, recordsPath);
+          console.warn('Firestore records listener warning:', error);
         }
       );
 
@@ -268,7 +283,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
           }
         },
         (error) => {
-          handleFirestoreError(error, OperationType.GET, settingsPath);
+          console.warn('Firestore settings listener warning:', error);
         }
       );
 
@@ -292,7 +307,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
           }
         },
         (error) => {
-          handleFirestoreError(error, OperationType.GET, usersPath);
+          console.warn('Firestore users listener warning:', error);
         }
       );
     };
@@ -538,7 +553,14 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       created_at: Date.now()
     };
 
-    setStudents((prev) => [...prev, newStudent].sort((a, b) => a.student_no - b.student_no));
+    const updated = [...students, newStudent].sort((a, b) => a.student_no - b.student_no);
+    setStudents(updated);
+    try {
+      localStorage.setItem(STORAGE_KEYS.STUDENTS, JSON.stringify(updated));
+    } catch (e) {
+      console.warn(e);
+    }
+
     // Write to Firestore
     setDoc(doc(db, 'students', newStudent.id), newStudent).catch((err) => {
       console.warn('Firestore save student note:', err);
@@ -555,9 +577,15 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       student_class: data.student_class.trim()
     };
 
-    setStudents((prev) =>
-      prev.map((s) => (s.id === id ? { ...s, ...updatedStudent } : s)).sort((a, b) => a.student_no - b.student_no)
-    );
+    const updated = students
+      .map((s) => (s.id === id ? { ...s, ...updatedStudent } : s))
+      .sort((a, b) => a.student_no - b.student_no);
+    setStudents(updated);
+    try {
+      localStorage.setItem(STORAGE_KEYS.STUDENTS, JSON.stringify(updated));
+    } catch (e) {
+      console.warn(e);
+    }
 
     // Update in Firestore
     updateDoc(doc(db, 'students', id), updatedStudent).catch((err) => {
@@ -565,8 +593,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     });
 
     // Also update student names across existing records
-    setRecords((prev) =>
-      prev.map((r) =>
+    setRecords((prev) => {
+      const updatedRecs = prev.map((r) =>
         r.student_id === id
           ? {
               ...r,
@@ -575,8 +603,14 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
               student_class: updatedStudent.student_class
             }
           : r
-      )
-    );
+      );
+      try {
+        localStorage.setItem(STORAGE_KEYS.RECORDS, JSON.stringify(updatedRecs));
+      } catch (e) {
+        console.warn(e);
+      }
+      return updatedRecs;
+    });
 
     showToast('แก้ไขข้อมูลนักเรียนเรียบร้อย', 'success');
     return { success: true };
@@ -584,8 +618,16 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
   const deleteStudent = (id: string) => {
     const st = students.find((s) => s.id === id);
-    setStudents((prev) => prev.filter((s) => s.id !== id));
-    setRecords((prev) => prev.filter((r) => r.student_id !== id));
+    const updated = students.filter((s) => s.id !== id);
+    const updatedRecs = records.filter((r) => r.student_id !== id);
+    setStudents(updated);
+    setRecords(updatedRecs);
+    try {
+      localStorage.setItem(STORAGE_KEYS.STUDENTS, JSON.stringify(updated));
+      localStorage.setItem(STORAGE_KEYS.RECORDS, JSON.stringify(updatedRecs));
+    } catch (e) {
+      console.warn(e);
+    }
 
     // Delete in Firestore
     deleteDoc(doc(db, 'students', id)).catch((err) => {
@@ -608,7 +650,13 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       created_at: Date.now()
     }));
 
-    setStudents((prev) => [...prev, ...newItems].sort((a, b) => a.student_no - b.student_no));
+    const updated = [...students, ...newItems].sort((a, b) => a.student_no - b.student_no);
+    setStudents(updated);
+    try {
+      localStorage.setItem(STORAGE_KEYS.STUDENTS, JSON.stringify(updated));
+    } catch (e) {
+      console.warn(e);
+    }
 
     // Batch write to Firestore
     try {
@@ -657,7 +705,13 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       };
     });
 
-    setRecords((prev) => [...newRecords, ...prev]);
+    const updated = [...newRecords, ...records];
+    setRecords(updated);
+    try {
+      localStorage.setItem(STORAGE_KEYS.RECORDS, JSON.stringify(updated));
+    } catch (e) {
+      console.warn(e);
+    }
 
     // Batch write to Firestore
     try {
@@ -705,7 +759,13 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       };
     });
 
-    setRecords((prev) => [...newRecords, ...prev]);
+    const updated = [...newRecords, ...records];
+    setRecords(updated);
+    try {
+      localStorage.setItem(STORAGE_KEYS.RECORDS, JSON.stringify(updated));
+    } catch (e) {
+      console.warn(e);
+    }
 
     // Batch write to Firestore
     try {

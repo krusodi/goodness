@@ -32,41 +32,44 @@ export const getGenderStyles = (gender: Gender) => {
   if (gender === 'male') {
     return {
       label: 'ชาย',
-      icon: '👦',
-      textClass: 'text-sky-700',
+      icon: '',
+      textClass: 'text-sky-700 font-semibold',
       bgLight: 'bg-sky-50',
       borderClass: 'border-sky-200',
       badgeClass: 'bg-sky-50 text-sky-700 border-sky-200',
-      chipInactive: 'bg-sky-50/60 text-sky-900 border-sky-200 hover:bg-sky-100/60',
-      chipActive: 'bg-sky-600 text-white border-sky-700 shadow-xs ring-1 ring-sky-500',
-      avatarClass: 'bg-sky-100 text-sky-700 border-sky-200',
-      noBadgeClass: 'bg-sky-100 text-sky-800'
+      chipInactive: 'bg-sky-50/50 text-slate-800 border-sky-200 hover:border-sky-400 hover:bg-sky-100/60 shadow-2xs',
+      chipActive: 'bg-sky-600 text-white border-sky-700 shadow-xs ring-2 ring-sky-400',
+      avatarClass: 'bg-sky-100 text-sky-700 border border-sky-200',
+      noBadgeClass: 'bg-sky-100 text-sky-800 border border-sky-200 font-bold',
+      rowClass: 'hover:bg-sky-50/40'
     };
   }
   if (gender === 'female') {
     return {
       label: 'หญิง',
-      icon: '👧',
-      textClass: 'text-rose-600',
+      icon: '',
+      textClass: 'text-rose-700 font-semibold',
       bgLight: 'bg-pink-50',
       borderClass: 'border-pink-200',
       badgeClass: 'bg-pink-50 text-rose-700 border-pink-200',
-      chipInactive: 'bg-pink-50/60 text-pink-950 border-pink-200 hover:bg-pink-100/60',
-      chipActive: 'bg-rose-600 text-white border-rose-700 shadow-xs ring-1 ring-rose-500',
-      avatarClass: 'bg-pink-100 text-rose-700 border-pink-200',
-      noBadgeClass: 'bg-pink-100 text-rose-800'
+      chipInactive: 'bg-pink-50/50 text-slate-800 border-pink-200 hover:border-pink-400 hover:bg-pink-100/60 shadow-2xs',
+      chipActive: 'bg-rose-600 text-white border-rose-700 shadow-xs ring-2 ring-rose-400',
+      avatarClass: 'bg-pink-100 text-rose-700 border border-pink-200',
+      noBadgeClass: 'bg-pink-100 text-rose-800 border border-pink-200 font-bold',
+      rowClass: 'hover:bg-pink-50/40'
     };
   }
   return {
     label: 'ทั่วไป',
-    icon: '🧑',
-    textClass: 'text-slate-700',
+    icon: '',
+    textClass: 'text-slate-800 font-semibold',
     bgLight: 'bg-slate-50',
     borderClass: 'border-slate-200',
     badgeClass: 'bg-slate-50 text-slate-700 border-slate-200',
-    chipInactive: 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50',
+    chipInactive: 'bg-white text-slate-800 border-slate-200 hover:bg-slate-50 shadow-2xs',
     chipActive: 'bg-slate-700 text-white border-slate-800 shadow-xs',
-    avatarClass: 'bg-slate-100 text-slate-700 border-slate-200',
-    noBadgeClass: 'bg-slate-100 text-slate-800'
+    avatarClass: 'bg-slate-100 text-slate-700 border border-slate-200',
+    noBadgeClass: 'bg-slate-100 text-slate-700 border border-slate-200',
+    rowClass: 'hover:bg-slate-50'
   };
 };

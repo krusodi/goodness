@@ -216,7 +216,7 @@ export const DemeritRecordView: React.FC = () => {
                 onClick={selectOnlyBoys}
                 className="text-xs font-medium text-sky-700 hover:text-sky-900 hover:underline"
               >
-                👦 เฉพาะชาย ({maleCount})
+                เฉพาะชาย ({maleCount})
               </button>
               <span className="text-slate-300">|</span>
               <button
@@ -224,7 +224,7 @@ export const DemeritRecordView: React.FC = () => {
                 onClick={selectOnlyGirls}
                 className="text-xs font-medium text-rose-700 hover:text-rose-900 hover:underline"
               >
-                👧 เฉพาะหญิง ({femaleCount})
+                เฉพาะหญิง ({femaleCount})
               </button>
               <span className="text-slate-300">|</span>
               <button
@@ -268,7 +268,7 @@ export const DemeritRecordView: React.FC = () => {
                   genderFilter === 'male' ? 'bg-sky-600 text-white shadow-xs' : 'text-sky-700 hover:bg-sky-50'
                 }`}
               >
-                <span>👦 ชาย</span>
+                <span>ชาย</span>
                 <span className="text-[10px] opacity-90">({maleCount})</span>
               </button>
               <button
@@ -278,7 +278,7 @@ export const DemeritRecordView: React.FC = () => {
                   genderFilter === 'female' ? 'bg-rose-500 text-white shadow-xs' : 'text-rose-600 hover:bg-pink-50'
                 }`}
               >
-                <span>👧 หญิง</span>
+                <span>หญิง</span>
                 <span className="text-[10px] opacity-90">({femaleCount})</span>
               </button>
             </div>
@@ -314,12 +314,15 @@ export const DemeritRecordView: React.FC = () => {
                     {isSelected ? '✓' : st.student_no}
                   </div>
                   <div className="min-w-0 flex-1">
-                    <div className="text-xs leading-snug flex items-center gap-1 font-semibold">
-                      <span className="shrink-0">{gs.icon}</span>
-                      <span className="truncate">{st.student_name}</span>
+                    <div className={`text-xs leading-snug font-semibold truncate ${isSelected ? 'text-white' : gs.textClass}`}>
+                      {st.student_name}
                     </div>
-                    <div className={`text-[10px] mt-0.5 ${isSelected ? 'text-rose-100' : 'text-slate-400'}`}>
-                      เลขที่ {st.student_no} · {gs.label}
+                    <div className={`text-[10px] mt-0.5 ${isSelected ? 'text-rose-100' : 'text-slate-500'} flex items-center gap-1`}>
+                      <span>เลขที่ {st.student_no}</span>
+                      <span>·</span>
+                      <span className={`px-1 py-0.2 rounded font-medium ${isSelected ? 'bg-rose-700 text-white' : gs.badgeClass}`}>
+                        {gs.label}
+                      </span>
                     </div>
                   </div>
                 </button>
@@ -534,7 +537,7 @@ export const DemeritRecordView: React.FC = () => {
                       <td className="py-2.5 px-4 whitespace-nowrap">
                         <div className="flex items-center gap-1.5">
                           <span className={`inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-semibold border ${gs.badgeClass}`}>
-                            {gs.icon} {gs.label}
+                            {gs.label}
                           </span>
                           <span className={`font-semibold ${gs.textClass}`}>
                             {rec.student_name}

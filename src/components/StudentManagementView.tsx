@@ -215,10 +215,10 @@ export const StudentManagementView: React.FC = () => {
           </h1>
           <div className="flex items-center gap-2 mt-2">
             <span className="inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-lg bg-sky-50 text-sky-700 border border-sky-200">
-              👦 นักเรียนชาย {maleCount} คน
+              นักเรียนชาย {maleCount} คน
             </span>
             <span className="inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-lg bg-pink-50 text-rose-700 border border-pink-200">
-              👧 นักเรียนหญิง {femaleCount} คน
+              นักเรียนหญิง {femaleCount} คน
             </span>
           </div>
         </div>
@@ -286,16 +286,16 @@ export const StudentManagementView: React.FC = () => {
                   <button
                     type="button"
                     onClick={() => setNewName((prev) => prev.startsWith('ด.ญ. ') ? prev.replace('ด.ญ. ', 'ด.ช. ') : prev.startsWith('ด.ช. ') ? prev : 'ด.ช. ' + prev)}
-                    className="px-1.5 py-0.5 rounded bg-sky-100 hover:bg-sky-200 text-sky-800 font-semibold"
+                    className="px-2 py-0.5 rounded bg-sky-100 hover:bg-sky-200 text-sky-800 font-semibold"
                   >
-                    👦 ด.ช.
+                    ด.ช.
                   </button>
                   <button
                     type="button"
                     onClick={() => setNewName((prev) => prev.startsWith('ด.ช. ') ? prev.replace('ด.ช. ', 'ด.ญ. ') : prev.startsWith('ด.ญ. ') ? prev : 'ด.ญ. ' + prev)}
-                    className="px-1.5 py-0.5 rounded bg-pink-100 hover:bg-pink-200 text-rose-800 font-semibold"
+                    className="px-2 py-0.5 rounded bg-pink-100 hover:bg-pink-200 text-rose-800 font-semibold"
                   >
-                    👧 ด.ญ.
+                    ด.ญ.
                   </button>
                 </div>
               </div>
@@ -376,7 +376,7 @@ export const StudentManagementView: React.FC = () => {
                   : 'text-sky-700 hover:bg-sky-50'
               }`}
             >
-              <span>👦 ชาย</span>
+              <span>ชาย</span>
               <span className="text-[10px] opacity-90">({maleCount})</span>
             </button>
             <button
@@ -388,7 +388,7 @@ export const StudentManagementView: React.FC = () => {
                   : 'text-rose-600 hover:bg-pink-50'
               }`}
             >
-              <span>👧 หญิง</span>
+              <span>หญิง</span>
               <span className="text-[10px] opacity-90">({femaleCount})</span>
             </button>
           </div>
@@ -460,18 +460,18 @@ export const StudentManagementView: React.FC = () => {
                   const gs = getGenderStyles(gender);
 
                   return (
-                    <tr key={st.id} className="hover:bg-slate-50 transition-colors">
+                    <tr key={st.id} className={`${gs.rowClass} transition-colors`}>
                       <td className="py-3 px-4 text-center whitespace-nowrap">
-                        <span className={`inline-flex items-center justify-center w-7 h-7 rounded-lg font-mono font-bold text-xs ${gs.noBadgeClass}`}>
+                        <span className={`inline-flex items-center justify-center w-7 h-7 rounded-lg font-mono text-xs ${gs.noBadgeClass}`}>
                           {st.student_no}
                         </span>
                       </td>
                       <td className="py-3 px-4 whitespace-nowrap">
                         <div className="flex items-center gap-2">
                           <span className={`inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-semibold border shrink-0 ${gs.badgeClass}`}>
-                            {gs.icon} {gs.label}
+                            {gs.label}
                           </span>
-                          <span className={`font-semibold ${gs.textClass}`}>
+                          <span className={gs.textClass}>
                             {st.student_name}
                           </span>
                         </div>

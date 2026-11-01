@@ -216,7 +216,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onSelectStudent })
                       <span>อันดับ 2</span>
                       <span>·</span>
                       <span className={`px-1.5 py-0.2 rounded text-[10px] font-bold ${gs2.label === 'ชาย' ? 'bg-sky-400/30 text-sky-200' : 'bg-pink-400/30 text-pink-200'}`}>
-                        {gs2.icon} {gs2.label}
+                        {gs2.label}
                       </span>
                     </div>
                     <div className="text-sm font-bold text-white mt-1 truncate" title={top2.student.student_name}>
@@ -250,7 +250,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onSelectStudent })
                       <span>คะแนนสูงสุด</span>
                       <span>·</span>
                       <span className={`px-1.5 py-0.2 rounded text-[10px] font-bold ${gs1.label === 'ชาย' ? 'bg-sky-400/40 text-sky-100' : 'bg-pink-400/40 text-pink-100'}`}>
-                        {gs1.icon} {gs1.label}
+                        {gs1.label}
                       </span>
                     </div>
                     <div className="text-base font-extrabold text-white mt-1 truncate" title={top1.student.student_name}>
@@ -279,7 +279,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onSelectStudent })
                       <span>อันดับ 3</span>
                       <span>·</span>
                       <span className={`px-1.5 py-0.2 rounded text-[10px] font-bold ${gs3.label === 'ชาย' ? 'bg-sky-400/30 text-sky-200' : 'bg-pink-400/30 text-pink-200'}`}>
-                        {gs3.icon} {gs3.label}
+                        {gs3.label}
                       </span>
                     </div>
                     <div className="text-sm font-bold text-white mt-1 truncate" title={top3.student.student_name}>
@@ -378,7 +378,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onSelectStudent })
                   : 'text-sky-700 hover:bg-sky-50'
               }`}
             >
-              <span>👦 ชาย</span>
+              <span>ชาย</span>
               <span className="text-[10px] opacity-90">({boyCount})</span>
             </button>
             <button
@@ -390,7 +390,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onSelectStudent })
                   : 'text-rose-600 hover:bg-pink-50'
               }`}
             >
-              <span>👧 หญิง</span>
+              <span>หญิง</span>
               <span className="text-[10px] opacity-90">({girlCount})</span>
             </button>
           </div>
@@ -435,10 +435,10 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onSelectStudent })
           <div className="flex items-center gap-3 text-xs text-slate-500">
             <div className="flex items-center gap-2">
               <span className="inline-flex items-center gap-1 text-sky-700 font-semibold bg-sky-50 px-2 py-0.5 rounded border border-sky-200">
-                👦 ชาย {boyCount} คน
+                ชาย {boyCount} คน
               </span>
               <span className="inline-flex items-center gap-1 text-rose-700 font-semibold bg-pink-50 px-2 py-0.5 rounded border border-pink-200">
-                👧 หญิง {girlCount} คน
+                หญิง {girlCount} คน
               </span>
             </div>
             <span>
@@ -479,7 +479,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onSelectStudent })
                   return (
                     <tr
                       key={item.student.id}
-                      className="hover:bg-slate-50/80 transition-colors group"
+                      className={`${gs.rowClass} transition-colors group`}
                     >
                       <td className="py-3 px-4 text-center font-bold whitespace-nowrap">
                         {getRankBadge(item.rank)}
@@ -491,11 +491,10 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onSelectStudent })
                       </td>
                       <td className="py-3 px-4 whitespace-nowrap">
                         <div className="flex items-center gap-2">
-                          <span className={`inline-flex items-center gap-0.5 px-2 py-0.5 rounded-md text-[11px] font-semibold border shrink-0 ${gs.badgeClass}`}>
-                            <span>{gs.icon}</span>
-                            <span>{gs.label}</span>
+                          <span className={`inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-semibold border shrink-0 ${gs.badgeClass}`}>
+                            {gs.label}
                           </span>
-                          <span className={`font-semibold ${gs.textClass} group-hover:underline`}>
+                          <span className={`font-semibold group-hover:underline ${gs.textClass}`}>
                             {item.student.student_name}
                           </span>
                         </div>
@@ -624,7 +623,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onSelectStudent })
                         <td className="py-2.5 px-4 whitespace-nowrap">
                           <div className="flex items-center gap-1.5">
                             <span className={`inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-semibold border shrink-0 ${gs.badgeClass}`}>
-                              {gs.icon} {gs.label}
+                              {gs.label}
                             </span>
                             <span className={`font-semibold ${gs.textClass}`}>
                               {rec.student_name}
@@ -688,7 +687,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onSelectStudent })
                         <td className="py-2.5 px-4 whitespace-nowrap">
                           <div className="flex items-center gap-1.5">
                             <span className={`inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-semibold border shrink-0 ${gs.badgeClass}`}>
-                              {gs.icon} {gs.label}
+                              {gs.label}
                             </span>
                             <span className={`font-semibold ${gs.textClass}`}>
                               {rec.student_name}
