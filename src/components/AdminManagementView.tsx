@@ -597,10 +597,10 @@ export const AdminManagementView: React.FC = () => {
               >
                 <div className="flex items-center justify-between mb-2">
                   <RotateCcw className="w-5 h-5 text-slate-600 group-hover:rotate-180 transition-transform duration-500" />
-                  <span className="text-[11px] text-slate-400">ชุดสาธิต</span>
+                  <span className="text-[11px] text-slate-400">เริ่มต้นใหม่</span>
                 </div>
-                <div className="font-bold text-sm text-slate-800">คืนค่าข้อมูลตัวอย่าง (Demo Data)</div>
-                <div className="text-xs text-slate-500 mt-1">คืนค่านักเรียน ป.5/1 และบันทึกคะแนนตัวอย่างตั้งต้น</div>
+                <div className="font-bold text-sm text-slate-800">ล้างระบบเป็นค่าเริ่มต้น (Reset System)</div>
+                <div className="text-xs text-slate-500 mt-1">ลบข้อมูลนักเรียนและคะแนนทั้งหมด เริ่มต้นระบบสะอาด</div>
               </button>
             </div>
           </div>

@@ -31,8 +31,20 @@ const STORAGE_KEYS = {
   USERS: 'merit_system_users_v1',
   STUDENTS: 'merit_system_students_v1',
   RECORDS: 'merit_system_records_v1',
-  CURRENT_USER: 'merit_system_current_user_v1'
+  CURRENT_USER: 'merit_system_current_user_v1',
+  PURGE_FLAG: 'merit_system_purged_mock_v4'
 };
+
+// One-time purge of sample data from localStorage
+try {
+  if (typeof window !== 'undefined' && localStorage.getItem(STORAGE_KEYS.PURGE_FLAG) !== 'true') {
+    localStorage.removeItem(STORAGE_KEYS.STUDENTS);
+    localStorage.removeItem(STORAGE_KEYS.RECORDS);
+    localStorage.setItem(STORAGE_KEYS.PURGE_FLAG, 'true');
+  }
+} catch {
+  // ignore
+}
 
 interface AppContextType {
   settings: AppSettings;
@@ -172,6 +184,23 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       const ok = await testConnection();
       setIsFirebaseConnected(ok);
 
+      // One-time purge of any old mock data from Firestore
+      try {
+        if (typeof window !== 'undefined' && sessionStorage.getItem('firestore_purged_mock_v4') !== 'true') {
+          sessionStorage.setItem('firestore_purged_mock_v4', 'true');
+          const stdSnap = await getDocs(collection(db, 'students'));
+          const recSnap = await getDocs(collection(db, 'records'));
+          if (!stdSnap.empty || !recSnap.empty) {
+            const batch = writeBatch(db);
+            stdSnap.forEach((d) => batch.delete(d.ref));
+            recSnap.forEach((d) => batch.delete(d.ref));
+            await batch.commit();
+          }
+        }
+      } catch (err) {
+        console.warn('Firestore initial purge note:', err);
+      }
+
       // Listen to Students collection
       const studentsPath = 'students';
       unsubscribeStudents = onSnapshot(
@@ -184,26 +213,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
             });
             list.sort((a, b) => a.student_no - b.student_no);
             setStudents(list);
-          } else if (!hasSeededRef.current && students.length > 0) {
-            // Seed initial students to Firestore if empty
-            hasSeededRef.current = true;
-            try {
-              const batch = writeBatch(db);
-              INITIAL_STUDENTS.forEach((st) => {
-                const docRef = doc(db, 'students', st.id);
-                batch.set(docRef, st);
-              });
-              INITIAL_RECORDS.forEach((rec) => {
-                const docRef = doc(db, 'records', rec.id);
-                batch.set(docRef, rec);
-              });
-              batch.set(doc(db, 'settings', 'global'), INITIAL_SETTINGS);
-              batch.commit().catch((err) => {
-                console.warn('Initial seeding note:', err);
-              });
-            } catch (seedErr) {
-              console.warn('Seeding error:', seedErr);
-            }
+          } else {
+            setStudents([]);
           }
         },
         (error) => {
@@ -223,6 +234,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
             });
             list.sort((a, b) => (b.created_at || 0) - (a.created_at || 0));
             setRecords(list);
+          } else {
+            setRecords([]);
           }
         },
         (error) => {
@@ -709,19 +722,26 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     showToast('ล้างบันทึกหักคะแนนทั้งหมดเรียบร้อยแล้ว', 'info');
   };
 
-  const clearAllData = () => {
-    const studentsToDelete = [...students];
-    const recordsToDelete = [...records];
+  const clearAllData = async () => {
     setRecords([]);
     setStudents([]);
 
     try {
-      const batch = writeBatch(db);
-      studentsToDelete.forEach((s) => batch.delete(doc(db, 'students', s.id)));
-      recordsToDelete.forEach((r) => batch.delete(doc(db, 'records', r.id)));
-      batch.commit().catch((err) => {
-        console.warn('Firestore clear all batch note:', err);
-      });
+      localStorage.removeItem(STORAGE_KEYS.STUDENTS);
+      localStorage.removeItem(STORAGE_KEYS.RECORDS);
+    } catch {
+      // ignore
+    }
+
+    try {
+      const stdSnap = await getDocs(collection(db, 'students'));
+      const recSnap = await getDocs(collection(db, 'records'));
+      if (!stdSnap.empty || !recSnap.empty) {
+        const batch = writeBatch(db);
+        stdSnap.forEach((s) => batch.delete(s.ref));
+        recSnap.forEach((r) => batch.delete(r.ref));
+        await batch.commit();
+      }
     } catch (e) {
       console.warn('Clear all error:', e);
     }
@@ -730,22 +750,27 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   };
 
   const resetToDemo = () => {
-    setStudents(INITIAL_STUDENTS);
-    setRecords(INITIAL_RECORDS);
+    setStudents([]);
+    setRecords([]);
     setUsers(INITIAL_USERS);
     setSettings(INITIAL_SETTINGS);
 
     try {
+      localStorage.removeItem(STORAGE_KEYS.STUDENTS);
+      localStorage.removeItem(STORAGE_KEYS.RECORDS);
+    } catch {
+      // ignore
+    }
+
+    try {
       const batch = writeBatch(db);
-      INITIAL_STUDENTS.forEach((st) => batch.set(doc(db, 'students', st.id), st));
-      INITIAL_RECORDS.forEach((rec) => batch.set(doc(db, 'records', rec.id), rec));
       batch.set(doc(db, 'settings', 'global'), INITIAL_SETTINGS);
       batch.commit().catch(() => {});
     } catch (e) {
       console.warn(e);
     }
 
-    showToast('รีเซ็ตข้อมูลเป็นชุดสาธิตตั้งต้นเรียบร้อยแล้ว', 'success');
+    showToast('รีเซ็ตระบบเป็นค่าเริ่มต้น (ไม่มีข้อมูลตัวอย่าง) เรียบร้อยแล้ว', 'success');
   };
 
   const exportJSON = () => {

@@ -293,7 +293,12 @@ export const MeritRecordView: React.FC = () => {
 
           {/* Student Grid / Gender-Colored Chips */}
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2 max-h-60 overflow-y-auto p-2 border border-slate-100 rounded-xl bg-slate-50/50">
-            {filteredStudents.map((st) => {
+            {filteredStudents.length === 0 ? (
+              <div className="col-span-full py-8 text-center text-xs text-slate-400">
+                ยังไม่มีรายชื่อนักเรียนในระบบ กรุณาเพิ่มรายชื่อนักเรียนที่เมนู &ldquo;จัดการนักเรียน&rdquo;
+              </div>
+            ) : (
+              filteredStudents.map((st) => {
               const isSelected = selectedStudentIds.includes(st.id);
               const gender = getStudentGender(st.student_name);
               const gs = getGenderStyles(gender);
@@ -326,8 +331,9 @@ export const MeritRecordView: React.FC = () => {
                   </div>
                 </button>
               );
-            })}
-          </div>
+            })
+          )}
+        </div>
         </div>
 
         {/* Step 2: Select Behavior (21 Preset Items + Custom) */}

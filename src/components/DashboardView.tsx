@@ -163,106 +163,116 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onSelectStudent })
               <Trophy className="w-5 h-5 text-amber-400" />
               <h2 className="text-lg font-bold">สุดยอดคนดีประจำชั้น (Top 3)</h2>
             </div>
-            <span className="text-xs text-emerald-200">
-              {selectedMonth !== 'all' ? `ประจำเดือน ${THAI_MONTHS.find(m => m.value === selectedMonth)?.label}` : 'คะแนนรวมตลอดปี'}
+            <span className="text-xs text-emerald-200 bg-emerald-800/60 px-3 py-1 rounded-full border border-emerald-700/50 font-medium">
+              {selectedMonth !== 'all' ? `คะแนนรวมประจำเดือน ${THAI_MONTHS.find(m => m.value === selectedMonth)?.label}` : 'คะแนนรวมตลอดเดือน'}
             </span>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 items-end pt-2">
-            {/* Rank 2 (Silver) */}
-            {top2 ? (() => {
-              const gs2 = getGenderStyles(getStudentGender(top2.student.student_name));
-              return (
-                <div className="order-2 sm:order-1 bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/10 text-center relative group hover:bg-white/15 transition-all">
-                  <div className="w-12 h-12 mx-auto mb-2 rounded-full bg-slate-200 text-slate-800 flex items-center justify-center text-2xl font-bold ring-4 ring-slate-400/30">
-                    🥈
+          {summaries.length === 0 ? (
+            <div className="py-10 text-center text-white/80">
+              <Sparkles className="w-8 h-8 text-amber-300 mx-auto mb-2 opacity-70" />
+              <div className="text-sm font-semibold">ยังไม่มีข้อมูลนักเรียนและคะแนนความดี</div>
+              <p className="text-xs text-emerald-200/80 mt-1">
+                สามารถเริ่มต้นเพิ่มรายชื่อนักเรียนได้ที่เมนู &ldquo;จัดการนักเรียน&rdquo;
+              </p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 items-end pt-2">
+              {/* Rank 2 (Silver) */}
+              {top2 ? (() => {
+                const gs2 = getGenderStyles(getStudentGender(top2.student.student_name));
+                return (
+                  <div className="order-2 sm:order-1 bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/10 text-center relative group hover:bg-white/15 transition-all">
+                    <div className="w-12 h-12 mx-auto mb-2 rounded-full bg-slate-200 text-slate-800 flex items-center justify-center text-2xl font-bold ring-4 ring-slate-400/30">
+                      🥈
+                    </div>
+                    <div className="flex items-center justify-center gap-1.5 text-xs text-slate-300 font-medium">
+                      <span>อันดับ 2</span>
+                      <span>·</span>
+                      <span className={`px-1.5 py-0.2 rounded text-[10px] font-bold ${gs2.label === 'ชาย' ? 'bg-sky-400/30 text-sky-200' : 'bg-pink-400/30 text-pink-200'}`}>
+                        {gs2.icon} {gs2.label}
+                      </span>
+                    </div>
+                    <div className="text-sm font-bold text-white mt-1 truncate" title={top2.student.student_name}>
+                      {top2.student.student_name}
+                    </div>
+                    <div className="text-xs text-emerald-200">เลขที่ {top2.student.student_no}</div>
+                    <div className="mt-3 py-1 px-2 rounded-lg bg-white/15 font-mono text-base font-bold text-emerald-300 tabular-nums">
+                      {top2.net_score} คะแนน
+                    </div>
+                    <div className="mt-1 text-[11px] text-slate-300">
+                      + {top2.merit_score} | - {top2.demerit_score}
+                    </div>
                   </div>
-                  <div className="flex items-center justify-center gap-1.5 text-xs text-slate-300 font-medium">
-                    <span>อันดับ 2</span>
-                    <span>·</span>
-                    <span className={`px-1.5 py-0.2 rounded text-[10px] font-bold ${gs2.label === 'ชาย' ? 'bg-sky-400/30 text-sky-200' : 'bg-pink-400/30 text-pink-200'}`}>
-                      {gs2.icon} {gs2.label}
-                    </span>
-                  </div>
-                  <div className="text-sm font-bold text-white mt-1 truncate" title={top2.student.student_name}>
-                    {top2.student.student_name}
-                  </div>
-                  <div className="text-xs text-emerald-200">เลขที่ {top2.student.student_no}</div>
-                  <div className="mt-3 py-1 px-2 rounded-lg bg-white/15 font-mono text-base font-bold text-emerald-300 tabular-nums">
-                    {top2.net_score} คะแนน
-                  </div>
-                  <div className="mt-1 text-[11px] text-slate-300">
-                    + {top2.merit_score} | - {top2.demerit_score}
-                  </div>
-                </div>
-              );
-            })() : (
-              <div className="order-2 sm:order-1 bg-white/5 rounded-xl p-4 text-center text-xs text-white/40">ไม่มีข้อมูล</div>
-            )}
+                );
+              })() : (
+                <div className="order-2 sm:order-1 bg-white/5 rounded-xl p-4 text-center text-xs text-white/40">ไม่มีข้อมูล</div>
+              )}
 
-            {/* Rank 1 (Gold - Center taller) */}
-            {top1 ? (() => {
-              const gs1 = getGenderStyles(getStudentGender(top1.student.student_name));
-              return (
-                <div className="order-1 sm:order-2 bg-gradient-to-b from-amber-500/20 to-white/10 backdrop-blur-sm rounded-2xl p-5 border-2 border-amber-400/50 text-center relative shadow-lg transform sm:-translate-y-2">
-                  <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-amber-400 text-amber-950 font-bold text-[11px] px-3 py-0.5 rounded-full uppercase tracking-wider shadow-sm flex items-center gap-1">
-                    <Sparkles className="w-3 h-3" /> ยอดเยี่ยมอันดับ 1
+              {/* Rank 1 (Gold - Center taller) */}
+              {top1 ? (() => {
+                const gs1 = getGenderStyles(getStudentGender(top1.student.student_name));
+                return (
+                  <div className="order-1 sm:order-2 bg-gradient-to-b from-amber-500/20 to-white/10 backdrop-blur-sm rounded-2xl p-5 border-2 border-amber-400/50 text-center relative shadow-lg transform sm:-translate-y-2">
+                    <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-amber-400 text-amber-950 font-bold text-[11px] px-3 py-0.5 rounded-full uppercase tracking-wider shadow-sm flex items-center gap-1">
+                      <Sparkles className="w-3 h-3" /> ยอดเยี่ยมอันดับ 1
+                    </div>
+                    <div className="w-16 h-16 mx-auto mb-2 rounded-full bg-amber-400 text-amber-950 flex items-center justify-center text-3xl font-bold ring-4 ring-amber-300/40 shadow-inner">
+                      🥇
+                    </div>
+                    <div className="flex items-center justify-center gap-1.5 text-xs text-amber-300 font-bold">
+                      <span>คะแนนสูงสุด</span>
+                      <span>·</span>
+                      <span className={`px-1.5 py-0.2 rounded text-[10px] font-bold ${gs1.label === 'ชาย' ? 'bg-sky-400/40 text-sky-100' : 'bg-pink-400/40 text-pink-100'}`}>
+                        {gs1.icon} {gs1.label}
+                      </span>
+                    </div>
+                    <div className="text-base font-extrabold text-white mt-1 truncate" title={top1.student.student_name}>
+                      {top1.student.student_name}
+                    </div>
+                    <div className="text-xs text-emerald-200">เลขที่ {top1.student.student_no} · ชั้น {top1.student.student_class}</div>
+                    <div className="mt-3 py-1.5 px-3 rounded-xl bg-amber-400/20 border border-amber-400/30 font-mono text-xl font-black text-amber-300 tabular-nums">
+                      {top1.net_score} คะแนน
+                    </div>
+                    <div className="mt-1 text-xs text-amber-100">
+                      ความดี +{top1.merit_score} ({top1.merit_count} ครั้ง) · หัก -{top1.demerit_score}
+                    </div>
                   </div>
-                  <div className="w-16 h-16 mx-auto mb-2 rounded-full bg-amber-400 text-amber-950 flex items-center justify-center text-3xl font-bold ring-4 ring-amber-300/40 shadow-inner">
-                    🥇
-                  </div>
-                  <div className="flex items-center justify-center gap-1.5 text-xs text-amber-300 font-bold">
-                    <span>คะแนนสูงสุด</span>
-                    <span>·</span>
-                    <span className={`px-1.5 py-0.2 rounded text-[10px] font-bold ${gs1.label === 'ชาย' ? 'bg-sky-400/40 text-sky-100' : 'bg-pink-400/40 text-pink-100'}`}>
-                      {gs1.icon} {gs1.label}
-                    </span>
-                  </div>
-                  <div className="text-base font-extrabold text-white mt-1 truncate" title={top1.student.student_name}>
-                    {top1.student.student_name}
-                  </div>
-                  <div className="text-xs text-emerald-200">เลขที่ {top1.student.student_no} · ชั้น {top1.student.student_class}</div>
-                  <div className="mt-3 py-1.5 px-3 rounded-xl bg-amber-400/20 border border-amber-400/30 font-mono text-xl font-black text-amber-300 tabular-nums">
-                    {top1.net_score} คะแนน
-                  </div>
-                  <div className="mt-1 text-xs text-amber-100">
-                    ความดี +{top1.merit_score} ({top1.merit_count} ครั้ง) · หัก -{top1.demerit_score}
-                  </div>
-                </div>
-              );
-            })() : null}
+                );
+              })() : null}
 
-            {/* Rank 3 (Bronze) */}
-            {top3 ? (() => {
-              const gs3 = getGenderStyles(getStudentGender(top3.student.student_name));
-              return (
-                <div className="order-3 bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/10 text-center relative group hover:bg-white/15 transition-all">
-                  <div className="w-12 h-12 mx-auto mb-2 rounded-full bg-amber-700/80 text-amber-100 flex items-center justify-center text-2xl font-bold ring-4 ring-amber-600/30">
-                    🥉
+              {/* Rank 3 (Bronze) */}
+              {top3 ? (() => {
+                const gs3 = getGenderStyles(getStudentGender(top3.student.student_name));
+                return (
+                  <div className="order-3 bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/10 text-center relative group hover:bg-white/15 transition-all">
+                    <div className="w-12 h-12 mx-auto mb-2 rounded-full bg-amber-700/80 text-amber-100 flex items-center justify-center text-2xl font-bold ring-4 ring-amber-600/30">
+                      🥉
+                    </div>
+                    <div className="flex items-center justify-center gap-1.5 text-xs text-amber-200 font-medium">
+                      <span>อันดับ 3</span>
+                      <span>·</span>
+                      <span className={`px-1.5 py-0.2 rounded text-[10px] font-bold ${gs3.label === 'ชาย' ? 'bg-sky-400/30 text-sky-200' : 'bg-pink-400/30 text-pink-200'}`}>
+                        {gs3.icon} {gs3.label}
+                      </span>
+                    </div>
+                    <div className="text-sm font-bold text-white mt-1 truncate" title={top3.student.student_name}>
+                      {top3.student.student_name}
+                    </div>
+                    <div className="text-xs text-emerald-200">เลขที่ {top3.student.student_no}</div>
+                    <div className="mt-3 py-1 px-2 rounded-lg bg-white/15 font-mono text-base font-bold text-amber-300 tabular-nums">
+                      {top3.net_score} คะแนน
+                    </div>
+                    <div className="mt-1 text-[11px] text-slate-300">
+                      + {top3.merit_score} | - {top3.demerit_score}
+                    </div>
                   </div>
-                  <div className="flex items-center justify-center gap-1.5 text-xs text-amber-200 font-medium">
-                    <span>อันดับ 3</span>
-                    <span>·</span>
-                    <span className={`px-1.5 py-0.2 rounded text-[10px] font-bold ${gs3.label === 'ชาย' ? 'bg-sky-400/30 text-sky-200' : 'bg-pink-400/30 text-pink-200'}`}>
-                      {gs3.icon} {gs3.label}
-                    </span>
-                  </div>
-                  <div className="text-sm font-bold text-white mt-1 truncate" title={top3.student.student_name}>
-                    {top3.student.student_name}
-                  </div>
-                  <div className="text-xs text-emerald-200">เลขที่ {top3.student.student_no}</div>
-                  <div className="mt-3 py-1 px-2 rounded-lg bg-white/15 font-mono text-base font-bold text-amber-300 tabular-nums">
-                    {top3.net_score} คะแนน
-                  </div>
-                  <div className="mt-1 text-[11px] text-slate-300">
-                    + {top3.merit_score} | - {top3.demerit_score}
-                  </div>
-                </div>
-              );
-            })() : (
-              <div className="order-3 bg-white/5 rounded-xl p-4 text-center text-xs text-white/40">ไม่มีข้อมูล</div>
-            )}
-          </div>
+                );
+              })() : (
+                <div className="order-3 bg-white/5 rounded-xl p-4 text-center text-xs text-white/40">ไม่มีข้อมูล</div>
+              )}
+            </div>
+          )}
         </div>
       )}
 
