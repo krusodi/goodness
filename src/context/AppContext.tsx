@@ -5,7 +5,9 @@ import {
   UserAccount,
   AppSettings,
   StudentScoreSummary,
-  UserRole
+  UserRole,
+  PRESET_MERIT_BEHAVIORS,
+  PRESET_DEMERIT_BEHAVIORS
 } from '../types';
 import {
   INITIAL_SETTINGS,
@@ -78,6 +80,22 @@ interface AppContextType {
   deleteAcademicYear: (year: string) => { success: boolean; message?: string };
   academicYearModalOpen: boolean;
   setAcademicYearModalOpen: (open: boolean) => void;
+
+  // Standard Behaviors Management (21 Standard Items)
+  meritBehaviors: string[];
+  demeritBehaviors: string[];
+  addMeritBehavior: (name: string) => { success: boolean; message?: string };
+  updateMeritBehavior: (oldName: string, newName: string) => { success: boolean; message?: string };
+  deleteMeritBehavior: (name: string) => { success: boolean; message?: string };
+  resetMeritBehaviors: () => void;
+  addDemeritBehavior: (name: string) => { success: boolean; message?: string };
+  updateDemeritBehavior: (oldName: string, newName: string) => { success: boolean; message?: string };
+  deleteDemeritBehavior: (name: string) => { success: boolean; message?: string };
+  resetDemeritBehaviors: () => void;
+  behaviorModalOpen: boolean;
+  setBehaviorModalOpen: (open: boolean) => void;
+  behaviorModalTab: 'merit' | 'demerit';
+  setBehaviorModalTab: (tab: 'merit' | 'demerit') => void;
 
   // Top 3 Customization Modal
   top3ColorModalOpen: boolean;
@@ -167,6 +185,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [loginModalOpen, setLoginModalOpen] = useState(false);
   const [academicYearModalOpen, setAcademicYearModalOpen] = useState(false);
   const [top3ColorModalOpen, setTop3ColorModalOpen] = useState(false);
+  const [behaviorModalOpen, setBehaviorModalOpen] = useState(false);
+  const [behaviorModalTab, setBehaviorModalTab] = useState<'merit' | 'demerit'>('merit');
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' | 'info' } | null>(null);
 
   const showToast = (message: string, type: 'success' | 'error' | 'info' = 'success') => {
@@ -1035,6 +1055,101 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     return { success: true };
   };
 
+  // Standard behaviors (21 items) management
+  const meritBehaviors = (settings.merit_behaviors && settings.merit_behaviors.length > 0)
+    ? settings.merit_behaviors
+    : PRESET_MERIT_BEHAVIORS;
+
+  const demeritBehaviors = (settings.demerit_behaviors && settings.demerit_behaviors.length > 0)
+    ? settings.demerit_behaviors
+    : PRESET_DEMERIT_BEHAVIORS;
+
+  const addMeritBehavior = (name: string) => {
+    const trimmed = name.trim();
+    if (!trimmed) {
+      return { success: false, message: 'กรุณาระบุชื่อพฤติกรรมความดี' };
+    }
+    if (meritBehaviors.includes(trimmed)) {
+      return { success: false, message: 'มีรายการพฤติกรรมนี้อยู่ในรายการแล้ว' };
+    }
+    const updated = [...meritBehaviors, trimmed];
+    updateSettings({ merit_behaviors: updated });
+    showToast(`เพิ่มพฤติกรรมความดี "${trimmed}" สำเร็จ`, 'success');
+    return { success: true };
+  };
+
+  const updateMeritBehavior = (oldName: string, newName: string) => {
+    const trimmed = newName.trim();
+    if (!trimmed) {
+      return { success: false, message: 'กรุณาระบุชื่อพฤติกรรมใหม่' };
+    }
+    if (trimmed !== oldName && meritBehaviors.includes(trimmed)) {
+      return { success: false, message: 'มีรายการพฤติกรรมนี้อยู่ในรายการแล้ว' };
+    }
+    const updated = meritBehaviors.map((b) => (b === oldName ? trimmed : b));
+    updateSettings({ merit_behaviors: updated });
+    showToast(`แก้ไขพฤติกรรมความดีเรียบร้อย`, 'success');
+    return { success: true };
+  };
+
+  const deleteMeritBehavior = (name: string) => {
+    if (meritBehaviors.length <= 1) {
+      return { success: false, message: 'ไม่สามารถลบได้ ต้องมีอย่างน้อย 1 รายการ' };
+    }
+    const updated = meritBehaviors.filter((b) => b !== name);
+    updateSettings({ merit_behaviors: updated });
+    showToast(`ลบพฤติกรรมความดี "${name}" เรียบร้อย`, 'info');
+    return { success: true };
+  };
+
+  const resetMeritBehaviors = () => {
+    updateSettings({ merit_behaviors: [...PRESET_MERIT_BEHAVIORS] });
+    showToast('รีเซ็ตรายการพฤติกรรมความดีเป็น 21 รายการมาตรฐานแล้ว', 'info');
+  };
+
+  const addDemeritBehavior = (name: string) => {
+    const trimmed = name.trim();
+    if (!trimmed) {
+      return { success: false, message: 'กรุณาระบุชื่อพฤติกรรมที่หักคะแนน' };
+    }
+    if (demeritBehaviors.includes(trimmed)) {
+      return { success: false, message: 'มีรายการพฤติกรรมนี้อยู่ในรายการแล้ว' };
+    }
+    const updated = [...demeritBehaviors, trimmed];
+    updateSettings({ demerit_behaviors: updated });
+    showToast(`เพิ่มพฤติกรรมหักคะแนน "${trimmed}" สำเร็จ`, 'success');
+    return { success: true };
+  };
+
+  const updateDemeritBehavior = (oldName: string, newName: string) => {
+    const trimmed = newName.trim();
+    if (!trimmed) {
+      return { success: false, message: 'กรุณาระบุชื่อพฤติกรรมใหม่' };
+    }
+    if (trimmed !== oldName && demeritBehaviors.includes(trimmed)) {
+      return { success: false, message: 'มีรายการพฤติกรรมนี้อยู่ในรายการแล้ว' };
+    }
+    const updated = demeritBehaviors.map((b) => (b === oldName ? trimmed : b));
+    updateSettings({ demerit_behaviors: updated });
+    showToast(`แก้ไขพฤติกรรมหักคะแนนเรียบร้อย`, 'success');
+    return { success: true };
+  };
+
+  const deleteDemeritBehavior = (name: string) => {
+    if (demeritBehaviors.length <= 1) {
+      return { success: false, message: 'ไม่สามารถลบได้ ต้องมีอย่างน้อย 1 รายการ' };
+    }
+    const updated = demeritBehaviors.filter((b) => b !== name);
+    updateSettings({ demerit_behaviors: updated });
+    showToast(`ลบพฤติกรรมหักคะแนน "${name}" เรียบร้อย`, 'info');
+    return { success: true };
+  };
+
+  const resetDemeritBehaviors = () => {
+    updateSettings({ demerit_behaviors: [...PRESET_DEMERIT_BEHAVIORS] });
+    showToast('รีเซ็ตรายการพฤติกรรมหักคะแนนเป็น 21 รายการมาตรฐานแล้ว', 'info');
+  };
+
   // Summaries calculation (Leaderboard calculation)
   const getSummaries = (monthFilter?: string, yearFilter?: string): StudentScoreSummary[] => {
     return students.map((student) => {
@@ -1100,6 +1215,20 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         deleteAcademicYear,
         academicYearModalOpen,
         setAcademicYearModalOpen,
+        meritBehaviors,
+        demeritBehaviors,
+        addMeritBehavior,
+        updateMeritBehavior,
+        deleteMeritBehavior,
+        resetMeritBehaviors,
+        addDemeritBehavior,
+        updateDemeritBehavior,
+        deleteDemeritBehavior,
+        resetDemeritBehaviors,
+        behaviorModalOpen,
+        setBehaviorModalOpen,
+        behaviorModalTab,
+        setBehaviorModalTab,
         top3ColorModalOpen,
         setTop3ColorModalOpen,
         users,

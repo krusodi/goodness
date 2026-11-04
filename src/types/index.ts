@@ -59,6 +59,8 @@ export interface AppSettings {
   signatory2_name?: string;
   signatory3_title?: string;
   signatory3_name?: string;
+  merit_behaviors?: string[];
+  demerit_behaviors?: string[];
 }
 
 export interface Top3ColorPreset {

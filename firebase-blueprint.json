@@ -47,6 +47,8 @@
         "signatory2_name": { "type": "string", "description": "Student affairs head name" },
         "signatory3_title": { "type": "string", "description": "School director title" },
         "signatory3_name": { "type": "string", "description": "School director name" },
+        "merit_behaviors": { "type": "array", "items": { "type": "string" }, "description": "List of standard merit behaviors" },
+        "demerit_behaviors": { "type": "array", "items": { "type": "string" }, "description": "List of standard demerit behaviors" },
         "updated_at": { "type": "string", "description": "Last update timestamp" }
       },
       "required": ["school_name", "system_name", "academic_year"]

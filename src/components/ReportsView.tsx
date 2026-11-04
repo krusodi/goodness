@@ -111,6 +111,31 @@ export const ReportsView: React.FC<ReportsViewProps> = ({ initialStudentId }) =>
   // Monthly Summaries (Leaderboard)
   const monthlySummaries = getSummaries(summaryMonth, summaryYear);
 
+  // Daily score totals
+  const dailyMeritScore = dailyRecords.filter((r) => r.category === 'merit').reduce((acc, r) => acc + r.score, 0);
+  const dailyDemeritScore = dailyRecords.filter((r) => r.category === 'demerit').reduce((acc, r) => acc + r.score, 0);
+  const dailyNetScore = dailyMeritScore - dailyDemeritScore;
+
+  // Monthly score totals
+  const monthlyMeritScore = monthlyRecords.filter((r) => r.category === 'merit').reduce((acc, r) => acc + r.score, 0);
+  const monthlyDemeritScore = monthlyRecords.filter((r) => r.category === 'demerit').reduce((acc, r) => acc + r.score, 0);
+  const monthlyNetScore = monthlyMeritScore - monthlyDemeritScore;
+
+  // Monthly Summaries totals
+  const summaryTotalMerit = monthlySummaries.reduce((acc, s) => acc + s.merit_score, 0);
+  const summaryTotalDemerit = monthlySummaries.reduce((acc, s) => acc + s.demerit_score, 0);
+  const summaryTotalNet = monthlySummaries.reduce((acc, s) => acc + s.net_score, 0);
+
+  const getThaiFormattedDate = (dateStr: string) => {
+    if (!dateStr) return '';
+    const parts = dateStr.split('-');
+    if (parts.length < 3) return dateStr;
+    const day = parseInt(parts[2], 10);
+    const month = THAI_MONTHS.find((m) => m.value === parts[1])?.label || parts[1];
+    const year = parseInt(parts[0], 10) + 543;
+    return `วันที่ ${day} ${month} พ.ศ. ${year}`;
+  };
+
   const handlePrint = () => {
     window.print();
   };
@@ -222,18 +247,18 @@ export const ReportsView: React.FC<ReportsViewProps> = ({ initialStudentId }) =>
         </button>
       </div>
 
-      {/* Formal Header Printed on Page */}
-      <div className="hidden print:block text-center border-b-2 border-slate-800 pb-4 mb-6">
-        <div className="text-xl font-bold">{settings.school_name}</div>
-        <div className="text-sm font-medium">สำนักงานเขตพื้นที่การศึกษาประถมศึกษา</div>
-        <div className="text-base font-bold mt-1">
-          {reportType === 'individual' && `แบบรายงานผลคะแนนความดีและความประพฤติรายบุคคล (ชั้น ${settings.system_name.includes('ป.') ? 'ป.5/1' : 'ป.5/1'})`}
-          {reportType === 'daily' && `รายงานบันทึกพฤติกรรมความดีและความประพฤติ ประจำวันที่ ${dailyDate}`}
+      {/* Formal Header Printed on Page (A4 Paper Standard) */}
+      <div className="hidden print:block text-center border-b-2 border-slate-900 pb-3 mb-5">
+        <div className="text-xl font-bold tracking-tight text-slate-900">{settings.school_name}</div>
+        <div className="text-xs text-slate-600 font-medium">สำนักงานเขตพื้นที่การศึกษาประถมศึกษา · {settings.system_name}</div>
+        <div className="text-base font-bold mt-1 text-slate-900">
+          {reportType === 'individual' && `แบบรายงานผลคะแนนความดีและความประพฤติรายบุคคล (ชั้น ${currentStudent?.student_class || 'ป.5/1'})`}
+          {reportType === 'daily' && `รายงานบันทึกพฤติกรรมความดีและความประพฤติ ประจำ${getThaiFormattedDate(dailyDate)} (${dailyDate})`}
           {reportType === 'monthly' && `รายงานบันทึกพฤติกรรมความดี ประจำเดือน ${THAI_MONTHS.find(m => m.value === monthlyMonth)?.label} ปี พ.ศ. ${monthlyYear}`}
           {reportType === 'monthly_summary' && `รายงานสรุปผลคะแนนและอันดับความดี ประจำเดือน ${THAI_MONTHS.find(m => m.value === summaryMonth)?.label} ปี พ.ศ. ${summaryYear}`}
         </div>
-        <div className="text-xs text-slate-600 mt-1">
-          ปีการศึกษา {settings.academic_year} · ออกเอกสารเมื่อวันที่ {new Date().toLocaleDateString('th-TH')}
+        <div className="text-[11px] text-slate-500 mt-0.5">
+          ปีการศึกษา {settings.academic_year} · ออกรายงานเมื่อวันที่ {new Date().toLocaleDateString('th-TH')} เวลา {new Date().toTimeString().slice(0, 5)} น.
         </div>
       </div>
 
@@ -517,25 +542,25 @@ export const ReportsView: React.FC<ReportsViewProps> = ({ initialStudentId }) =>
             </div>
           </div>
 
-          {/* Daily Table */}
-          <div className="bg-white rounded-2xl border border-slate-100 shadow-xs overflow-hidden">
-            <div className="overflow-x-auto">
-              <table className="w-full min-w-[700px] text-left text-xs sm:text-sm">
-                <thead className="bg-slate-50 text-slate-600 border-b border-slate-100 font-semibold">
+          {/* Daily Table (A4 Print Optimized) */}
+          <div className="bg-white rounded-2xl border border-slate-100 shadow-xs overflow-hidden print:border-none print:shadow-none print:rounded-none">
+            <div className="overflow-x-auto print:overflow-visible">
+              <table className="w-full min-w-[700px] print:min-w-0 print:w-full print:table-fixed text-left text-xs sm:text-sm border-collapse">
+                <thead className="bg-slate-50 text-slate-600 border-b border-slate-200 font-semibold print:bg-slate-100 print:text-black">
                   <tr>
-                    <th className="py-2.5 px-3 w-20 whitespace-nowrap">เวลา</th>
-                    <th className="py-2.5 px-3 w-16 text-center whitespace-nowrap">เลขที่</th>
-                    <th className="py-2.5 px-4 whitespace-nowrap">ชื่อ - นามสกุล</th>
-                    <th className="py-2.5 px-3 text-center w-24 whitespace-nowrap">ประเภท</th>
-                    <th className="py-2.5 px-4 min-w-[180px]">พฤติกรรม</th>
-                    <th className="py-2.5 px-3 text-right whitespace-nowrap">คะแนน</th>
-                    <th className="py-2.5 px-4 whitespace-nowrap">ผู้บันทึก</th>
+                    <th className="py-2.5 px-3 w-20 whitespace-nowrap text-center print:w-[12%] print:py-1.5 print:px-2 print:border print:border-slate-400 print:text-[10pt]">เวลา</th>
+                    <th className="py-2.5 px-3 w-16 text-center whitespace-nowrap print:w-[8%] print:py-1.5 print:px-2 print:border print:border-slate-400 print:text-[10pt]">เลขที่</th>
+                    <th className="py-2.5 px-4 whitespace-nowrap print:w-[26%] print:py-1.5 print:px-2 print:border print:border-slate-400 print:text-[10pt]">ชื่อ - นามสกุล</th>
+                    <th className="py-2.5 px-3 text-center w-24 whitespace-nowrap print:w-[12%] print:py-1.5 print:px-2 print:border print:border-slate-400 print:text-[10pt]">ประเภท</th>
+                    <th className="py-2.5 px-4 min-w-[180px] print:w-[26%] print:py-1.5 print:px-2 print:border print:border-slate-400 print:text-[10pt]">พฤติกรรม</th>
+                    <th className="py-2.5 px-3 text-right whitespace-nowrap print:w-[8%] print:py-1.5 print:px-2 print:border print:border-slate-400 print:text-[10pt]">คะแนน</th>
+                    <th className="py-2.5 px-4 whitespace-nowrap text-center print:w-[8%] print:py-1.5 print:px-2 print:border print:border-slate-400 print:text-[10pt]">ผู้บันทึก</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100">
+                <tbody className="divide-y divide-slate-100 print:divide-none">
                   {dailyRecords.length === 0 ? (
                     <tr>
-                      <td colSpan={7} className="py-8 text-center text-slate-400">
+                      <td colSpan={7} className="py-8 text-center text-slate-400 print:border print:border-slate-400 print:py-6">
                         ไม่มีบันทึกพฤติกรรมในวันที่ {dailyDate}
                       </td>
                     </tr>
@@ -544,45 +569,69 @@ export const ReportsView: React.FC<ReportsViewProps> = ({ initialStudentId }) =>
                       const gs = getGenderStyles(getStudentGender(r.student_name));
                       return (
                         <tr key={r.id} className="hover:bg-slate-50">
-                          <td className="py-2.5 px-3 font-mono text-slate-500">{r.record_time} น.</td>
-                          <td className="py-2.5 px-3 text-center">
-                            <span className={`inline-flex items-center justify-center w-6 h-6 rounded-md font-mono font-bold text-xs ${gs.noBadgeClass}`}>
+                          <td className="py-2.5 px-3 font-mono text-slate-500 text-center whitespace-nowrap print:py-1.5 print:px-2 print:border print:border-slate-400 print:text-black">
+                            {r.record_time} น.
+                          </td>
+                          <td className="py-2.5 px-3 text-center print:py-1.5 print:px-2 print:border print:border-slate-400">
+                            <span className={`inline-flex items-center justify-center w-6 h-6 rounded-md font-mono font-bold text-xs ${gs.noBadgeClass} print:bg-transparent print:border-none print:text-black`}>
                               {r.student_no}
                             </span>
                           </td>
-                          <td className="py-2.5 px-4">
+                          <td className="py-2.5 px-4 print:py-1.5 print:px-2 print:border print:border-slate-400">
                             <div className="flex items-center gap-1.5">
-                              <span className={`inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-semibold border ${gs.badgeClass}`}>
-                                {gs.label}
+                              <span className={`inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-semibold border ${gs.badgeClass} print:bg-transparent print:border-none print:text-black print:p-0`}>
+                                [{gs.label}]
                               </span>
-                              <span className={`font-semibold ${gs.textClass}`}>
+                              <span className={`font-semibold ${gs.textClass} print:text-black print:font-semibold`}>
                                 {r.student_name}
                               </span>
                             </div>
                           </td>
-                          <td className="py-2.5 px-3 text-center">
-                            <span className={`inline-block px-2 py-0.5 rounded-full text-[11px] font-semibold ${
+                          <td className="py-2.5 px-3 text-center print:py-1.5 print:px-2 print:border print:border-slate-400">
+                            <span className={`inline-block px-2 py-0.5 rounded-full text-[11px] font-semibold print:bg-transparent print:border print:border-slate-400 print:text-black print:rounded-none print:px-1.5 print:py-0.5 ${
                               r.category === 'merit'
                                 ? 'bg-amber-100 text-amber-800'
                                 : 'bg-rose-100 text-rose-800'
                             }`}>
-                              {r.category === 'merit' ? 'ความดี ⭐' : 'หักคะแนน ⚠️'}
+                              <span className="print:hidden">{r.category === 'merit' ? 'ความดี ⭐' : 'หักคะแนน ⚠️'}</span>
+                              <span className="hidden print:inline">{r.category === 'merit' ? 'ความดี (+)' : 'หักคะแนน (-)'}</span>
                             </span>
                           </td>
-                          <td className="py-2.5 px-4 font-medium text-slate-700">{r.behavior}</td>
-                          <td className="py-2.5 px-3 text-right font-bold tabular-nums">
+                          <td className="py-2.5 px-4 font-medium text-slate-700 print:py-1.5 print:px-2 print:border print:border-slate-400 print:text-black break-words">
+                            {r.behavior}
+                          </td>
+                          <td className="py-2.5 px-3 text-right font-bold tabular-nums print:py-1.5 print:px-2 print:border print:border-slate-400 print:text-black">
                             {r.category === 'merit' ? (
-                              <span className="text-emerald-600">+{r.score}</span>
+                              <span className="text-emerald-600 print:text-emerald-800">+{r.score}</span>
                             ) : (
-                              <span className="text-rose-600">-{r.score}</span>
+                              <span className="text-rose-600 print:text-rose-800">-{r.score}</span>
                             )}
                           </td>
-                          <td className="py-2.5 px-4 text-xs text-slate-500">{r.recorded_by}</td>
+                          <td className="py-2.5 px-4 text-xs text-slate-500 text-center print:py-1.5 print:px-2 print:border print:border-slate-400 print:text-black">
+                            {r.recorded_by}
+                          </td>
                         </tr>
                       );
                     })
                   )}
                 </tbody>
+                {dailyRecords.length > 0 && (
+                  <tfoot className="border-t-2 border-slate-300 font-semibold bg-slate-50/70 print:bg-slate-100 text-xs print:text-[10pt]">
+                    <tr>
+                      <td colSpan={5} className="py-2 px-3 text-right print:border print:border-slate-400 font-bold">
+                        รวมคะแนนสุทธิประจำวัน ({dailyRecords.length} รายการ):
+                      </td>
+                      <td className="py-2 px-3 text-right tabular-nums print:border print:border-slate-400 font-bold">
+                        <span className={dailyNetScore >= 0 ? 'text-emerald-700' : 'text-rose-700'}>
+                          {dailyNetScore >= 0 ? `+${dailyNetScore}` : dailyNetScore}
+                        </span>
+                      </td>
+                      <td className="py-2 px-2 text-center text-[11px] text-slate-500 print:text-black print:border print:border-slate-400 font-bold">
+                        คะแนน
+                      </td>
+                    </tr>
+                  </tfoot>
+                )}
               </table>
             </div>
           </div>
@@ -668,25 +717,25 @@ export const ReportsView: React.FC<ReportsViewProps> = ({ initialStudentId }) =>
             </div>
           </div>
 
-          {/* Monthly Table */}
-          <div className="bg-white rounded-2xl border border-slate-100 shadow-xs overflow-hidden">
-            <div className="overflow-x-auto">
-              <table className="w-full min-w-[700px] text-left text-xs sm:text-sm">
-                <thead className="bg-slate-50 text-slate-600 border-b border-slate-100 font-semibold">
+          {/* Monthly Table (A4 Print Optimized) */}
+          <div className="bg-white rounded-2xl border border-slate-100 shadow-xs overflow-hidden print:border-none print:shadow-none print:rounded-none">
+            <div className="overflow-x-auto print:overflow-visible">
+              <table className="w-full min-w-[700px] print:min-w-0 print:w-full print:table-fixed text-left text-xs sm:text-sm border-collapse">
+                <thead className="bg-slate-50 text-slate-600 border-b border-slate-200 font-semibold print:bg-slate-100 print:text-black">
                   <tr>
-                    <th className="py-2.5 px-3 w-32 min-w-[125px] whitespace-nowrap">วันที่</th>
-                    <th className="py-2.5 px-3 w-16 text-center whitespace-nowrap">เลขที่</th>
-                    <th className="py-2.5 px-4 whitespace-nowrap">ชื่อ - นามสกุล</th>
-                    <th className="py-2.5 px-3 text-center w-24 whitespace-nowrap">ประเภท</th>
-                    <th className="py-2.5 px-4 min-w-[180px]">พฤติกรรม</th>
-                    <th className="py-2.5 px-3 text-right whitespace-nowrap">คะแนน</th>
-                    <th className="py-2.5 px-4 whitespace-nowrap">ผู้บันทึก</th>
+                    <th className="py-2.5 px-3 w-32 min-w-[125px] whitespace-nowrap text-center print:w-[14%] print:py-1.5 print:px-2 print:border print:border-slate-400 print:text-[10pt]">วันที่</th>
+                    <th className="py-2.5 px-3 w-16 text-center whitespace-nowrap print:w-[8%] print:py-1.5 print:px-2 print:border print:border-slate-400 print:text-[10pt]">เลขที่</th>
+                    <th className="py-2.5 px-4 whitespace-nowrap print:w-[26%] print:py-1.5 print:px-2 print:border print:border-slate-400 print:text-[10pt]">ชื่อ - นามสกุล</th>
+                    <th className="py-2.5 px-3 text-center w-24 whitespace-nowrap print:w-[12%] print:py-1.5 print:px-2 print:border print:border-slate-400 print:text-[10pt]">ประเภท</th>
+                    <th className="py-2.5 px-4 min-w-[180px] print:w-[24%] print:py-1.5 print:px-2 print:border print:border-slate-400 print:text-[10pt]">พฤติกรรม</th>
+                    <th className="py-2.5 px-3 text-right whitespace-nowrap print:w-[8%] print:py-1.5 print:px-2 print:border print:border-slate-400 print:text-[10pt]">คะแนน</th>
+                    <th className="py-2.5 px-4 whitespace-nowrap text-center print:w-[8%] print:py-1.5 print:px-2 print:border print:border-slate-400 print:text-[10pt]">ผู้บันทึก</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100">
+                <tbody className="divide-y divide-slate-100 print:divide-none">
                   {monthlyRecords.length === 0 ? (
                     <tr>
-                      <td colSpan={7} className="py-8 text-center text-slate-400">
+                      <td colSpan={7} className="py-8 text-center text-slate-400 print:border print:border-slate-400 print:py-6">
                         ไม่มีบันทึกพฤติกรรมในเดือน {THAI_MONTHS.find(m => m.value === monthlyMonth)?.label} {monthlyYear}
                       </td>
                     </tr>
@@ -695,45 +744,69 @@ export const ReportsView: React.FC<ReportsViewProps> = ({ initialStudentId }) =>
                       const gs = getGenderStyles(getStudentGender(r.student_name));
                       return (
                         <tr key={r.id} className="hover:bg-slate-50">
-                          <td className="py-2.5 px-3 font-mono text-slate-600 whitespace-nowrap min-w-[125px]">{r.record_date}</td>
-                          <td className="py-2.5 px-3 text-center">
-                            <span className={`inline-flex items-center justify-center w-6 h-6 rounded-md font-mono font-bold text-xs ${gs.noBadgeClass}`}>
+                          <td className="py-2.5 px-3 font-mono text-slate-600 text-center whitespace-nowrap min-w-[125px] print:py-1.5 print:px-2 print:border print:border-slate-400 print:text-black">
+                            {r.record_date}
+                          </td>
+                          <td className="py-2.5 px-3 text-center print:py-1.5 print:px-2 print:border print:border-slate-400">
+                            <span className={`inline-flex items-center justify-center w-6 h-6 rounded-md font-mono font-bold text-xs ${gs.noBadgeClass} print:bg-transparent print:border-none print:text-black`}>
                               {r.student_no}
                             </span>
                           </td>
-                          <td className="py-2.5 px-4">
+                          <td className="py-2.5 px-4 print:py-1.5 print:px-2 print:border print:border-slate-400">
                             <div className="flex items-center gap-1.5">
-                              <span className={`inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-semibold border ${gs.badgeClass}`}>
-                                {gs.label}
+                              <span className={`inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-semibold border ${gs.badgeClass} print:bg-transparent print:border-none print:text-black print:p-0`}>
+                                [{gs.label}]
                               </span>
-                              <span className={`font-semibold ${gs.textClass}`}>
+                              <span className={`font-semibold ${gs.textClass} print:text-black print:font-semibold`}>
                                 {r.student_name}
                               </span>
                             </div>
                           </td>
-                          <td className="py-2.5 px-3 text-center">
-                            <span className={`inline-block px-2 py-0.5 rounded-full text-[11px] font-semibold ${
+                          <td className="py-2.5 px-3 text-center print:py-1.5 print:px-2 print:border print:border-slate-400">
+                            <span className={`inline-block px-2 py-0.5 rounded-full text-[11px] font-semibold print:bg-transparent print:border print:border-slate-400 print:text-black print:rounded-none print:px-1.5 print:py-0.5 ${
                               r.category === 'merit'
                                 ? 'bg-amber-100 text-amber-800'
                                 : 'bg-rose-100 text-rose-800'
                             }`}>
-                              {r.category === 'merit' ? 'ความดี ⭐' : 'หักคะแนน ⚠️'}
+                              <span className="print:hidden">{r.category === 'merit' ? 'ความดี ⭐' : 'หักคะแนน ⚠️'}</span>
+                              <span className="hidden print:inline">{r.category === 'merit' ? 'ความดี (+)' : 'หักคะแนน (-)'}</span>
                             </span>
                           </td>
-                          <td className="py-2.5 px-4 font-medium text-slate-700">{r.behavior}</td>
-                          <td className="py-2.5 px-3 text-right font-bold tabular-nums">
+                          <td className="py-2.5 px-4 font-medium text-slate-700 print:py-1.5 print:px-2 print:border print:border-slate-400 print:text-black break-words">
+                            {r.behavior}
+                          </td>
+                          <td className="py-2.5 px-3 text-right font-bold tabular-nums print:py-1.5 print:px-2 print:border print:border-slate-400 print:text-black">
                             {r.category === 'merit' ? (
-                              <span className="text-emerald-600">+{r.score}</span>
+                              <span className="text-emerald-600 print:text-emerald-800">+{r.score}</span>
                             ) : (
-                              <span className="text-rose-600">-{r.score}</span>
+                              <span className="text-rose-600 print:text-rose-800">-{r.score}</span>
                             )}
                           </td>
-                          <td className="py-2.5 px-4 text-xs text-slate-500">{r.recorded_by}</td>
+                          <td className="py-2.5 px-4 text-xs text-slate-500 text-center print:py-1.5 print:px-2 print:border print:border-slate-400 print:text-black">
+                            {r.recorded_by}
+                          </td>
                         </tr>
                       );
                     })
                   )}
                 </tbody>
+                {monthlyRecords.length > 0 && (
+                  <tfoot className="border-t-2 border-slate-300 font-semibold bg-slate-50/70 print:bg-slate-100 text-xs print:text-[10pt]">
+                    <tr>
+                      <td colSpan={5} className="py-2 px-3 text-right print:border print:border-slate-400 font-bold">
+                        รวมคะแนนสุทธิประจำเดือน ({monthlyRecords.length} รายการ):
+                      </td>
+                      <td className="py-2 px-3 text-right tabular-nums print:border print:border-slate-400 font-bold">
+                        <span className={monthlyNetScore >= 0 ? 'text-emerald-700' : 'text-rose-700'}>
+                          {monthlyNetScore >= 0 ? `+${monthlyNetScore}` : monthlyNetScore}
+                        </span>
+                      </td>
+                      <td className="py-2 px-2 text-center text-[11px] text-slate-500 print:text-black print:border print:border-slate-400 font-bold">
+                        คะแนน
+                      </td>
+                    </tr>
+                  </tfoot>
+                )}
               </table>
             </div>
           </div>
@@ -799,62 +872,102 @@ export const ReportsView: React.FC<ReportsViewProps> = ({ initialStudentId }) =>
             </div>
           </div>
 
-          {/* Monthly Leaderboard Table */}
-          <div className="bg-white rounded-2xl border border-slate-100 shadow-xs overflow-hidden">
-            <div className="overflow-x-auto">
-              <table className="w-full min-w-[780px] text-left text-xs sm:text-sm">
-                <thead className="bg-slate-50 text-slate-600 border-b border-slate-100 font-semibold">
+          {/* Monthly Leaderboard Table (A4 Print Optimized) */}
+          <div className="bg-white rounded-2xl border border-slate-100 shadow-xs overflow-hidden print:border-none print:shadow-none print:rounded-none">
+            <div className="overflow-x-auto print:overflow-visible">
+              <table className="w-full min-w-[780px] print:min-w-0 print:w-full print:table-fixed text-left text-xs sm:text-sm border-collapse">
+                <thead className="bg-slate-50 text-slate-600 border-b border-slate-200 font-semibold print:bg-slate-100 print:text-black">
                   <tr>
-                    <th className="py-3 px-4 text-center w-24 whitespace-nowrap">อันดับ</th>
-                    <th className="py-3 px-3 text-center w-16 whitespace-nowrap">เลขที่</th>
-                    <th className="py-3 px-4 min-w-[200px] whitespace-nowrap">ชื่อ - นามสกุล</th>
-                    <th className="py-3 px-3 text-center w-16 whitespace-nowrap">ชั้น</th>
-                    <th className="py-3 px-3 text-right text-emerald-700 whitespace-nowrap">ความดี (+)</th>
-                    <th className="py-3 px-3 text-right text-rose-700 whitespace-nowrap">หักคะแนน (-)</th>
-                    <th className="py-3 px-4 text-right font-bold text-slate-900 whitespace-nowrap">คะแนนสุทธิ</th>
-                    <th className="py-3 px-4 text-center whitespace-nowrap">ระดับผลการประเมิน</th>
+                    <th className="py-3 px-4 text-center w-24 whitespace-nowrap print:w-[10%] print:py-1.5 print:px-2 print:border print:border-slate-400 print:text-[10pt]">อันดับ</th>
+                    <th className="py-3 px-3 text-center w-16 whitespace-nowrap print:w-[8%] print:py-1.5 print:px-2 print:border print:border-slate-400 print:text-[10pt]">เลขที่</th>
+                    <th className="py-3 px-4 min-w-[200px] whitespace-nowrap print:w-[26%] print:py-1.5 print:px-2 print:border print:border-slate-400 print:text-[10pt]">ชื่อ - นามสกุล</th>
+                    <th className="py-3 px-3 text-center w-16 whitespace-nowrap print:w-[8%] print:py-1.5 print:px-2 print:border print:border-slate-400 print:text-[10pt]">ชั้น</th>
+                    <th className="py-3 px-3 text-right text-emerald-700 whitespace-nowrap print:w-[12%] print:py-1.5 print:px-2 print:border print:border-slate-400 print:text-[10pt] print:text-emerald-800">ความดี (+)</th>
+                    <th className="py-3 px-3 text-right text-rose-700 whitespace-nowrap print:w-[12%] print:py-1.5 print:px-2 print:border print:border-slate-400 print:text-[10pt] print:text-rose-800">หักคะแนน (-)</th>
+                    <th className="py-3 px-4 text-right font-bold text-slate-900 whitespace-nowrap print:w-[12%] print:py-1.5 print:px-2 print:border print:border-slate-400 print:text-[10pt]">คะแนนสุทธิ</th>
+                    <th className="py-3 px-4 text-center whitespace-nowrap print:w-[12%] print:py-1.5 print:px-2 print:border print:border-slate-400 print:text-[10pt]">ระดับผลการประเมิน</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100">
-                  {monthlySummaries.map((item) => {
-                    const gs = getGenderStyles(getStudentGender(item.student.student_name));
-                    return (
-                      <tr key={item.student.id} className="hover:bg-slate-50 transition-colors">
-                        <td className="py-3 px-4 text-center font-bold">
-                          {item.rank === 1 ? '🥇 1' : item.rank === 2 ? '🥈 2' : item.rank === 3 ? '🥉 3' : item.rank}
-                        </td>
-                        <td className="py-3 px-3 text-center">
-                          <span className={`inline-flex items-center justify-center w-6 h-6 rounded-md font-mono font-bold text-xs ${gs.noBadgeClass}`}>
-                            {item.student.student_no}
-                          </span>
-                        </td>
-                        <td className="py-3 px-4">
-                          <div className="flex items-center gap-2">
-                            <span className={`inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-semibold border shrink-0 ${gs.badgeClass}`}>
-                              {gs.label}
-                            </span>
-                            <span className={`font-semibold ${gs.textClass}`}>
-                              {item.student.student_name}
-                            </span>
-                          </div>
-                        </td>
-                        <td className="py-3 px-3 text-center text-slate-500">{item.student.student_class}</td>
-                        <td className="py-3 px-3 text-right font-bold text-emerald-600 tabular-nums">+{item.merit_score}</td>
-                        <td className="py-3 px-3 text-right font-bold text-rose-600 tabular-nums">{item.demerit_score > 0 ? `-${item.demerit_score}` : '0'}</td>
-                        <td className="py-3 px-4 text-right font-bold text-base tabular-nums">
-                          <span className={item.net_score >= 0 ? 'text-emerald-700' : 'text-rose-700'}>
-                            {item.net_score}
-                          </span>
-                        </td>
-                      <td className="py-3 px-4 text-center">
-                        <span className="inline-block px-2.5 py-0.5 rounded-full text-xs font-medium bg-slate-100 text-slate-700">
-                          {item.net_score >= 20 ? 'ดีเยี่ยม' : item.net_score >= 10 ? 'ดีมาก' : 'ปกติ'}
-                        </span>
+                <tbody className="divide-y divide-slate-100 print:divide-none">
+                  {monthlySummaries.length === 0 ? (
+                    <tr>
+                      <td colSpan={8} className="py-8 text-center text-slate-400 print:border print:border-slate-400 print:py-6">
+                        ยังไม่มีข้อมูลคะแนนในเดือนนี้
                       </td>
                     </tr>
-                    );
-                  })}
+                  ) : (
+                    monthlySummaries.map((item) => {
+                      const gs = getGenderStyles(getStudentGender(item.student.student_name));
+                      return (
+                        <tr key={item.student.id} className="hover:bg-slate-50 transition-colors">
+                          <td className="py-3 px-4 text-center font-bold print:py-1.5 print:px-2 print:border print:border-slate-400 print:text-black">
+                            <span className="print:hidden">
+                              {item.rank === 1 ? '🥇 1' : item.rank === 2 ? '🥈 2' : item.rank === 3 ? '🥉 3' : item.rank}
+                            </span>
+                            <span className="hidden print:inline font-bold">
+                              อันดับ {item.rank}
+                            </span>
+                          </td>
+                          <td className="py-3 px-3 text-center print:py-1.5 print:px-2 print:border print:border-slate-400">
+                            <span className={`inline-flex items-center justify-center w-6 h-6 rounded-md font-mono font-bold text-xs ${gs.noBadgeClass} print:bg-transparent print:border-none print:text-black`}>
+                              {item.student.student_no}
+                            </span>
+                          </td>
+                          <td className="py-3 px-4 print:py-1.5 print:px-2 print:border print:border-slate-400">
+                            <div className="flex items-center gap-1.5">
+                              <span className={`inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-semibold border shrink-0 ${gs.badgeClass} print:bg-transparent print:border-none print:text-black print:p-0`}>
+                                [{gs.label}]
+                              </span>
+                              <span className={`font-semibold ${gs.textClass} print:text-black print:font-semibold`}>
+                                {item.student.student_name}
+                              </span>
+                            </div>
+                          </td>
+                          <td className="py-3 px-3 text-center text-slate-500 print:py-1.5 print:px-2 print:border print:border-slate-400 print:text-black font-medium">
+                            {item.student.student_class}
+                          </td>
+                          <td className="py-3 px-3 text-right font-bold text-emerald-600 tabular-nums print:py-1.5 print:px-2 print:border print:border-slate-400 print:text-emerald-800">
+                            +{item.merit_score}
+                          </td>
+                          <td className="py-3 px-3 text-right font-bold text-rose-600 tabular-nums print:py-1.5 print:px-2 print:border print:border-slate-400 print:text-rose-800">
+                            {item.demerit_score > 0 ? `-${item.demerit_score}` : '0'}
+                          </td>
+                          <td className="py-3 px-4 text-right font-bold text-base tabular-nums print:py-1.5 print:px-2 print:border print:border-slate-400 print:text-[10.5pt]">
+                            <span className={item.net_score >= 0 ? 'text-emerald-700 print:text-emerald-800' : 'text-rose-700 print:text-rose-800'}>
+                              {item.net_score}
+                            </span>
+                          </td>
+                          <td className="py-3 px-4 text-center print:py-1.5 print:px-2 print:border print:border-slate-400">
+                            <span className="inline-block px-2.5 py-0.5 rounded-full text-xs font-semibold bg-slate-100 text-slate-700 print:bg-transparent print:border print:border-slate-400 print:text-black print:rounded-none print:px-1.5 print:py-0.5">
+                              {item.net_score >= 20 ? 'ดีเยี่ยม' : item.net_score >= 10 ? 'ดีมาก' : 'ปกติ'}
+                            </span>
+                          </td>
+                        </tr>
+                      );
+                    })
+                  )}
                 </tbody>
+                {monthlySummaries.length > 0 && (
+                  <tfoot className="border-t-2 border-slate-300 font-semibold bg-slate-50/70 print:bg-slate-100 text-xs print:text-[10pt]">
+                    <tr>
+                      <td colSpan={4} className="py-2.5 px-3 text-right print:border print:border-slate-400 font-bold">
+                        สรุปรวมทั้งห้อง ({monthlySummaries.length} คน):
+                      </td>
+                      <td className="py-2.5 px-3 text-right font-bold text-emerald-700 tabular-nums print:border print:border-slate-400 print:text-emerald-800">
+                        +{summaryTotalMerit}
+                      </td>
+                      <td className="py-2.5 px-3 text-right font-bold text-rose-700 tabular-nums print:border print:border-slate-400 print:text-rose-800">
+                        -{summaryTotalDemerit}
+                      </td>
+                      <td className="py-2.5 px-4 text-right font-bold text-slate-900 tabular-nums print:border print:border-slate-400">
+                        {summaryTotalNet >= 0 ? `+${summaryTotalNet}` : summaryTotalNet}
+                      </td>
+                      <td className="py-2.5 px-4 text-center text-[11px] text-slate-600 print:border print:border-slate-400 font-medium">
+                        เฉลี่ย {(summaryTotalNet / (monthlySummaries.length || 1)).toFixed(1)} คะแนน
+                      </td>
+                    </tr>
+                  </tfoot>
+                )}
               </table>
             </div>
           </div>
@@ -862,7 +975,7 @@ export const ReportsView: React.FC<ReportsViewProps> = ({ initialStudentId }) =>
       )}
 
       {/* Official Signatures Section (Preview on screen and printed on paper) */}
-      <div className="pt-8 mt-10 border-t border-slate-200/80 page-break-avoid">
+      <div className="pt-8 mt-10 border-t border-slate-200/80 page-break-avoid print:mt-6 print:pt-4 print:border-t print:border-slate-300">
         {/* On-screen control bar over signatures */}
         <div className="no-print flex items-center justify-between pb-3 mb-4 border-b border-slate-100">
           <div className="flex items-center gap-2 text-xs font-bold text-slate-700">
@@ -880,43 +993,52 @@ export const ReportsView: React.FC<ReportsViewProps> = ({ initialStudentId }) =>
         </div>
 
         {/* 3 Signatures Layout */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 text-center text-xs print:grid-cols-3">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 text-center text-xs print:grid-cols-3 print:gap-4">
           {/* Signatory 1: ครูประจำชั้น */}
           <div className="p-4 rounded-xl border border-dashed border-slate-200 bg-slate-50/40 print:border-none print:bg-transparent print:p-0">
-            <div className="mb-6 font-medium text-slate-700">
+            <div className="mb-6 font-medium text-slate-700 print:text-black">
               ลงชื่อ ......................................................
             </div>
-            <div className="font-bold text-slate-900 mb-1">
+            <div className="font-bold text-slate-900 mb-1 print:text-black">
               ( {settings.signatory1_name?.trim() ? settings.signatory1_name.trim() : '......................................................'} )
             </div>
-            <div className="text-slate-600 font-medium">
-              {settings.signatory1_title?.trim() || 'ครูประจำชั้น ป.5/1'}
+            <div className="text-slate-600 font-medium print:text-black">
+              ตำแหน่ง {settings.signatory1_title?.trim() || 'ครูประจำชั้น ป.5/1'}
+            </div>
+            <div className="text-[11px] text-slate-500 mt-2 font-light print:text-black">
+              วันที่ ...... เดือน ...................... พ.ศ. ............
             </div>
           </div>
 
           {/* Signatory 2: หัวหน้ากลุ่มงานกิจการนักเรียน */}
           <div className="p-4 rounded-xl border border-dashed border-slate-200 bg-slate-50/40 print:border-none print:bg-transparent print:p-0">
-            <div className="mb-6 font-medium text-slate-700">
+            <div className="mb-6 font-medium text-slate-700 print:text-black">
               ลงชื่อ ......................................................
             </div>
-            <div className="font-bold text-slate-900 mb-1">
+            <div className="font-bold text-slate-900 mb-1 print:text-black">
               ( {settings.signatory2_name?.trim() ? settings.signatory2_name.trim() : '......................................................'} )
             </div>
-            <div className="text-slate-600 font-medium">
-              {settings.signatory2_title?.trim() || 'หัวหน้ากลุ่มงานกิจการนักเรียน'}
+            <div className="text-slate-600 font-medium print:text-black">
+              ตำแหน่ง {settings.signatory2_title?.trim() || 'หัวหน้ากลุ่มงานกิจการนักเรียน'}
+            </div>
+            <div className="text-[11px] text-slate-500 mt-2 font-light print:text-black">
+              วันที่ ...... เดือน ...................... พ.ศ. ............
             </div>
           </div>
 
           {/* Signatory 3: ผู้อำนวยการโรงเรียน */}
           <div className="p-4 rounded-xl border border-dashed border-slate-200 bg-slate-50/40 print:border-none print:bg-transparent print:p-0">
-            <div className="mb-6 font-medium text-slate-700">
+            <div className="mb-6 font-medium text-slate-700 print:text-black">
               ลงชื่อ ......................................................
             </div>
-            <div className="font-bold text-slate-900 mb-1">
+            <div className="font-bold text-slate-900 mb-1 print:text-black">
               ( {settings.signatory3_name?.trim() ? settings.signatory3_name.trim() : '......................................................'} )
             </div>
-            <div className="text-slate-600 font-medium">
-              {settings.signatory3_title?.trim() || 'ผู้อำนวยการโรงเรียนบ้านยะบะ(อุปการวิทยา)'}
+            <div className="text-slate-600 font-medium print:text-black">
+              ตำแหน่ง {settings.signatory3_title?.trim() || 'ผู้อำนวยการโรงเรียนบ้านยะบะ(อุปการวิทยา)'}
+            </div>
+            <div className="text-[11px] text-slate-500 mt-2 font-light print:text-black">
+              วันที่ ...... เดือน ...................... พ.ศ. ............
             </div>
           </div>
         </div>

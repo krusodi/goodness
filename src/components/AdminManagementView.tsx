@@ -21,9 +21,11 @@ import {
   Edit2,
   User,
   Calendar,
-  PenTool,
   UserCheck,
-  Building
+  Building,
+  Star,
+  Plus,
+  PenTool
 } from 'lucide-react';
 
 export const AdminManagementView: React.FC = () => {
@@ -47,11 +49,25 @@ export const AdminManagementView: React.FC = () => {
     showToast,
     academicYears,
     setAcademicYearModalOpen,
-    setTop3ColorModalOpen
+    setTop3ColorModalOpen,
+    meritBehaviors,
+    demeritBehaviors,
+    addMeritBehavior,
+    updateMeritBehavior,
+    deleteMeritBehavior,
+    resetMeritBehaviors,
+    addDemeritBehavior,
+    updateDemeritBehavior,
+    deleteDemeritBehavior,
+    resetDemeritBehaviors
   } = useApp();
 
   // Active Admin Tab
-  const [adminTab, setAdminTab] = useState<'users' | 'security' | 'data' | 'theme'>('users');
+  const [adminTab, setAdminTab] = useState<'users' | 'security' | 'data' | 'theme' | 'behaviors'>('users');
+  const [behaviorSubTab, setBehaviorSubTab] = useState<'merit' | 'demerit'>('merit');
+  const [newAdminBehavior, setNewAdminBehavior] = useState('');
+  const [editingBehaviorIdx, setEditingBehaviorIdx] = useState<number | null>(null);
+  const [editingBehaviorVal, setEditingBehaviorVal] = useState('');
 
   // User Management Form State
   const [newUsername, setNewUsername] = useState('');
@@ -358,6 +374,18 @@ export const AdminManagementView: React.FC = () => {
         >
           <Palette className="w-4 h-4" />
           <span>4. ตั้งค่าระบบ & ธีมสี</span>
+        </button>
+
+        <button
+          onClick={() => setAdminTab('behaviors')}
+          className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all ${
+            adminTab === 'behaviors'
+              ? 'bg-slate-900 text-white shadow-xs'
+              : 'bg-white text-slate-700 hover:bg-slate-100 border border-slate-200'
+          }`}
+        >
+          <Star className="w-4 h-4 text-amber-500 fill-amber-500" />
+          <span>5. รายการพฤติกรรมมาตรฐาน (21 รายการ)</span>
         </button>
       </div>
 
@@ -1155,6 +1183,218 @@ export const AdminManagementView: React.FC = () => {
             </div>
           </div>
         </form>
+      )}
+
+      {/* ---------------- TAB 5: STANDARD BEHAVIOR MANAGEMENT (21 PRESETS) ---------------- */}
+      {adminTab === 'behaviors' && (
+        <div className="space-y-6">
+          <div className="bg-white rounded-2xl p-5 border border-slate-100 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <h2 className="text-base font-bold text-slate-900 flex items-center gap-2">
+                <Star className="w-4 h-4 text-amber-500 fill-amber-500" />
+                <span>จัดการรายการพฤติกรรมมาตรฐาน (21 รายการ)</span>
+              </h2>
+              <p className="text-xs text-slate-500 mt-1">
+                คุณสามารถเพิ่ม ลบ หรือแก้ไขข้อความรายการมาตรฐานได้ ทั้งพฤติกรรมความดี และพฤติกรรมหักคะแนน
+              </p>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => {
+                  if (behaviorSubTab === 'merit') resetMeritBehaviors();
+                  else resetDemeritBehaviors();
+                }}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-slate-700 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-xl transition-colors shadow-2xs"
+                title="รีเซ็ตกลับเป็น 21 รายการมาตรฐานดั้งเดิม"
+              >
+                <RotateCcw className="w-3.5 h-3.5 text-slate-500" />
+                <span>คืนค่า 21 รายการมาตรฐานเดิม</span>
+              </button>
+            </div>
+          </div>
+
+          {/* Sub-toggle: Merit vs Demerit */}
+          <div className="flex items-center gap-3">
+            <button
+              type="button"
+              onClick={() => {
+                setBehaviorSubTab('merit');
+                setEditingBehaviorIdx(null);
+                setNewAdminBehavior('');
+              }}
+              className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl text-xs sm:text-sm font-bold transition-all ${
+                behaviorSubTab === 'merit'
+                  ? 'bg-emerald-600 text-white shadow-xs'
+                  : 'bg-white text-slate-700 hover:bg-slate-50 border border-slate-200'
+              }`}
+            >
+              <Star className={`w-4 h-4 ${behaviorSubTab === 'merit' ? 'text-amber-300 fill-amber-300' : 'text-slate-400'}`} />
+              <span>พฤติกรรมความดี ({meritBehaviors.length} รายการ)</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => {
+                setBehaviorSubTab('demerit');
+                setEditingBehaviorIdx(null);
+                setNewAdminBehavior('');
+              }}
+              className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl text-xs sm:text-sm font-bold transition-all ${
+                behaviorSubTab === 'demerit'
+                  ? 'bg-rose-600 text-white shadow-xs'
+                  : 'bg-white text-slate-700 hover:bg-slate-50 border border-slate-200'
+              }`}
+            >
+              <AlertTriangle className={`w-4 h-4 ${behaviorSubTab === 'demerit' ? 'text-amber-200' : 'text-slate-400'}`} />
+              <span>พฤติกรรมหักคะแนน ({demeritBehaviors.length} รายการ)</span>
+            </button>
+          </div>
+
+          {/* Add New Item Box */}
+          <div className="bg-white rounded-2xl p-5 border border-slate-100 shadow-xs">
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                if (!newAdminBehavior.trim()) return;
+                if (behaviorSubTab === 'merit') {
+                  const res = addMeritBehavior(newAdminBehavior.trim());
+                  if (res.success) setNewAdminBehavior('');
+                } else {
+                  const res = addDemeritBehavior(newAdminBehavior.trim());
+                  if (res.success) setNewAdminBehavior('');
+                }
+              }}
+              className="flex flex-col sm:flex-row gap-3"
+            >
+              <input
+                type="text"
+                value={newAdminBehavior}
+                onChange={(e) => setNewAdminBehavior(e.target.value)}
+                placeholder={behaviorSubTab === 'merit' ? 'พิมพ์พฤติกรรมความดีใหม่ที่ต้องการเพิ่มในรายการมาตรฐาน...' : 'พิมพ์พฤติกรรมหักคะแนนใหม่ที่ต้องการเพิ่มในรายการมาตรฐาน...'}
+                className="flex-1 px-4 py-2.5 text-xs sm:text-sm border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500"
+              />
+              <button
+                type="submit"
+                disabled={!newAdminBehavior.trim()}
+                className={`inline-flex items-center justify-center gap-2 px-5 py-2.5 text-xs sm:text-sm font-bold text-white rounded-xl shadow-xs transition-all disabled:opacity-50 disabled:cursor-not-allowed ${
+                  behaviorSubTab === 'merit'
+                    ? 'bg-emerald-600 hover:bg-emerald-700'
+                    : 'bg-rose-600 hover:bg-rose-700'
+                }`}
+              >
+                <Plus className="w-4 h-4" />
+                <span>+ เพิ่มเข้ารายการมาตรฐาน</span>
+              </button>
+            </form>
+          </div>
+
+          {/* Items Grid */}
+          <div className="bg-white rounded-2xl p-5 border border-slate-100 shadow-xs">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+              {(behaviorSubTab === 'merit' ? meritBehaviors : demeritBehaviors).map((item, idx) => {
+                const isEditing = editingBehaviorIdx === idx;
+                const isMerit = behaviorSubTab === 'merit';
+
+                return (
+                  <div
+                    key={`${item}-${idx}`}
+                    className={`p-3 rounded-xl border flex items-center justify-between gap-2.5 transition-all ${
+                      isEditing
+                        ? 'border-emerald-500 bg-emerald-50/30 ring-2 ring-emerald-200'
+                        : 'border-slate-200 bg-white hover:bg-slate-50/70 hover:border-slate-300'
+                    }`}
+                  >
+                    <div className="flex items-center gap-2.5 flex-1 min-w-0">
+                      <span className={`w-6 h-6 rounded-md flex items-center justify-center text-[11px] font-mono font-bold shrink-0 ${
+                        isMerit ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'
+                      }`}>
+                        {idx + 1}
+                      </span>
+
+                      {isEditing ? (
+                        <div className="flex items-center gap-1.5 flex-1 min-w-0">
+                          <input
+                            type="text"
+                            value={editingBehaviorVal}
+                            onChange={(e) => setEditingBehaviorVal(e.target.value)}
+                            onKeyDown={(e) => {
+                              if (e.key === 'Enter') {
+                                if (editingBehaviorVal.trim()) {
+                                  if (isMerit) updateMeritBehavior(item, editingBehaviorVal.trim());
+                                  else updateDemeritBehavior(item, editingBehaviorVal.trim());
+                                  setEditingBehaviorIdx(null);
+                                }
+                              }
+                              if (e.key === 'Escape') setEditingBehaviorIdx(null);
+                            }}
+                            autoFocus
+                            className="flex-1 px-2.5 py-1 text-xs border border-emerald-400 rounded-lg focus:outline-none focus:ring-1 focus:ring-emerald-500"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => {
+                              if (editingBehaviorVal.trim()) {
+                                if (isMerit) updateMeritBehavior(item, editingBehaviorVal.trim());
+                                else updateDemeritBehavior(item, editingBehaviorVal.trim());
+                                setEditingBehaviorIdx(null);
+                              }
+                            }}
+                            className="p-1.5 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700"
+                            title="บันทึก"
+                          >
+                            <Check className="w-3.5 h-3.5" />
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setEditingBehaviorIdx(null)}
+                            className="p-1.5 bg-slate-200 text-slate-700 rounded-lg hover:bg-slate-300"
+                            title="ยกเลิก"
+                          >
+                            <X className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
+                      ) : (
+                        <span className="text-xs sm:text-sm font-medium text-slate-800 truncate">
+                          {item}
+                        </span>
+                      )}
+                    </div>
+
+                    {!isEditing && (
+                      <div className="flex items-center gap-1 shrink-0">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setEditingBehaviorIdx(idx);
+                            setEditingBehaviorVal(item);
+                          }}
+                          className="p-1 text-slate-400 hover:text-emerald-700 hover:bg-emerald-50 rounded-lg transition-colors"
+                          title="แก้ไขข้อความ"
+                        >
+                          <Edit2 className="w-3.5 h-3.5" />
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={() => {
+                            if (isMerit) deleteMeritBehavior(item);
+                            else deleteDemeritBehavior(item);
+                          }}
+                          className="p-1 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors"
+                          title="ลบรายการนี้"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </div>
       )}
 
       {/* 3-Step Confirmation Modal for Destructive Data Deletion */}

@@ -1,4 +1,11 @@
-import { Student, BehaviorRecord, UserAccount, AppSettings } from '../types';
+import {
+  Student,
+  BehaviorRecord,
+  UserAccount,
+  AppSettings,
+  PRESET_MERIT_BEHAVIORS,
+  PRESET_DEMERIT_BEHAVIORS
+} from '../types';
 
 export const INITIAL_SETTINGS: AppSettings = {
   system_name: 'ระบบบันทึกความดีนักเรียน ป.5/1',
@@ -21,7 +28,9 @@ export const INITIAL_SETTINGS: AppSettings = {
   signatory2_title: 'หัวหน้ากลุ่มงานกิจการนักเรียน',
   signatory2_name: '',
   signatory3_title: 'ผู้อำนวยการโรงเรียนบ้านยะบะ(อุปการวิทยา)',
-  signatory3_name: ''
+  signatory3_name: '',
+  merit_behaviors: [...PRESET_MERIT_BEHAVIORS],
+  demerit_behaviors: [...PRESET_DEMERIT_BEHAVIORS]
 };
 
 export const INITIAL_USERS: UserAccount[] = [

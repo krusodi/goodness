@@ -10,6 +10,7 @@ import { AdminManagementView } from './components/AdminManagementView';
 import { LoginModal } from './components/LoginModal';
 import { AcademicYearModal } from './components/AcademicYearModal';
 import { Top3ColorModal } from './components/Top3ColorModal';
+import { BehaviorPresetModal } from './components/BehaviorPresetModal';
 import { Toast } from './components/Toast';
 
 const MainContent: React.FC = () => {
@@ -19,7 +20,9 @@ const MainContent: React.FC = () => {
     academicYearModalOpen,
     setAcademicYearModalOpen,
     top3ColorModalOpen,
-    setTop3ColorModalOpen
+    setTop3ColorModalOpen,
+    behaviorModalOpen,
+    setBehaviorModalOpen
   } = useApp();
   const [selectedStudentForReport, setSelectedStudentForReport] = useState<string | null>(null);
 
@@ -62,6 +65,10 @@ const MainContent: React.FC = () => {
       <Top3ColorModal
         isOpen={top3ColorModalOpen}
         onClose={() => setTop3ColorModalOpen(false)}
+      />
+      <BehaviorPresetModal
+        isOpen={behaviorModalOpen}
+        onClose={() => setBehaviorModalOpen(false)}
       />
       <Toast />
     </div>

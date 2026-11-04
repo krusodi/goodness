@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useApp } from '../context/AppContext';
-import { PRESET_MERIT_BEHAVIORS, BehaviorRecord } from '../types';
+import { BehaviorRecord } from '../types';
 import { getStudentGender, getGenderStyles } from '../utils/gender';
 import {
   Star,
@@ -24,7 +24,10 @@ export const MeritRecordView: React.FC = () => {
     addMeritBatch,
     updateRecord,
     deleteRecord,
-    showToast
+    showToast,
+    meritBehaviors,
+    setBehaviorModalOpen,
+    setBehaviorModalTab
   } = useApp();
 
   // Current date & time defaults
@@ -34,13 +37,19 @@ export const MeritRecordView: React.FC = () => {
 
   // Form State
   const [selectedStudentIds, setSelectedStudentIds] = useState<string[]>([]);
-  const [selectedBehavior, setSelectedBehavior] = useState<string>(PRESET_MERIT_BEHAVIORS[0]);
+  const [selectedBehavior, setSelectedBehavior] = useState<string>(meritBehaviors[0] || 'มาเรียนตรงเวลา');
   const [customBehavior, setCustomBehavior] = useState<string>('');
   const [isCustom, setIsCustom] = useState<boolean>(false);
   const [score, setScore] = useState<number>(5);
   const [recordDate, setRecordDate] = useState<string>(defaultDate);
   const [recordTime, setRecordTime] = useState<string>(defaultTime);
   const [studentSearch, setStudentSearch] = useState<string>('');
+
+  useEffect(() => {
+    if (meritBehaviors.length > 0 && !meritBehaviors.includes(selectedBehavior)) {
+      setSelectedBehavior(meritBehaviors[0]);
+    }
+  }, [meritBehaviors, selectedBehavior]);
 
   // Editing record state
   const [editingRecord, setEditingRecord] = useState<BehaviorRecord | null>(null);
@@ -339,25 +348,38 @@ export const MeritRecordView: React.FC = () => {
         </div>
         </div>
 
-        {/* Step 2: Select Behavior (21 Preset Items + Custom) */}
+        {/* Step 2: Select Behavior (Preset Items + Custom) */}
         <div>
-          <div className="flex items-center justify-between mb-3">
+          <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
             <label className="text-sm font-bold text-slate-800 flex items-center gap-2">
               <span className="w-6 h-6 rounded-full bg-emerald-100 text-emerald-800 text-xs flex items-center justify-center font-bold">2</span>
-              <span>เลือกพฤติกรรมความดี (21 รายการมาตรฐาน)</span>
+              <span>เลือกพฤติกรรมความดี ({meritBehaviors.length} รายการมาตรฐาน)</span>
             </label>
-            <button
-              type="button"
-              onClick={() => setIsCustom(!isCustom)}
-              className="text-xs text-emerald-700 hover:text-emerald-900 font-semibold underline"
-            >
-              {isCustom ? '← เลือกจาก 21 รายการ' : '✏️ พิมพ์พฤติกรรมเอง'}
-            </button>
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => {
+                  setBehaviorModalTab('merit');
+                  setBehaviorModalOpen(true);
+                }}
+                className="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold text-emerald-800 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 rounded-lg transition-colors shadow-2xs"
+                title="เพิ่ม ลบ หรือแก้ไขรายการมาตรฐาน"
+              >
+                <span>⚙️ จัดการรายการมาตรฐาน</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setIsCustom(!isCustom)}
+                className="text-xs text-emerald-700 hover:text-emerald-900 font-semibold underline"
+              >
+                {isCustom ? '← เลือกจากรายการ' : '✏️ พิมพ์พฤติกรรมเอง'}
+              </button>
+            </div>
           </div>
 
           {!isCustom ? (
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2">
-              {PRESET_MERIT_BEHAVIORS.map((beh) => {
+              {meritBehaviors.map((beh) => {
                 const isChosen = selectedBehavior === beh;
                 return (
                   <button
