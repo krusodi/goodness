@@ -1,17 +1,14 @@
 import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
-import { LogIn, X, Lock, User, Eye, EyeOff, ShieldCheck, KeyRound } from 'lucide-react';
+import { LogIn, X, Lock, User, Eye, EyeOff, ShieldCheck } from 'lucide-react';
 
 export const LoginModal: React.FC = () => {
-  const { loginModalOpen, setLoginModalOpen, login, users } = useApp();
-  const [username, setUsername] = useState('Admin');
-  const [password, setPassword] = useState('kruyb');
+  const { loginModalOpen, setLoginModalOpen, login } = useApp();
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-
-  const adminUser = users.find((u) => u.username.toLowerCase() === 'admin') || users.find((u) => u.role === 'admin');
-  const teacherUser = users.find((u) => u.username.toLowerCase() === 'kru_somchai') || users.find((u) => u.role === 'user');
 
   if (!loginModalOpen) return null;
 
@@ -27,18 +24,6 @@ export const LoginModal: React.FC = () => {
         setError(res.message || 'ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง');
       }
     }, 200);
-  };
-
-  const handleQuickFillAdmin = () => {
-    setUsername(adminUser ? adminUser.username : 'Admin');
-    setPassword(adminUser ? adminUser.password : 'kruyb');
-    setError(null);
-  };
-
-  const handleQuickFillTeacher = () => {
-    setUsername(teacherUser ? teacherUser.username : 'kru_somchai');
-    setPassword(teacherUser ? teacherUser.password : '123');
-    setError(null);
   };
 
   return (
@@ -121,45 +106,6 @@ export const LoginModal: React.FC = () => {
             </div>
           </div>
 
-          {/* Quick autofill helper as described in prompt */}
-          <div className="pt-2 border-t border-slate-100">
-            <span className="text-[11px] text-slate-500 block mb-1.5 font-medium">
-              คลิกเพื่อเติมรหัสผ่านทดสอบ:
-            </span>
-            <div className="grid grid-cols-2 gap-2">
-              <button
-                type="button"
-                onClick={handleQuickFillAdmin}
-                className="px-2.5 py-2 text-xs text-left bg-emerald-50 hover:bg-emerald-100 text-emerald-900 border border-emerald-200 rounded-xl transition-colors flex items-center gap-2 min-w-0"
-              >
-                <KeyRound className="w-4 h-4 text-emerald-600 shrink-0" />
-                <div className="min-w-0 flex-1">
-                  <div className="font-bold text-[11px] text-emerald-950 truncate">
-                    {adminUser ? adminUser.name : 'Admin (สิทธิ์เต็ม)'}
-                  </div>
-                  <div className="text-[10px] text-emerald-700 font-mono truncate">
-                    {adminUser ? `${adminUser.username} / ${adminUser.password}` : 'Admin / kruyb'}
-                  </div>
-                </div>
-              </button>
-
-              <button
-                type="button"
-                onClick={handleQuickFillTeacher}
-                className="px-2.5 py-2 text-xs text-left bg-blue-50 hover:bg-blue-100 text-blue-900 border border-blue-200 rounded-xl transition-colors flex items-center gap-2 min-w-0"
-              >
-                <KeyRound className="w-4 h-4 text-blue-600 shrink-0" />
-                <div className="min-w-0 flex-1">
-                  <div className="font-bold text-[11px] text-blue-950 truncate">
-                    {teacherUser ? teacherUser.name : 'ครูประจำชั้น'}
-                  </div>
-                  <div className="text-[10px] text-blue-700 font-mono truncate">
-                    {teacherUser ? `${teacherUser.username} / ${teacherUser.password}` : 'kru_somchai / 123'}
-                  </div>
-                </div>
-              </button>
-            </div>
-          </div>
 
           {/* Submit */}
           <div className="pt-2">

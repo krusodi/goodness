@@ -901,62 +901,19 @@ export const AttendanceView: React.FC = () => {
           {/* ------------------------------------------------------------ */}
           {reportSubMode === 'overview' && (
             <div className="space-y-6">
-              {/* Overall metric cards */}
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <div className="bg-white rounded-2xl p-5 border border-emerald-100 shadow-xs">
-                  <span className="text-xs font-semibold text-slate-500">จำนวนวันที่บันทึกเช็คชื่อ</span>
-                  <div className="flex items-baseline gap-2 mt-1">
-                    <span className="text-3xl font-black text-slate-900">{overallStats.totalDaysRecorded}</span>
-                    <span className="text-xs text-slate-500">วัน</span>
-                  </div>
-                  <div className="text-[11px] text-slate-400 mt-2">
-                    รวมทั้งสิ้น {overallStats.totalRecords} รายการบันทึก
-                  </div>
-                </div>
-
-                <div className="bg-emerald-50/80 rounded-2xl p-5 border border-emerald-200 shadow-xs">
-                  <span className="text-xs font-bold text-emerald-800">อัตราการมาเรียนเฉลี่ย</span>
-                  <div className="flex items-baseline gap-2 mt-1">
-                    <span className="text-3xl font-black text-emerald-700">{overallStats.overallRate}%</span>
-                  </div>
-                  <div className="text-[11px] text-emerald-600 mt-2">
-                    มาเรียน + มาสาย รวมกัน
-                  </div>
-                </div>
-
-                <div className="bg-white rounded-2xl p-5 border border-slate-200 shadow-xs">
-                  <span className="text-xs font-semibold text-slate-500">ยอดรวมขาดเรียน</span>
-                  <div className="flex items-baseline gap-2 mt-1">
-                    <span className="text-3xl font-black text-rose-600">{overallStats.absent}</span>
-                    <span className="text-xs text-slate-500">ครั้ง</span>
-                  </div>
-                  <div className="text-[11px] text-rose-500 mt-2">
-                    ไม่รวมการลาป่วยและลากิจ
-                  </div>
-                </div>
-
-                <div className="bg-white rounded-2xl p-5 border border-slate-200 shadow-xs">
-                  <span className="text-xs font-semibold text-slate-500">ยอดรวมลากิจ + ลาป่วย</span>
-                  <div className="flex items-baseline gap-2 mt-1">
-                    <span className="text-3xl font-black text-sky-600">
-                      {overallStats.personal_leave + overallStats.sick}
-                    </span>
-                    <span className="text-xs text-slate-500">ครั้ง</span>
-                  </div>
-                  <div className="text-[11px] text-slate-400 mt-2">
-                    ลากิจ {overallStats.personal_leave} / ป่วย {overallStats.sick}
-                  </div>
-                </div>
-              </div>
-
               {/* Progress bar visual breakdown */}
               <div className="bg-white rounded-2xl p-5 border border-emerald-100 shadow-xs space-y-3">
-                <div className="flex items-center justify-between">
-                  <h3 className="text-sm font-bold text-slate-800">
-                    สัดส่วนสถานะการมาเรียนทั้งหมด
-                  </h3>
-                  <span className="text-xs text-slate-500">
-                    {overallStats.totalRecords} ครั้งบันทึก
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
+                  <div>
+                    <h3 className="text-sm sm:text-base font-bold text-slate-800">
+                      สัดส่วนสถานะการมาเรียนทั้งหมด
+                    </h3>
+                    <p className="text-xs text-slate-500">
+                      จำนวนวันที่บันทึกเช็คชื่อ: <span className="font-bold text-emerald-700">{overallStats.totalDaysRecorded} วัน</span> ({overallStats.totalRecords} รายการบันทึก)
+                    </p>
+                  </div>
+                  <span className="text-xs font-semibold text-slate-600 bg-slate-100 px-3 py-1 rounded-full self-start sm:self-auto">
+                    รวม {overallStats.totalRecords} ครั้งบันทึก
                   </span>
                 </div>
 
