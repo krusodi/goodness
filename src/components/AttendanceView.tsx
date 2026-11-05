@@ -730,13 +730,13 @@ export const AttendanceView: React.FC = () => {
                 {searchTerm ? 'ไม่พบนักเรียนตามคำค้นหา' : 'ยังไม่มีข้อมูลนักเรียนในระบบหรือห้องที่เลือก'}
               </h3>
               <p className="text-xs text-slate-500 max-w-md mx-auto mb-4">
-                กรุณาเพิ่มรายชื่อนักเรียนในเมนู "จัดการนักเรียน" หรือเปลี่ยนเงื่อนไขห้องเรียน
+                กรุณาเพิ่มรายชื่อนักเรียนในเมนู "จัดการรายชื่อ" หรือเปลี่ยนเงื่อนไขห้องเรียน
               </p>
               <button
                 onClick={() => setActiveTab('students')}
                 className="inline-flex items-center gap-2 px-4 py-2 text-xs font-semibold text-white bg-emerald-600 hover:bg-emerald-700 rounded-xl shadow-xs transition-colors"
               >
-                ไปที่จัดการนักเรียน
+                ไปที่จัดการรายชื่อ
               </button>
             </div>
           ) : (
@@ -1237,8 +1237,8 @@ export const AttendanceView: React.FC = () => {
                           <tr className="bg-slate-50 border-b border-slate-200 text-slate-600 font-bold">
                             <th className="py-2.5 px-3 text-center w-12">เลขที่</th>
                             <th className="py-2.5 px-3">ชื่อ - นามสกุล</th>
-                            <th className="py-2.5 px-3 text-center">ชั้น</th>
                             <th className="py-2.5 px-3 text-center">สถานะ</th>
+                            <th className="py-2.5 px-3 text-center">ชั้น</th>
                             <th className="py-2.5 px-3">สาเหตุ / หมายเหตุ</th>
                             <th className="py-2.5 px-3 text-center">ผู้บันทึก</th>
                           </tr>
@@ -1259,13 +1259,13 @@ export const AttendanceView: React.FC = () => {
                                     {rec.student_name}
                                   </span>
                                 </td>
-                                <td className="py-2.5 px-3 text-center text-slate-600">
-                                  {rec.student_class}
-                                </td>
                                 <td className="py-2.5 px-3 text-center">
                                   <span className={`inline-block px-2.5 py-0.5 rounded-full font-bold text-xs border ${config.badgeClass}`}>
                                     {config.label}
                                   </span>
+                                </td>
+                                <td className="py-2.5 px-3 text-center text-slate-600">
+                                  {rec.student_class}
                                 </td>
                                 <td className="py-2.5 px-3 text-slate-600 italic">
                                   {rec.note || '-'}

@@ -199,7 +199,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onSelectStudent })
               <Sparkles className="w-8 h-8 text-amber-300 mx-auto mb-2 opacity-70" />
               <div className="text-sm font-semibold">ยังไม่มีข้อมูลนักเรียนและคะแนนความดี</div>
               <p className="text-xs text-emerald-200/80 mt-1">
-                สามารถเริ่มต้นเพิ่มรายชื่อนักเรียนได้ที่เมนู &ldquo;จัดการนักเรียน&rdquo;
+                สามารถเริ่มต้นเพิ่มรายชื่อนักเรียนได้ที่เมนู &ldquo;จัดการรายชื่อ&rdquo;
               </p>
             </div>
           ) : (

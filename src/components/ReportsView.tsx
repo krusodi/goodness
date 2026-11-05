@@ -493,7 +493,7 @@ export const ReportsView: React.FC<ReportsViewProps> = ({ initialStudentId }) =>
               {students.length === 0 ? (
                 <div className="space-y-1">
                   <div className="text-sm font-semibold text-slate-600">ยังไม่มีรายชื่อนักเรียนในระบบ</div>
-                  <div className="text-xs text-slate-400">กรุณาเพิ่มรายชื่อนักเรียนที่เมนู &ldquo;จัดการนักเรียน&rdquo; ก่อนดูรายงานรายบุคคล</div>
+                  <div className="text-xs text-slate-400">กรุณาเพิ่มรายชื่อนักเรียนที่เมนู &ldquo;จัดการรายชื่อ&rdquo; ก่อนดูรายงานรายบุคคล</div>
                 </div>
               ) : (
                 'กรุณาเลือกนักเรียน'
