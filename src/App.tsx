@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { AppProvider, useApp } from './context/AppContext';
 import { Navbar } from './components/Navbar';
 import { DashboardView } from './components/DashboardView';
+import { AttendanceView } from './components/AttendanceView';
 import { StudentManagementView } from './components/StudentManagementView';
 import { MeritRecordView } from './components/MeritRecordView';
 import { DemeritRecordView } from './components/DemeritRecordView';
@@ -36,6 +37,7 @@ const MainContent: React.FC = () => {
             onSelectStudent={(studentId) => setSelectedStudentForReport(studentId)}
           />
         )}
+        {activeTab === 'attendance' && <AttendanceView />}
         {activeTab === 'students' && <StudentManagementView />}
         {activeTab === 'merit' && <MeritRecordView />}
         {activeTab === 'demerit' && <DemeritRecordView />}

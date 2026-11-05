@@ -1,6 +1,91 @@
-export type RecordType = 'student' | 'merit' | 'demerit' | 'user';
+export type RecordType = 'student' | 'merit' | 'demerit' | 'user' | 'attendance';
 export type UserRole = 'admin' | 'user';
 export type BehaviorCategory = 'merit' | 'demerit';
+export type AttendanceStatus = 'present' | 'late' | 'personal_leave' | 'sick' | 'absent';
+
+export interface AttendanceRecord {
+  id: string; // `${date}_${student_id}`
+  date: string; // YYYY-MM-DD
+  student_id: string;
+  student_no: number;
+  student_name: string;
+  student_class: string;
+  status: AttendanceStatus;
+  note?: string;
+  recorded_by: string;
+  created_at: number;
+  updated_at: number;
+}
+
+export interface AttendanceStatusConfig {
+  status: AttendanceStatus;
+  label: string;
+  shortLabel: string;
+  badgeClass: string;
+  bgLight: string;
+  borderClass: string;
+  textClass: string;
+  activeButtonClass: string;
+  inactiveButtonClass: string;
+}
+
+export const ATTENDANCE_STATUS_MAP: Record<AttendanceStatus, AttendanceStatusConfig> = {
+  present: {
+    status: 'present',
+    label: 'มาเรียน',
+    shortLabel: 'มา',
+    badgeClass: 'bg-emerald-100 text-emerald-800 border-emerald-300',
+    bgLight: 'bg-emerald-50/70',
+    borderClass: 'border-emerald-300',
+    textClass: 'text-emerald-700',
+    activeButtonClass: 'bg-emerald-600 text-white border-emerald-600 shadow-xs ring-2 ring-emerald-300 font-bold',
+    inactiveButtonClass: 'bg-white text-slate-700 border-slate-200 hover:bg-emerald-50 hover:border-emerald-300'
+  },
+  late: {
+    status: 'late',
+    label: 'มาสาย',
+    shortLabel: 'สาย',
+    badgeClass: 'bg-amber-100 text-amber-800 border-amber-300',
+    bgLight: 'bg-amber-50/70',
+    borderClass: 'border-amber-300',
+    textClass: 'text-amber-700',
+    activeButtonClass: 'bg-amber-500 text-white border-amber-500 shadow-xs ring-2 ring-amber-300 font-bold',
+    inactiveButtonClass: 'bg-white text-slate-700 border-slate-200 hover:bg-amber-50 hover:border-amber-300'
+  },
+  personal_leave: {
+    status: 'personal_leave',
+    label: 'ลากิจ',
+    shortLabel: 'ลากิจ',
+    badgeClass: 'bg-sky-100 text-sky-800 border-sky-300',
+    bgLight: 'bg-sky-50/70',
+    borderClass: 'border-sky-300',
+    textClass: 'text-sky-700',
+    activeButtonClass: 'bg-sky-600 text-white border-sky-600 shadow-xs ring-2 ring-sky-300 font-bold',
+    inactiveButtonClass: 'bg-white text-slate-700 border-slate-200 hover:bg-sky-50 hover:border-sky-300'
+  },
+  sick: {
+    status: 'sick',
+    label: 'ป่วย',
+    shortLabel: 'ป่วย',
+    badgeClass: 'bg-purple-100 text-purple-800 border-purple-300',
+    bgLight: 'bg-purple-50/70',
+    borderClass: 'border-purple-300',
+    textClass: 'text-purple-700',
+    activeButtonClass: 'bg-purple-600 text-white border-purple-600 shadow-xs ring-2 ring-purple-300 font-bold',
+    inactiveButtonClass: 'bg-white text-slate-700 border-slate-200 hover:bg-purple-50 hover:border-purple-300'
+  },
+  absent: {
+    status: 'absent',
+    label: 'ขาดเรียน',
+    shortLabel: 'ขาด',
+    badgeClass: 'bg-rose-100 text-rose-800 border-rose-300',
+    bgLight: 'bg-rose-50/70',
+    borderClass: 'border-rose-300',
+    textClass: 'text-rose-700',
+    activeButtonClass: 'bg-rose-600 text-white border-rose-600 shadow-xs ring-2 ring-rose-300 font-bold',
+    inactiveButtonClass: 'bg-white text-slate-700 border-slate-200 hover:bg-rose-50 hover:border-rose-300'
+  }
+};
 
 export interface Student {
   id: string;

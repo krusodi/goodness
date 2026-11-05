@@ -21,6 +21,11 @@ service cloud.firestore {
       allow read, write: if true;
     }
 
+    // Student Attendance records (Realtime multi-device sync)
+    match /attendance/{attendanceId} {
+      allow read, write: if true;
+    }
+
     // School and app settings
     match /settings/{settingId} {
       allow read, write: if true;

@@ -1,6 +1,7 @@
 import {
   Student,
   BehaviorRecord,
+  AttendanceRecord,
   UserAccount,
   AppSettings,
   PRESET_MERIT_BEHAVIORS,
@@ -59,3 +60,4 @@ export const INITIAL_STUDENTS: Student[] = [];
 
 export const INITIAL_RECORDS: BehaviorRecord[] = [];
 
+export const INITIAL_ATTENDANCE: AttendanceRecord[] = [];

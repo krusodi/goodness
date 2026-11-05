@@ -74,6 +74,25 @@
       "properties": {
         "status": { "type": "string" }
       }
+    },
+    "AttendanceRecord": {
+      "title": "AttendanceRecord",
+      "description": "Student daily attendance status record",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Composite key {date}_{student_id}" },
+        "date": { "type": "string", "description": "Date in YYYY-MM-DD" },
+        "student_id": { "type": "string", "description": "Student ID" },
+        "student_no": { "type": "number", "description": "Student roll number" },
+        "student_name": { "type": "string", "description": "Student name" },
+        "student_class": { "type": "string", "description": "Classroom" },
+        "status": { "type": "string", "enum": ["present", "late", "personal_leave", "sick", "absent"], "description": "Attendance status" },
+        "note": { "type": "string", "description": "Optional remark or leave reason" },
+        "recorded_by": { "type": "string", "description": "Recorder name" },
+        "created_at": { "type": "number", "description": "Creation timestamp" },
+        "updated_at": { "type": "number", "description": "Update timestamp" }
+      },
+      "required": ["id", "date", "student_id", "student_no", "student_name", "status"]
     }
   },
   "firestore": {
@@ -84,6 +103,10 @@
     "/records/{recordId}": {
       "schema": "BehaviorRecord",
       "description": "Collection of merit and demerit records"
+    },
+    "/attendance/{attendanceId}": {
+      "schema": "AttendanceRecord",
+      "description": "Collection of student attendance records"
     },
     "/settings/{settingId}": {
       "schema": "SystemSettings",

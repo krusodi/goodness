@@ -35,7 +35,7 @@ export const Navbar: React.FC = () => {
   const [profileModalOpen, setProfileModalOpen] = useState(false);
 
   interface NavItem {
-    id: 'dashboard' | 'students' | 'merit' | 'demerit' | 'reports' | 'admin';
+    id: 'dashboard' | 'attendance' | 'students' | 'merit' | 'demerit' | 'reports' | 'admin';
     label: string;
     icon: React.ComponentType<{ className?: string }>;
     requireAuth?: boolean;
@@ -45,6 +45,7 @@ export const Navbar: React.FC = () => {
 
   const navItems: NavItem[] = [
     { id: 'dashboard', label: 'หน้าหลัก', icon: Award },
+    { id: 'attendance', label: 'เช็คชื่อนักเรียน', icon: UserCheck, requireAuth: true },
     { id: 'students', label: 'จัดการนักเรียน', icon: Users, requireAuth: true },
     { id: 'merit', label: 'บันทึกความดี', icon: Star, requireAuth: true, highlight: 'merit' },
     { id: 'demerit', label: 'หักคะแนน', icon: AlertTriangle, requireAuth: true, highlight: 'demerit' },

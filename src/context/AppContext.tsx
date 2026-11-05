@@ -2,6 +2,8 @@ import React, { createContext, useContext, useState, useEffect, useRef } from 'r
 import {
   Student,
   BehaviorRecord,
+  AttendanceRecord,
+  AttendanceStatus,
   UserAccount,
   AppSettings,
   StudentScoreSummary,
@@ -13,7 +15,8 @@ import {
   INITIAL_SETTINGS,
   INITIAL_USERS,
   INITIAL_STUDENTS,
-  INITIAL_RECORDS
+  INITIAL_RECORDS,
+  INITIAL_ATTENDANCE
 } from '../data/initialData';
 import {
   collection,
@@ -33,6 +36,7 @@ const STORAGE_KEYS = {
   USERS: 'merit_system_users_v1',
   STUDENTS: 'merit_system_students_v1',
   RECORDS: 'merit_system_records_v1',
+  ATTENDANCE: 'merit_system_attendance_v1',
   CURRENT_USER: 'merit_system_current_user_v1'
 };
 
@@ -62,9 +66,17 @@ interface AppContextType {
   updateRecord: (id: string, updates: Partial<BehaviorRecord>) => boolean;
   deleteRecord: (id: string) => boolean;
   
+  // Attendance records & actions
+  attendanceRecords: AttendanceRecord[];
+  setStudentAttendance: (studentId: string, status: AttendanceStatus, date: string, note?: string) => Promise<boolean>;
+  markAllPresent: (date: string, studentClass?: string) => Promise<number>;
+  resetDayAttendance: (date: string, studentClass?: string) => Promise<number>;
+  deleteDayAttendance: (date: string, studentClass?: string, customToastMsg?: string) => Promise<number>;
+
   // Data management
   clearMerits: () => void;
   clearDemerits: () => void;
+  clearAttendance: () => void;
   clearAllData: () => void;
   resetToDemo: () => void;
   exportJSON: () => void;
@@ -106,8 +118,8 @@ interface AppContextType {
   firebaseProjectId: string;
   
   // Navigation / UI State
-  activeTab: 'dashboard' | 'students' | 'merit' | 'demerit' | 'reports' | 'admin';
-  setActiveTab: (tab: 'dashboard' | 'students' | 'merit' | 'demerit' | 'reports' | 'admin') => void;
+  activeTab: 'dashboard' | 'attendance' | 'students' | 'merit' | 'demerit' | 'reports' | 'admin';
+  setActiveTab: (tab: 'dashboard' | 'attendance' | 'students' | 'merit' | 'demerit' | 'reports' | 'admin') => void;
   loginModalOpen: boolean;
   setLoginModalOpen: (open: boolean) => void;
   toast: { message: string; type: 'success' | 'error' | 'info' } | null;
@@ -175,13 +187,23 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     }
   });
 
+  // Attendance Records
+  const [attendanceRecords, setAttendanceRecords] = useState<AttendanceRecord[]>(() => {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEYS.ATTENDANCE);
+      return saved ? JSON.parse(saved) : INITIAL_ATTENDANCE;
+    } catch {
+      return INITIAL_ATTENDANCE;
+    }
+  });
+
   // Firebase connection state
   const [isFirebaseConnected, setIsFirebaseConnected] = useState<boolean>(false);
   const firebaseProjectId = firebaseConfig.projectId || 'goodness-8a88d';
   const hasSeededRef = useRef<boolean>(false);
 
   // UI state
-  const [activeTab, setActiveTab] = useState<'dashboard' | 'students' | 'merit' | 'demerit' | 'reports' | 'admin'>('dashboard');
+  const [activeTab, setActiveTab] = useState<'dashboard' | 'attendance' | 'students' | 'merit' | 'demerit' | 'reports' | 'admin'>('dashboard');
   const [loginModalOpen, setLoginModalOpen] = useState(false);
   const [academicYearModalOpen, setAcademicYearModalOpen] = useState(false);
   const [top3ColorModalOpen, setTop3ColorModalOpen] = useState(false);
@@ -200,6 +222,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   useEffect(() => {
     let unsubscribeStudents: (() => void) | null = null;
     let unsubscribeRecords: (() => void) | null = null;
+    let unsubscribeAttendance: (() => void) | null = null;
     let unsubscribeSettings: (() => void) | null = null;
     let unsubscribeUsers: (() => void) | null = null;
 
@@ -330,6 +353,46 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
           console.warn('Firestore users listener warning:', error);
         }
       );
+
+      // Listen to Attendance collection (Real-time sync)
+      const attendancePath = 'attendance';
+      unsubscribeAttendance = onSnapshot(
+        collection(db, attendancePath),
+        (snapshot) => {
+          if (!snapshot.empty) {
+            const list: AttendanceRecord[] = [];
+            snapshot.forEach((d) => {
+              list.push(d.data() as AttendanceRecord);
+            });
+            setAttendanceRecords(list);
+            try {
+              localStorage.setItem(STORAGE_KEYS.ATTENDANCE, JSON.stringify(list));
+            } catch (e) {
+              console.warn(e);
+            }
+          } else {
+            try {
+              const saved = localStorage.getItem(STORAGE_KEYS.ATTENDANCE);
+              if (saved) {
+                const parsed: AttendanceRecord[] = JSON.parse(saved);
+                if (Array.isArray(parsed) && parsed.length > 0) {
+                  setAttendanceRecords(parsed);
+                  const batch = writeBatch(db);
+                  parsed.forEach((att) => batch.set(doc(db, 'attendance', att.id), att));
+                  batch.commit().catch((err) => console.warn('Sync local attendance note:', err));
+                  return;
+                }
+              }
+            } catch {
+              // ignore
+            }
+            setAttendanceRecords([]);
+          }
+        },
+        (error) => {
+          console.warn('Firestore attendance listener warning:', error);
+        }
+      );
     };
 
     setupFirestore().catch((err) => {
@@ -339,6 +402,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     return () => {
       if (unsubscribeStudents) unsubscribeStudents();
       if (unsubscribeRecords) unsubscribeRecords();
+      if (unsubscribeAttendance) unsubscribeAttendance();
       if (unsubscribeSettings) unsubscribeSettings();
       if (unsubscribeUsers) unsubscribeUsers();
     };
@@ -394,6 +458,14 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       console.error(e);
     }
   }, [records]);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(STORAGE_KEYS.ATTENDANCE, JSON.stringify(attendanceRecords));
+    } catch (e) {
+      console.error(e);
+    }
+  }, [attendanceRecords]);
 
   // Auth operations
   const login = (username: string, password: string) => {
@@ -632,6 +704,26 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       return updatedRecs;
     });
 
+    // Also update student info in attendance records
+    setAttendanceRecords((prev) => {
+      const updatedAtt = prev.map((a) =>
+        a.student_id === id
+          ? {
+              ...a,
+              student_no: updatedStudent.student_no,
+              student_name: updatedStudent.student_name,
+              student_class: updatedStudent.student_class
+            }
+          : a
+      );
+      try {
+        localStorage.setItem(STORAGE_KEYS.ATTENDANCE, JSON.stringify(updatedAtt));
+      } catch (e) {
+        console.warn(e);
+      }
+      return updatedAtt;
+    });
+
     showToast('แก้ไขข้อมูลนักเรียนเรียบร้อย', 'success');
     return { success: true };
   };
@@ -640,11 +732,14 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     const st = students.find((s) => s.id === id);
     const updated = students.filter((s) => s.id !== id);
     const updatedRecs = records.filter((r) => r.student_id !== id);
+    const updatedAtt = attendanceRecords.filter((a) => a.student_id !== id);
     setStudents(updated);
     setRecords(updatedRecs);
+    setAttendanceRecords(updatedAtt);
     try {
       localStorage.setItem(STORAGE_KEYS.STUDENTS, JSON.stringify(updated));
       localStorage.setItem(STORAGE_KEYS.RECORDS, JSON.stringify(updatedRecs));
+      localStorage.setItem(STORAGE_KEYS.ATTENDANCE, JSON.stringify(updatedAtt));
     } catch (e) {
       console.warn(e);
     }
@@ -830,6 +925,172 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     return true;
   };
 
+  // Attendance operations
+  const setStudentAttendance = async (
+    studentId: string,
+    status: AttendanceStatus,
+    date: string,
+    note?: string
+  ): Promise<boolean> => {
+    const student = students.find((s) => s.id === studentId);
+    if (!student) return false;
+    const recordId = `${date}_${student.id}`;
+    const recordedBy = currentUser ? currentUser.name : 'ครูประจำชั้น';
+    const now = Date.now();
+
+    const existing = attendanceRecords.find((r) => r.id === recordId);
+    const updatedRecord: AttendanceRecord = {
+      id: recordId,
+      date,
+      student_id: student.id,
+      student_no: student.student_no,
+      student_name: student.student_name,
+      student_class: student.student_class,
+      status,
+      note: note !== undefined ? note : (existing?.note || ''),
+      recorded_by: recordedBy,
+      created_at: existing?.created_at || now,
+      updated_at: now
+    };
+
+    setAttendanceRecords((prev) => {
+      const idx = prev.findIndex((r) => r.id === recordId);
+      let next: AttendanceRecord[];
+      if (idx >= 0) {
+        next = [...prev];
+        next[idx] = updatedRecord;
+      } else {
+        next = [...prev, updatedRecord];
+      }
+      try {
+        localStorage.setItem(STORAGE_KEYS.ATTENDANCE, JSON.stringify(next));
+      } catch (e) {
+        console.warn(e);
+      }
+      return next;
+    });
+
+    try {
+      await setDoc(doc(db, 'attendance', recordId), updatedRecord);
+    } catch (err) {
+      console.warn('Firestore setStudentAttendance error:', err);
+    }
+    return true;
+  };
+
+  const markAllPresent = async (date: string, studentClass?: string): Promise<number> => {
+    const targetStudents = studentClass && studentClass !== 'all'
+      ? students.filter((s) => s.student_class === studentClass)
+      : students;
+
+    if (targetStudents.length === 0) {
+      showToast('ไม่พบรายชื่อนักเรียนในห้องที่เลือก', 'info');
+      return 0;
+    }
+
+    const recordedBy = currentUser ? currentUser.name : 'ครูประจำชั้น';
+    const now = Date.now();
+    const newRecords: AttendanceRecord[] = [];
+
+    targetStudents.forEach((st) => {
+      const recordId = `${date}_${st.id}`;
+      const existing = attendanceRecords.find((r) => r.id === recordId);
+      newRecords.push({
+        id: recordId,
+        date,
+        student_id: st.id,
+        student_no: st.student_no,
+        student_name: st.student_name,
+        student_class: st.student_class,
+        status: 'present',
+        note: existing?.note || '',
+        recorded_by: recordedBy,
+        created_at: existing?.created_at || now,
+        updated_at: now
+      });
+    });
+
+    const newIds = new Set(newRecords.map((r) => r.id));
+    setAttendanceRecords((prev) => {
+      const remaining = prev.filter((r) => !newIds.has(r.id));
+      const next = [...remaining, ...newRecords];
+      try {
+        localStorage.setItem(STORAGE_KEYS.ATTENDANCE, JSON.stringify(next));
+      } catch (e) {
+        console.warn(e);
+      }
+      return next;
+    });
+
+    try {
+      const batch = writeBatch(db);
+      newRecords.forEach((rec) => {
+        batch.set(doc(db, 'attendance', rec.id), rec);
+      });
+      await batch.commit();
+    } catch (err) {
+      console.warn('Firestore markAllPresent error:', err);
+    }
+
+    showToast(`บันทึก "มาเรียนทั้งหมด" (${newRecords.length} คน) เรียบร้อย ✅`, 'success');
+    return newRecords.length;
+  };
+
+  const resetDayAttendance = async (date: string, studentClass?: string): Promise<number> => {
+    return deleteDayAttendance(date, studentClass, 'รีเซ็ตสถานะเช็คชื่อวันที่เลือกเรียบร้อยแล้ว');
+  };
+
+  const deleteDayAttendance = async (
+    date: string,
+    studentClass?: string,
+    customToastMsg?: string
+  ): Promise<number> => {
+    const targetStudents = studentClass && studentClass !== 'all'
+      ? students.filter((s) => s.student_class === studentClass)
+      : students;
+    const targetStudentIdSet = new Set(targetStudents.map((s) => s.id));
+
+    const toDelete = attendanceRecords.filter((rec) => {
+      if (rec.date !== date) return false;
+      if (studentClass && studentClass !== 'all') {
+        return targetStudentIdSet.has(rec.student_id) || rec.student_class === studentClass;
+      }
+      return true;
+    });
+
+    if (toDelete.length === 0) {
+      showToast('ยังไม่มีข้อมูลการเช็คชื่อในวันที่เลือก', 'info');
+      return 0;
+    }
+
+    const toDeleteIds = new Set(toDelete.map((r) => r.id));
+    setAttendanceRecords((prev) => {
+      const remaining = prev.filter((r) => !toDeleteIds.has(r.id));
+      try {
+        localStorage.setItem(STORAGE_KEYS.ATTENDANCE, JSON.stringify(remaining));
+      } catch (e) {
+        console.warn(e);
+      }
+      return remaining;
+    });
+
+    try {
+      const batch = writeBatch(db);
+      toDelete.forEach((rec) => {
+        batch.delete(doc(db, 'attendance', rec.id));
+      });
+      await batch.commit();
+    } catch (err) {
+      console.warn('Firestore deleteDayAttendance error:', err);
+    }
+
+    showToast(
+      customToastMsg || `ลบข้อมูลการเช็คชื่อวันที่ ${date} (${toDelete.length} คน) เรียบร้อยแล้ว`,
+      'info'
+    );
+    return toDelete.length;
+  };
+
   // Data management
   const clearMerits = () => {
     const toKeep = records.filter((r) => r.category !== 'merit');
@@ -867,13 +1128,31 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     showToast('ล้างบันทึกหักคะแนนทั้งหมดเรียบร้อยแล้ว', 'info');
   };
 
+  const clearAttendance = async () => {
+    setAttendanceRecords([]);
+    try {
+      localStorage.removeItem(STORAGE_KEYS.ATTENDANCE);
+      const attSnap = await getDocs(collection(db, 'attendance'));
+      if (!attSnap.empty) {
+        const batch = writeBatch(db);
+        attSnap.forEach((d) => batch.delete(d.ref));
+        await batch.commit();
+      }
+    } catch (e) {
+      console.warn(e);
+    }
+    showToast('ล้างข้อมูลการเช็คชื่อทั้งหมดเรียบร้อยแล้ว', 'info');
+  };
+
   const clearAllData = async () => {
     setRecords([]);
     setStudents([]);
+    setAttendanceRecords([]);
 
     try {
       localStorage.removeItem(STORAGE_KEYS.STUDENTS);
       localStorage.removeItem(STORAGE_KEYS.RECORDS);
+      localStorage.removeItem(STORAGE_KEYS.ATTENDANCE);
     } catch {
       // ignore
     }
@@ -881,28 +1160,32 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     try {
       const stdSnap = await getDocs(collection(db, 'students'));
       const recSnap = await getDocs(collection(db, 'records'));
-      if (!stdSnap.empty || !recSnap.empty) {
+      const attSnap = await getDocs(collection(db, 'attendance'));
+      if (!stdSnap.empty || !recSnap.empty || !attSnap.empty) {
         const batch = writeBatch(db);
         stdSnap.forEach((s) => batch.delete(s.ref));
         recSnap.forEach((r) => batch.delete(r.ref));
+        attSnap.forEach((a) => batch.delete(a.ref));
         await batch.commit();
       }
     } catch (e) {
       console.warn('Clear all error:', e);
     }
 
-    showToast('ล้างข้อมูลนักเรียนและบันทึกคะแนนทั้งหมดแล้ว', 'error');
+    showToast('ล้างข้อมูลนักเรียน บันทึกคะแนน และข้อมูลเช็คชื่อทั้งหมดแล้ว', 'error');
   };
 
   const resetToDemo = () => {
     setStudents([]);
     setRecords([]);
+    setAttendanceRecords([]);
     setUsers(INITIAL_USERS);
     setSettings(INITIAL_SETTINGS);
 
     try {
       localStorage.removeItem(STORAGE_KEYS.STUDENTS);
       localStorage.removeItem(STORAGE_KEYS.RECORDS);
+      localStorage.removeItem(STORAGE_KEYS.ATTENDANCE);
     } catch {
       // ignore
     }
@@ -920,19 +1203,20 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
   const exportJSON = () => {
     const backupData = {
-      version: '1.0',
+      version: '1.1',
       exported_at: new Date().toISOString(),
       school_name: settings.school_name,
       settings,
       users: users.map((u) => ({ ...u, password: '***' })), // mask passwords in export
       students,
-      records
+      records,
+      attendance: attendanceRecords
     };
 
     const dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(backupData, null, 2));
     const downloadAnchor = document.createElement('a');
     downloadAnchor.setAttribute('href', dataStr);
-    downloadAnchor.setAttribute('download', `ban_yaba_merit_backup_${new Date().toISOString().slice(0, 10)}.json`);
+    downloadAnchor.setAttribute('download', `ban_yaba_backup_${new Date().toISOString().slice(0, 10)}.json`);
     document.body.appendChild(downloadAnchor);
     downloadAnchor.click();
     downloadAnchor.remove();
@@ -942,8 +1226,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const importJSON = (jsonStr: string) => {
     try {
       const parsed = JSON.parse(jsonStr);
-      if (!parsed.students && !parsed.records) {
-        return { success: false, message: 'รูปแบบไฟล์ JSON ไม่ถูกต้อง ไม่พบข้อมูลนักเรียนหรือบันทึก' };
+      if (!parsed.students && !parsed.records && !parsed.attendance) {
+        return { success: false, message: 'รูปแบบไฟล์ JSON ไม่ถูกต้อง ไม่พบข้อมูลนักเรียน บันทึก หรือการเช็คชื่อ' };
       }
 
       if (Array.isArray(parsed.students)) {
@@ -962,6 +1246,17 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         try {
           const batch = writeBatch(db);
           parsed.records.forEach((rec: BehaviorRecord) => batch.set(doc(db, 'records', rec.id), rec));
+          batch.commit().catch(() => {});
+        } catch (e) {
+          console.warn(e);
+        }
+      }
+
+      if (Array.isArray(parsed.attendance)) {
+        setAttendanceRecords(parsed.attendance);
+        try {
+          const batch = writeBatch(db);
+          parsed.attendance.forEach((att: AttendanceRecord) => batch.set(doc(db, 'attendance', att.id), att));
           batch.commit().catch(() => {});
         } catch (e) {
           console.warn(e);
@@ -1249,6 +1544,12 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         addDemeritBatch,
         updateRecord,
         deleteRecord,
+        attendanceRecords,
+        setStudentAttendance,
+        markAllPresent,
+        resetDayAttendance,
+        deleteDayAttendance,
+        clearAttendance,
         clearMerits,
         clearDemerits,
         clearAllData,
