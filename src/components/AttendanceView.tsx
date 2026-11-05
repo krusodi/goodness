@@ -994,20 +994,20 @@ export const AttendanceView: React.FC = () => {
                 </div>
 
                 <div className="overflow-x-auto">
-                  <table className="w-full text-left text-xs sm:text-sm">
+                  <table className="w-full min-w-[800px] lg:min-w-full text-left text-xs sm:text-sm border-collapse">
                     <thead>
-                      <tr className="bg-slate-50 border-b border-slate-200 text-slate-600 font-bold">
-                        <th className="py-2.5 px-3 text-center w-12">เลขที่</th>
-                        <th className="py-2.5 px-3">ชื่อ - สกุล</th>
-                        <th className="py-2.5 px-3 text-center">ชั้น</th>
-                        <th className="py-2.5 px-3 text-center">วันที่บันทึก</th>
-                        <th className="py-2.5 px-3 text-center text-emerald-700">มา (วัน)</th>
-                        <th className="py-2.5 px-3 text-center text-amber-700">สาย</th>
-                        <th className="py-2.5 px-3 text-center text-sky-700">ลากิจ</th>
-                        <th className="py-2.5 px-3 text-center text-purple-700">ป่วย</th>
-                        <th className="py-2.5 px-3 text-center text-rose-700">ขาด</th>
-                        <th className="py-2.5 px-3 text-center">อัตราการมาเรียน</th>
-                        <th className="no-print py-2.5 px-3 text-center">ประวัติ</th>
+                      <tr className="bg-slate-50 border-b border-slate-200 text-slate-700 font-bold">
+                        <th scope="col" className="py-2.5 px-2 sm:px-3 text-center w-12 sm:w-14 whitespace-nowrap text-xs font-bold">เลขที่</th>
+                        <th scope="col" className="py-2.5 px-2.5 sm:px-3.5 text-left min-w-[170px] sm:min-w-[200px] whitespace-nowrap text-xs sm:text-sm font-bold">ชื่อ - สกุล</th>
+                        <th scope="col" className="py-2.5 px-2 sm:px-3 text-center w-16 sm:w-20 whitespace-nowrap text-xs font-bold">ชั้น</th>
+                        <th scope="col" className="py-2.5 px-2 sm:px-3 text-center whitespace-nowrap text-xs font-bold">วันที่บันทึก</th>
+                        <th scope="col" className="py-2.5 px-2 sm:px-3 text-center text-emerald-700 whitespace-nowrap text-xs font-bold">มา (วัน)</th>
+                        <th scope="col" className="py-2.5 px-2 sm:px-3 text-center text-amber-700 whitespace-nowrap text-xs font-bold">สาย</th>
+                        <th scope="col" className="py-2.5 px-2 sm:px-3 text-center text-sky-700 whitespace-nowrap text-xs font-bold">ลากิจ</th>
+                        <th scope="col" className="py-2.5 px-2 sm:px-3 text-center text-purple-700 whitespace-nowrap text-xs font-bold">ป่วย</th>
+                        <th scope="col" className="py-2.5 px-2 sm:px-3 text-center text-rose-700 whitespace-nowrap text-xs font-bold">ขาด</th>
+                        <th scope="col" className="py-2.5 px-2 sm:px-3 text-center min-w-[110px] whitespace-nowrap text-xs font-bold">อัตราการมาเรียน</th>
+                        <th scope="col" className="no-print py-2.5 px-2 sm:px-3 text-center w-24 sm:w-28 whitespace-nowrap text-xs font-bold">ประวัติ</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-100">
@@ -1017,38 +1017,38 @@ export const AttendanceView: React.FC = () => {
 
                         return (
                           <tr key={item.student.id} className="hover:bg-slate-50/80 transition-colors">
-                            <td className="py-2.5 px-3 text-center font-bold text-slate-600">
+                            <td className="py-2.5 px-2 sm:px-3 text-center font-bold text-slate-600 whitespace-nowrap">
                               {item.student.student_no}
                             </td>
-                            <td className="py-2.5 px-3 font-semibold">
-                              <span className={isMale ? 'text-blue-900' : isFemale ? 'text-rose-900' : 'text-slate-900'}>
+                            <td className="py-2.5 px-2.5 sm:px-3.5 font-semibold whitespace-nowrap min-w-[170px] sm:min-w-[200px]">
+                              <span className={isMale ? 'text-blue-900 font-bold' : isFemale ? 'text-rose-900 font-bold' : 'text-slate-900'}>
                                 {item.student.student_name}
                               </span>
                             </td>
-                            <td className="py-2.5 px-3 text-center text-slate-600 font-medium">
+                            <td className="py-2.5 px-2 sm:px-3 text-center text-slate-600 font-medium whitespace-nowrap">
                               {item.student.student_class}
                             </td>
-                            <td className="py-2.5 px-3 text-center text-slate-500 font-medium">
+                            <td className="py-2.5 px-2 sm:px-3 text-center text-slate-600 font-medium whitespace-nowrap">
                               {item.total}
                             </td>
-                            <td className="py-2.5 px-3 text-center font-bold text-emerald-700">
+                            <td className="py-2.5 px-2 sm:px-3 text-center font-bold text-emerald-700 whitespace-nowrap">
                               {item.present}
                             </td>
-                            <td className="py-2.5 px-3 text-center font-bold text-amber-600">
+                            <td className="py-2.5 px-2 sm:px-3 text-center font-bold text-amber-600 whitespace-nowrap">
                               {item.late}
                             </td>
-                            <td className="py-2.5 px-3 text-center font-bold text-sky-600">
+                            <td className="py-2.5 px-2 sm:px-3 text-center font-bold text-sky-600 whitespace-nowrap">
                               {item.personal_leave}
                             </td>
-                            <td className="py-2.5 px-3 text-center font-bold text-purple-600">
+                            <td className="py-2.5 px-2 sm:px-3 text-center font-bold text-purple-600 whitespace-nowrap">
                               {item.sick}
                             </td>
-                            <td className="py-2.5 px-3 text-center font-bold text-rose-600">
+                            <td className="py-2.5 px-2 sm:px-3 text-center font-bold text-rose-600 whitespace-nowrap">
                               {item.absent}
                             </td>
-                            <td className="py-2.5 px-3 text-center">
+                            <td className="py-2.5 px-2 sm:px-3 text-center whitespace-nowrap">
                               <span
-                                className={`inline-block px-2.5 py-0.5 rounded-full font-bold text-xs ${
+                                className={`inline-flex items-center justify-center min-w-[56px] px-2.5 py-0.5 rounded-full font-bold text-xs whitespace-nowrap ${
                                   item.rate >= 90
                                     ? 'bg-emerald-100 text-emerald-800 border border-emerald-300'
                                     : item.rate >= 80
@@ -1059,14 +1059,14 @@ export const AttendanceView: React.FC = () => {
                                 {item.rate}%
                               </span>
                             </td>
-                            <td className="no-print py-2.5 px-3 text-center">
+                            <td className="no-print py-2.5 px-2 sm:px-3 text-center whitespace-nowrap">
                               <button
                                 type="button"
                                 onClick={() => {
                                   setSelectedStudentId(item.student.id);
                                   setReportSubMode('student_detail');
                                 }}
-                                className="text-xs font-bold text-emerald-700 hover:text-emerald-800 hover:underline cursor-pointer"
+                                className="inline-flex items-center justify-center text-xs font-bold text-emerald-700 hover:text-emerald-800 bg-emerald-50/70 hover:bg-emerald-100/80 px-2.5 py-1 rounded-lg border border-emerald-200/60 transition-colors cursor-pointer whitespace-nowrap"
                               >
                                 ดูรายละเอียด
                               </button>
@@ -1189,15 +1189,15 @@ export const AttendanceView: React.FC = () => {
                     </div>
                   ) : (
                     <div className="overflow-x-auto">
-                      <table className="w-full text-left text-xs sm:text-sm">
+                      <table className="w-full min-w-[640px] lg:min-w-full text-left text-xs sm:text-sm border-collapse">
                         <thead>
-                          <tr className="bg-slate-50 border-b border-slate-200 text-slate-600 font-bold">
-                            <th className="py-2.5 px-3 text-center w-12">เลขที่</th>
-                            <th className="py-2.5 px-3">ชื่อ - นามสกุล</th>
-                            <th className="py-2.5 px-3 text-center">สถานะ</th>
-                            <th className="py-2.5 px-3 text-center">ชั้น</th>
-                            <th className="py-2.5 px-3">สาเหตุ / หมายเหตุ</th>
-                            <th className="py-2.5 px-3 text-center">ผู้บันทึก</th>
+                          <tr className="bg-slate-50 border-b border-slate-200 text-slate-700 font-bold">
+                            <th scope="col" className="py-2.5 px-2 sm:px-3 text-center w-12 sm:w-14 whitespace-nowrap text-xs font-bold">เลขที่</th>
+                            <th scope="col" className="py-2.5 px-2.5 sm:px-3.5 text-left min-w-[170px] sm:min-w-[200px] whitespace-nowrap text-xs sm:text-sm font-bold">ชื่อ - นามสกุล</th>
+                            <th scope="col" className="py-2.5 px-2 sm:px-3 text-center w-24 sm:w-28 whitespace-nowrap text-xs font-bold">สถานะ</th>
+                            <th scope="col" className="py-2.5 px-2 sm:px-3 text-center w-16 sm:w-20 whitespace-nowrap text-xs font-bold">ชั้น</th>
+                            <th scope="col" className="py-2.5 px-3 min-w-[140px] sm:min-w-[180px] text-xs font-bold">สาเหตุ / หมายเหตุ</th>
+                            <th scope="col" className="py-2.5 px-2 sm:px-3 text-center w-28 whitespace-nowrap text-xs font-bold">ผู้บันทึก</th>
                           </tr>
                         </thead>
                         <tbody className="divide-y divide-slate-100">
@@ -1207,27 +1207,27 @@ export const AttendanceView: React.FC = () => {
                             const isFemale = isGirl(rec.student_name);
 
                             return (
-                              <tr key={rec.id} className="hover:bg-slate-50/80">
-                                <td className="py-2.5 px-3 text-center font-bold text-slate-600">
+                              <tr key={rec.id} className="hover:bg-slate-50/80 transition-colors">
+                                <td className="py-2.5 px-2 sm:px-3 text-center font-bold text-slate-600 whitespace-nowrap">
                                   {rec.student_no}
                                 </td>
-                                <td className="py-2.5 px-3 font-semibold">
-                                  <span className={isMale ? 'text-blue-900' : isFemale ? 'text-rose-900' : 'text-slate-900'}>
+                                <td className="py-2.5 px-2.5 sm:px-3.5 font-semibold whitespace-nowrap min-w-[170px] sm:min-w-[200px]">
+                                  <span className={isMale ? 'text-blue-900 font-bold' : isFemale ? 'text-rose-900 font-bold' : 'text-slate-900'}>
                                     {rec.student_name}
                                   </span>
                                 </td>
-                                <td className="py-2.5 px-3 text-center">
-                                  <span className={`inline-block px-2.5 py-0.5 rounded-full font-bold text-xs border ${config.badgeClass}`}>
+                                <td className="py-2.5 px-2 sm:px-3 text-center whitespace-nowrap">
+                                  <span className={`inline-flex items-center justify-center px-2.5 py-0.5 rounded-full font-bold text-xs border whitespace-nowrap ${config.badgeClass}`}>
                                     {config.label}
                                   </span>
                                 </td>
-                                <td className="py-2.5 px-3 text-center text-slate-600">
+                                <td className="py-2.5 px-2 sm:px-3 text-center text-slate-600 font-medium whitespace-nowrap">
                                   {rec.student_class}
                                 </td>
                                 <td className="py-2.5 px-3 text-slate-600 italic">
                                   {rec.note || '-'}
                                 </td>
-                                <td className="py-2.5 px-3 text-center text-slate-500 text-xs">
+                                <td className="py-2.5 px-2 sm:px-3 text-center text-slate-500 text-xs whitespace-nowrap">
                                   {rec.recorded_by}
                                 </td>
                               </tr>
@@ -1281,19 +1281,19 @@ export const AttendanceView: React.FC = () => {
                   </div>
 
                   <div className="overflow-x-auto">
-                    <table className="w-full text-left text-xs sm:text-sm">
+                    <table className="w-full min-w-[760px] lg:min-w-full text-left text-xs sm:text-sm border-collapse">
                       <thead>
-                        <tr className="bg-slate-50 border-b border-slate-200 text-slate-600 font-bold">
-                          <th className="py-2.5 px-3 text-center w-12">เลขที่</th>
-                          <th className="py-2.5 px-3">ชื่อ - สกุล</th>
-                          <th className="py-2.5 px-3 text-center">ชั้น</th>
-                          <th className="py-2.5 px-3 text-center">วันทั้งหมด</th>
-                          <th className="py-2.5 px-3 text-center text-emerald-700">มา</th>
-                          <th className="py-2.5 px-3 text-center text-amber-700">สาย</th>
-                          <th className="py-2.5 px-3 text-center text-sky-700">ลากิจ</th>
-                          <th className="py-2.5 px-3 text-center text-purple-700">ป่วย</th>
-                          <th className="py-2.5 px-3 text-center text-rose-700">ขาด</th>
-                          <th className="py-2.5 px-3 text-center">อัตราการมาเรียน</th>
+                        <tr className="bg-slate-50 border-b border-slate-200 text-slate-700 font-bold">
+                          <th scope="col" className="py-2.5 px-2 sm:px-3 text-center w-12 sm:w-14 whitespace-nowrap text-xs font-bold">เลขที่</th>
+                          <th scope="col" className="py-2.5 px-2.5 sm:px-3.5 text-left min-w-[170px] sm:min-w-[200px] whitespace-nowrap text-xs sm:text-sm font-bold">ชื่อ - สกุล</th>
+                          <th scope="col" className="py-2.5 px-2 sm:px-3 text-center w-16 sm:w-20 whitespace-nowrap text-xs font-bold">ชั้น</th>
+                          <th scope="col" className="py-2.5 px-2 sm:px-3 text-center whitespace-nowrap text-xs font-bold">วันทั้งหมด</th>
+                          <th scope="col" className="py-2.5 px-2 sm:px-3 text-center text-emerald-700 whitespace-nowrap text-xs font-bold">มา</th>
+                          <th scope="col" className="py-2.5 px-2 sm:px-3 text-center text-amber-700 whitespace-nowrap text-xs font-bold">สาย</th>
+                          <th scope="col" className="py-2.5 px-2 sm:px-3 text-center text-sky-700 whitespace-nowrap text-xs font-bold">ลากิจ</th>
+                          <th scope="col" className="py-2.5 px-2 sm:px-3 text-center text-purple-700 whitespace-nowrap text-xs font-bold">ป่วย</th>
+                          <th scope="col" className="py-2.5 px-2 sm:px-3 text-center text-rose-700 whitespace-nowrap text-xs font-bold">ขาด</th>
+                          <th scope="col" className="py-2.5 px-2 sm:px-3 text-center min-w-[110px] whitespace-nowrap text-xs font-bold">อัตราการมาเรียน</th>
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-slate-100">
@@ -1302,44 +1302,44 @@ export const AttendanceView: React.FC = () => {
                           const isFemale = isGirl(item.student.student_name);
 
                           return (
-                            <tr key={item.student.id} className="hover:bg-slate-50/80">
-                              <td className="py-2.5 px-3 text-center font-bold text-slate-600">
+                            <tr key={item.student.id} className="hover:bg-slate-50/80 transition-colors">
+                              <td className="py-2.5 px-2 sm:px-3 text-center font-bold text-slate-600 whitespace-nowrap">
                                 {item.student.student_no}
                               </td>
-                              <td className="py-2.5 px-3 font-semibold">
-                                <span className={isMale ? 'text-blue-900' : isFemale ? 'text-rose-900' : 'text-slate-900'}>
+                              <td className="py-2.5 px-2.5 sm:px-3.5 font-semibold whitespace-nowrap min-w-[170px] sm:min-w-[200px]">
+                                <span className={isMale ? 'text-blue-900 font-bold' : isFemale ? 'text-rose-900 font-bold' : 'text-slate-900'}>
                                   {item.student.student_name}
                                 </span>
                               </td>
-                              <td className="py-2.5 px-3 text-center text-slate-600">
+                              <td className="py-2.5 px-2 sm:px-3 text-center text-slate-600 font-medium whitespace-nowrap">
                                 {item.student.student_class}
                               </td>
-                              <td className="py-2.5 px-3 text-center font-medium text-slate-600">
+                              <td className="py-2.5 px-2 sm:px-3 text-center font-medium text-slate-600 whitespace-nowrap">
                                 {item.total}
                               </td>
-                              <td className="py-2.5 px-3 text-center font-bold text-emerald-700">
+                              <td className="py-2.5 px-2 sm:px-3 text-center font-bold text-emerald-700 whitespace-nowrap">
                                 {item.present}
                               </td>
-                              <td className="py-2.5 px-3 text-center font-bold text-amber-600">
+                              <td className="py-2.5 px-2 sm:px-3 text-center font-bold text-amber-600 whitespace-nowrap">
                                 {item.late}
                               </td>
-                              <td className="py-2.5 px-3 text-center font-bold text-sky-600">
+                              <td className="py-2.5 px-2 sm:px-3 text-center font-bold text-sky-600 whitespace-nowrap">
                                 {item.personal_leave}
                               </td>
-                              <td className="py-2.5 px-3 text-center font-bold text-purple-600">
+                              <td className="py-2.5 px-2 sm:px-3 text-center font-bold text-purple-600 whitespace-nowrap">
                                 {item.sick}
                               </td>
-                              <td className="py-2.5 px-3 text-center font-bold text-rose-600">
+                              <td className="py-2.5 px-2 sm:px-3 text-center font-bold text-rose-600 whitespace-nowrap">
                                 {item.absent}
                               </td>
-                              <td className="py-2.5 px-3 text-center">
+                              <td className="py-2.5 px-2 sm:px-3 text-center whitespace-nowrap">
                                 <span
-                                  className={`inline-block px-2.5 py-0.5 rounded-full font-bold text-xs ${
+                                  className={`inline-flex items-center justify-center min-w-[56px] px-2.5 py-0.5 rounded-full font-bold text-xs whitespace-nowrap ${
                                     item.rate >= 90
-                                      ? 'bg-emerald-100 text-emerald-800'
+                                      ? 'bg-emerald-100 text-emerald-800 border border-emerald-300'
                                       : item.rate >= 80
-                                      ? 'bg-amber-100 text-amber-800'
-                                      : 'bg-rose-100 text-rose-800'
+                                      ? 'bg-amber-100 text-amber-800 border border-amber-300'
+                                      : 'bg-rose-100 text-rose-800 border border-rose-300'
                                   }`}
                                 >
                                   {item.rate}%
