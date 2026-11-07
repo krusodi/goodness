@@ -10,6 +10,7 @@ import {
 
 export const INITIAL_SETTINGS: AppSettings = {
   system_name: 'ระบบบันทึกความดีนักเรียน ป.5/1',
+  system_description: 'ระบบสนับสนุนการพัฒนาคุณธรรม จริยธรรม และวินัยเชิงบวกตามหลักสูตรการศึกษาขั้นพื้นฐาน',
   school_name: 'โรงเรียนบ้านยะบะ(อุปการวิทยา)',
   academic_year: '2569',
   academic_years: ['2570', '2569', '2568', '2567'],

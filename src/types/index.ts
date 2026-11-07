@@ -124,6 +124,7 @@ export interface UserAccount {
 
 export interface AppSettings {
   system_name: string;
+  system_description?: string;
   school_name: string;
   academic_year: string;
   academic_years?: string[];

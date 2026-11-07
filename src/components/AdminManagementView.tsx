@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useApp } from '../context/AppContext';
 import { UserRole, TOP3_COLOR_PRESETS } from '../types';
 import {
@@ -101,6 +101,10 @@ export const AdminManagementView: React.FC = () => {
 
   // Theme Settings local state
   const [systemName, setSystemName] = useState(settings.system_name);
+  const [systemDescription, setSystemDescription] = useState(
+    settings.system_description ||
+      'ระบบสนับสนุนการพัฒนาคุณธรรม จริยธรรม และวินัยเชิงบวกตามหลักสูตรการศึกษาขั้นพื้นฐาน'
+  );
   const [schoolName, setSchoolName] = useState(settings.school_name);
   const [academicYear, setAcademicYear] = useState(settings.academic_year);
   const [bgColor, setBgColor] = useState(settings.bg_color);
@@ -264,11 +268,23 @@ export const AdminManagementView: React.FC = () => {
     e.target.value = '';
   };
 
+  useEffect(() => {
+    setSystemName(settings.system_name);
+    setSchoolName(settings.school_name);
+    setAcademicYear(settings.academic_year);
+    if (settings.system_description) {
+      setSystemDescription(settings.system_description);
+    }
+  }, [settings.system_name, settings.school_name, settings.academic_year, settings.system_description]);
+
   // Save Theme and Content Settings
   const handleSaveThemeSettings = (e: React.FormEvent) => {
     e.preventDefault();
     updateSettings({
       system_name: systemName,
+      system_description:
+        systemDescription.trim() ||
+        'ระบบสนับสนุนการพัฒนาคุณธรรม จริยธรรม และวินัยเชิงบวกตามหลักสูตรการศึกษาขั้นพื้นฐาน',
       school_name: schoolName,
       academic_year: academicYear,
       bg_color: bgColor,
@@ -885,6 +901,36 @@ export const AdminManagementView: React.FC = () => {
                   </button>
                 </div>
               </div>
+            </div>
+
+            {/* System Description / Footer Text */}
+            <div className="pt-2 border-t border-slate-100">
+              <div className="flex items-center justify-between mb-1.5">
+                <label className="block text-xs font-semibold text-slate-700">
+                  คำอธิบายระบบ / ข้อความท้ายเว็บ (Footer Text)
+                </label>
+                <button
+                  type="button"
+                  onClick={() =>
+                    setSystemDescription(
+                      'ระบบสนับสนุนการพัฒนาคุณธรรม จริยธรรม และวินัยเชิงบวกตามหลักสูตรการศึกษาขั้นพื้นฐาน'
+                    )
+                  }
+                  className="text-[11px] font-semibold text-emerald-700 hover:text-emerald-900 hover:underline cursor-pointer"
+                >
+                  คืนค่าข้อความเริ่มต้น
+                </button>
+              </div>
+              <textarea
+                rows={2}
+                value={systemDescription}
+                onChange={(e) => setSystemDescription(e.target.value)}
+                placeholder="เช่น ระบบสนับสนุนการพัฒนาคุณธรรม จริยธรรม และวินัยเชิงบวกตามหลักสูตรการศึกษาขั้นพื้นฐาน"
+                className="w-full px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-emerald-500 leading-relaxed text-slate-800"
+              />
+              <p className="text-[11px] text-slate-400 mt-1">
+                ข้อความนี้จะแสดงที่ส่วนล่างสุดของทุกหน้า (Footer) และปรับเปลี่ยนได้ตามความต้องการของสถานศึกษา
+              </p>
             </div>
           </div>
 
