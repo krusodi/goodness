@@ -151,7 +151,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onSelectStudent })
             {settings.system_name}
           </h1>
           <p className="text-sm text-slate-600 mt-1">
-            {settings.school_name} — ส่งเสริมคุณธรรม จริยธรรม และวินัยเชิงบวกในห้องเรียน
+            {settings.school_name}
           </p>
         </div>
 
