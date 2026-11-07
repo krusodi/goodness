@@ -43,6 +43,8 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onSelectStudent })
   const [selectedGender, setSelectedGender] = useState<'all' | 'male' | 'female'>('all');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [activeRecentTab, setActiveRecentTab] = useState<'merit' | 'demerit'>('merit');
+  const [displayLimit, setDisplayLimit] = useState<string>('all');
+  const [customLimit, setCustomLimit] = useState<number>(10);
 
   // Trigger celebration confetti
   const triggerCelebration = () => {
@@ -71,6 +73,16 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onSelectStudent })
       s.student.student_no.toString().includes(q)
     );
   });
+
+  // Calculate effective display limit & slice summaries
+  const effectiveLimit =
+    displayLimit === 'all'
+      ? filteredSummaries.length
+      : displayLimit === 'custom'
+      ? Math.max(1, customLimit)
+      : parseInt(displayLimit, 10) || filteredSummaries.length;
+
+  const displayedSummaries = filteredSummaries.slice(0, effectiveLimit);
 
   // Top 3 Podium
   const top1 = summaries.length > 0 ? summaries[0] : null;
@@ -425,15 +437,17 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onSelectStudent })
 
       {/* Main Leaderboard Table (ทั้งชั้น) with Gender Colors */}
       <div className="bg-white rounded-2xl border border-slate-100 shadow-xs overflow-hidden">
-        <div className="px-5 py-4 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+        <div className="px-5 py-4 border-b border-slate-100 flex flex-col lg:flex-row lg:items-center justify-between gap-3">
           <div className="flex items-center gap-2">
-            <Trophy className="w-4 h-4 text-emerald-600" />
+            <Trophy className="w-4 h-4 text-emerald-600 shrink-0" />
             <h2 className="font-bold text-slate-800 text-sm sm:text-base">
               ตารางสรุปคะแนนความดีและอันดับ (ทั้งชั้น ป.5/1)
             </h2>
           </div>
-          <div className="flex items-center gap-3 text-xs text-slate-500">
-            <div className="flex items-center gap-2">
+
+          <div className="flex flex-wrap items-center gap-2.5 text-xs text-slate-500">
+            {/* Gender tags */}
+            <div className="flex items-center gap-1.5">
               <span className="inline-flex items-center gap-1 text-sky-700 font-semibold bg-sky-50 px-2 py-0.5 rounded border border-sky-200">
                 ชาย {boyCount} คน
               </span>
@@ -441,8 +455,80 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onSelectStudent })
                 หญิง {girlCount} คน
               </span>
             </div>
-            <span>
-              แสดง {filteredSummaries.length} จาก {students.length} คน
+
+            {/* Display Limit Controller (ตัวกำหนดจำนวนที่จะแสดง) */}
+            <div className="no-print flex items-center gap-1.5 bg-slate-50 border border-slate-200 rounded-lg p-1">
+              <span className="text-[11px] font-semibold text-slate-600 pl-1 whitespace-nowrap">
+                กำหนดจำนวน:
+              </span>
+
+              {/* Quick Preset Buttons (Tablet / Desktop) */}
+              <div className="hidden sm:inline-flex items-center bg-white rounded-md border border-slate-200 p-0.5">
+                {(['5', '10', '20', 'all'] as const).map((opt) => (
+                  <button
+                    key={opt}
+                    type="button"
+                    onClick={() => setDisplayLimit(opt)}
+                    className={`px-2 py-0.5 text-xs font-semibold rounded transition-all cursor-pointer ${
+                      displayLimit === opt
+                        ? 'bg-emerald-600 text-white shadow-2xs font-bold'
+                        : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
+                    }`}
+                  >
+                    {opt === 'all' ? 'ทั้งหมด' : `${opt} คน`}
+                  </button>
+                ))}
+                <button
+                  type="button"
+                  onClick={() => setDisplayLimit('custom')}
+                  className={`px-2 py-0.5 text-xs font-semibold rounded transition-all cursor-pointer ${
+                    displayLimit === 'custom'
+                      ? 'bg-emerald-600 text-white shadow-2xs font-bold'
+                      : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
+                  }`}
+                >
+                  กำหนดเอง
+                </button>
+              </div>
+
+              {/* Dropdown for Mobile */}
+              <select
+                value={displayLimit}
+                onChange={(e) => setDisplayLimit(e.target.value)}
+                className="sm:hidden text-xs bg-white border border-slate-200 rounded px-2 py-1 font-bold text-emerald-800 focus:outline-none focus:ring-1 focus:ring-emerald-500 cursor-pointer shadow-2xs"
+              >
+                <option value="all">ทั้งหมด ({filteredSummaries.length} คน)</option>
+                <option value="5">5 คนแรก (Top 5)</option>
+                <option value="10">10 คนแรก (Top 10)</option>
+                <option value="15">15 คนแรก (Top 15)</option>
+                <option value="20">20 คนแรก (Top 20)</option>
+                <option value="25">25 คนแรก (Top 25)</option>
+                <option value="custom">กำหนดเอง...</option>
+              </select>
+
+              {/* Custom Number Input */}
+              {displayLimit === 'custom' && (
+                <div className="flex items-center gap-1 bg-white border border-emerald-400 rounded px-1.5 py-0.5 shadow-2xs">
+                  <input
+                    type="number"
+                    min={1}
+                    max={students.length || 100}
+                    value={customLimit}
+                    onChange={(e) => {
+                      const val = parseInt(e.target.value, 10);
+                      setCustomLimit(isNaN(val) ? 1 : Math.max(1, Math.min(val, 500)));
+                    }}
+                    className="w-12 text-xs font-bold text-center text-emerald-800 outline-none"
+                    placeholder="จำนวน"
+                  />
+                  <span className="text-[11px] text-slate-500 font-medium">คน</span>
+                </div>
+              )}
+            </div>
+
+            {/* Display Counter Badge */}
+            <span className="font-semibold text-slate-700 bg-slate-100 px-2.5 py-1 rounded-lg border border-slate-200 whitespace-nowrap">
+              แสดง <strong className="text-emerald-700">{displayedSummaries.length}</strong> จาก {filteredSummaries.length} คน
             </span>
           </div>
         </div>
@@ -464,14 +550,14 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onSelectStudent })
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
-              {filteredSummaries.length === 0 ? (
+              {displayedSummaries.length === 0 ? (
                 <tr>
                   <td colSpan={9} className="py-8 text-center text-slate-400">
                     ไม่พบข้อมูลนักเรียนตามเงื่อนไขที่ค้นหา
                   </td>
                 </tr>
               ) : (
-                filteredSummaries.map((item) => {
+                displayedSummaries.map((item) => {
                   const status = getStatusText(item.net_score);
                   const gender = getStudentGender(item.student.student_name);
                   const gs = getGenderStyles(gender);
@@ -541,6 +627,37 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onSelectStudent })
             </tbody>
           </table>
         </div>
+
+        {/* Table Footer when limit is active */}
+        {displayedSummaries.length < filteredSummaries.length && (
+          <div className="no-print p-3.5 bg-slate-50 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-2.5 text-xs text-slate-600 px-5">
+            <span className="text-center sm:text-left">
+              กำลังแสดง <strong className="text-emerald-800 font-bold">{displayedSummaries.length}</strong> อันดับแรก (ซ่อนอีก {filteredSummaries.length - displayedSummaries.length} คน)
+            </span>
+            <div className="flex items-center gap-2">
+              {effectiveLimit < filteredSummaries.length && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    const next = Math.min(filteredSummaries.length, effectiveLimit + 10);
+                    setDisplayLimit('custom');
+                    setCustomLimit(next);
+                  }}
+                  className="px-3 py-1 font-medium text-slate-700 hover:text-slate-900 bg-white hover:bg-slate-100 rounded-lg border border-slate-200 transition-colors shadow-2xs cursor-pointer"
+                >
+                  + เพิ่มอีก 10 คน
+                </button>
+              )}
+              <button
+                type="button"
+                onClick={() => setDisplayLimit('all')}
+                className="px-3 py-1 font-bold text-emerald-700 hover:text-emerald-800 hover:bg-emerald-100/70 bg-emerald-50 rounded-lg border border-emerald-200 transition-colors shadow-2xs cursor-pointer"
+              >
+                แสดงทั้งหมด ({filteredSummaries.length} คน)
+              </button>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Recent 50 Records Section (⭐ ความดีล่าสุด 50 / ⚠️ หักคะแนนล่าสุด 50) */}
