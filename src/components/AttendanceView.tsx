@@ -409,7 +409,7 @@ export const AttendanceView: React.FC = () => {
               ระบบเช็คชื่อนักเรียน
             </h1>
             <p className="text-xs sm:text-sm text-slate-500">
-              {settings.school_name} · บันทึกการมาเรียน 5 สถานะ เรียลไทม์ และสรุปรายงาน
+              {settings.school_name}
             </p>
           </div>
         </div>
