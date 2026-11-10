@@ -38,8 +38,11 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onSelectStudent })
 
   const top3Style = getTop3Style(settings);
 
+  const getCurrentMonthString = () => String(new Date().getMonth() + 1).padStart(2, '0');
+  const currentMonthStr = getCurrentMonthString();
+
   const [selectedYear, setSelectedYear] = useState<string>('all');
-  const [selectedMonth, setSelectedMonth] = useState<string>('all');
+  const [selectedMonth, setSelectedMonth] = useState<string>(currentMonthStr);
   const [selectedGender, setSelectedGender] = useState<'all' | 'male' | 'female'>('all');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [activeRecentTab, setActiveRecentTab] = useState<'merit' | 'demerit'>('merit');
@@ -358,12 +361,12 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onSelectStudent })
           <select
             value={selectedMonth}
             onChange={(e) => setSelectedMonth(e.target.value)}
-            className="text-xs px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-slate-700 focus:outline-none focus:ring-1 focus:ring-emerald-500"
+            className="text-xs px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-slate-700 focus:outline-none focus:ring-1 focus:ring-emerald-500 font-semibold"
           >
             <option value="all">ทุกเดือน (สะสม)</option>
             {THAI_MONTHS.map((m) => (
               <option key={m.value} value={m.value}>
-                เดือน{m.label}
+                เดือน{m.label} {m.value === currentMonthStr ? '(เดือนปัจจุบัน)' : ''}
               </option>
             ))}
           </select>
@@ -407,17 +410,18 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onSelectStudent })
             </button>
           </div>
 
-          {(selectedYear !== 'all' || selectedMonth !== 'all' || selectedGender !== 'all' || searchQuery) && (
+          {(selectedYear !== 'all' || selectedMonth !== currentMonthStr || selectedGender !== 'all' || searchQuery) && (
             <button
               onClick={() => {
                 setSelectedYear('all');
-                setSelectedMonth('all');
+                setSelectedMonth(currentMonthStr);
                 setSelectedGender('all');
                 setSearchQuery('');
               }}
               className="text-xs text-rose-600 hover:text-rose-800 underline px-1"
+              title="กลับสู่เงื่อนไขการแสดงผลเดือนปัจจุบัน"
             >
-              ล้างตัวกรอง
+              กลับสู่เดือนปัจจุบัน
             </button>
           )}
         </div>
@@ -441,7 +445,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onSelectStudent })
           <div className="flex items-center gap-2">
             <Trophy className="w-4 h-4 text-emerald-600 shrink-0" />
             <h2 className="font-bold text-slate-800 text-sm sm:text-base">
-              ตารางสรุปคะแนนความดีและอันดับ (ทั้งชั้น ป.5/1)
+              ตารางสรุปคะแนนความดีและอันดับ {selectedMonth !== 'all' ? `ประจำเดือน${THAI_MONTHS.find(m => m.value === selectedMonth)?.label || ''}` : '(สะสม)'} (ทั้งชั้น ป.5/1)
             </h2>
           </div>
 
