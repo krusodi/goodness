@@ -46,7 +46,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onSelectStudent })
   const [selectedGender, setSelectedGender] = useState<'all' | 'male' | 'female'>('all');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [activeRecentTab, setActiveRecentTab] = useState<'merit' | 'demerit'>('merit');
-  const [displayLimit, setDisplayLimit] = useState<string>('all');
+  const [displayLimit, setDisplayLimit] = useState<string>('10');
   const [customLimit, setCustomLimit] = useState<number>(10);
 
   // Trigger celebration confetti
