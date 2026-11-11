@@ -169,10 +169,11 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onSelectStudent })
 
           <button
             onClick={handlePrint}
-            className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-medium text-slate-700 bg-slate-100 hover:bg-slate-200 border border-slate-200 rounded-xl transition-all shadow-xs"
+            className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 border border-slate-200 rounded-xl transition-all shadow-xs cursor-pointer"
+            title="พิมพ์รายงาน / พิมพ์เอกสารราชการ"
           >
             <Printer className="w-3.5 h-3.5 text-slate-600" />
-            <span>พิมพ์ตารางอันดับ</span>
+            <span>พิมพ์รายงาน / เอกสารราชการ</span>
           </button>
         </div>
       </div>

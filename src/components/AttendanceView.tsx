@@ -986,10 +986,11 @@ export const AttendanceView: React.FC = () => {
                   </div>
                   <button
                     onClick={() => window.print()}
-                    className="no-print inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-lg border border-slate-200 transition-colors"
+                    className="no-print inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-lg border border-slate-200 transition-colors cursor-pointer"
+                    title="พิมพ์รายงาน / พิมพ์เอกสารราชการ"
                   >
-                    <Printer className="w-3.5 h-3.5" />
-                    <span>พิมพ์</span>
+                    <Printer className="w-3.5 h-3.5 text-slate-600" />
+                    <span>พิมพ์รายงาน / เอกสารราชการ</span>
                   </button>
                 </div>
 
@@ -1170,10 +1171,11 @@ export const AttendanceView: React.FC = () => {
                     </div>
                     <button
                       onClick={() => window.print()}
-                      className="no-print self-start sm:self-auto inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-lg border border-slate-200"
+                      className="no-print self-start sm:self-auto inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-lg border border-slate-200 cursor-pointer"
+                      title="พิมพ์รายงาน / พิมพ์เอกสารราชการ"
                     >
-                      <Printer className="w-3.5 h-3.5" />
-                      <span>พิมพ์หน้านี้</span>
+                      <Printer className="w-3.5 h-3.5 text-slate-600" />
+                      <span>พิมพ์รายงาน / เอกสารราชการ</span>
                     </button>
                   </div>
 
@@ -1273,10 +1275,11 @@ export const AttendanceView: React.FC = () => {
                     </div>
                     <button
                       onClick={() => window.print()}
-                      className="no-print self-start sm:self-auto inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-lg border border-slate-200"
+                      className="no-print self-start sm:self-auto inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-lg border border-slate-200 cursor-pointer"
+                      title="พิมพ์รายงาน / พิมพ์เอกสารราชการ"
                     >
-                      <Printer className="w-3.5 h-3.5" />
-                      <span>พิมพ์รายงานเดือนนี้</span>
+                      <Printer className="w-3.5 h-3.5 text-slate-600" />
+                      <span>พิมพ์รายงาน / เอกสารราชการ</span>
                     </button>
                   </div>
 
@@ -1400,11 +1403,13 @@ export const AttendanceView: React.FC = () => {
                 </div>
 
                 <button
+                  type="button"
                   onClick={() => window.print()}
-                  className="self-start sm:self-auto inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-xl border border-slate-200"
+                  className="no-print self-start sm:self-auto inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-xl border border-slate-200 cursor-pointer"
+                  title="พิมพ์ใบบันทึก / พิมพ์เอกสารราชการ"
                 >
-                  <Printer className="w-3.5 h-3.5" />
-                  <span>พิมพ์ใบบันทึกการขาดเรียน</span>
+                  <Printer className="w-3.5 h-3.5 text-slate-600" />
+                  <span>พิมพ์รายงาน / เอกสารราชการ</span>
                 </button>
               </div>
 

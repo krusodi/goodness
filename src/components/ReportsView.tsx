@@ -188,10 +188,11 @@ export const ReportsView: React.FC<ReportsViewProps> = ({ initialStudentId }) =>
 
           <button
             onClick={handlePrint}
-            className="inline-flex items-center gap-1.5 px-4 py-2 text-xs sm:text-sm font-semibold text-white bg-slate-800 hover:bg-slate-900 rounded-xl shadow-xs transition-all"
+            className="inline-flex items-center gap-1.5 px-4 py-2 text-xs sm:text-sm font-semibold text-white bg-slate-800 hover:bg-slate-900 rounded-xl shadow-xs transition-all cursor-pointer"
+            title="พิมพ์รายงาน / พิมพ์เอกสารราชการ"
           >
             <Printer className="w-4 h-4" />
-            <span>พิมพ์รายงาน (Print / PDF)</span>
+            <span>พิมพ์รายงาน / เอกสารราชการ</span>
           </button>
         </div>
       </div>
