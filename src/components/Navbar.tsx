@@ -18,6 +18,7 @@ import {
   Edit2
 } from 'lucide-react';
 import { ProfileModal } from './ProfileModal';
+import { exportElementToWord } from '../utils/exportWord';
 
 export const Navbar: React.FC = () => {
   const {
@@ -153,11 +154,10 @@ export const Navbar: React.FC = () => {
             <button
               onClick={handlePrint}
               className="hidden md:inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors border border-slate-200 shrink-0 cursor-pointer shadow-2xs"
-              title="พิมพ์รายงาน / พิมพ์เอกสารราชการ (Print / PDF)"
+              title="พิมพ์หน้านี้ / บันทึกเป็น PDF"
             >
               <Printer className="w-3.5 h-3.5 text-slate-600" />
-              <span className="hidden xl:inline">พิมพ์รายงาน / เอกสารราชการ</span>
-              <span className="hidden sm:inline xl:hidden">พิมพ์รายงาน</span>
+              <span>พิมพ์</span>
             </button>
 
             {currentUser ? (
@@ -294,7 +294,7 @@ export const Navbar: React.FC = () => {
                 className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-100 rounded-xl border border-slate-200 cursor-pointer"
               >
                 <Printer className="w-3.5 h-3.5 text-slate-500" />
-                <span>พิมพ์รายงาน / เอกสารราชการ</span>
+                <span>พิมพ์</span>
               </button>
               {currentUser && (
                 <button

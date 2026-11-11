@@ -21,6 +21,7 @@ import {
   Edit2
 } from 'lucide-react';
 import { SignatureSettingsModal } from './SignatureSettingsModal';
+import { exportElementToWord } from '../utils/exportWord';
 
 interface ReportsViewProps {
   initialStudentId?: string | null;
@@ -140,6 +141,23 @@ export const ReportsView: React.FC<ReportsViewProps> = ({ initialStudentId }) =>
     window.print();
   };
 
+  const handleExportWord = () => {
+    let filename = 'รายงานผลคะแนนความดี';
+    if (reportType === 'individual') {
+      filename = `รายงานพฤติกรรมรายบุคคล_${currentStudent?.student_name || 'นักเรียน'}`;
+    } else if (reportType === 'daily') {
+      filename = `รายงานพฤติกรรมประจำวัน_${dailyDate}`;
+    } else if (reportType === 'monthly') {
+      filename = `รายงานพฤติกรรมประจำเดือน_${monthlyMonth}_${monthlyYear}`;
+    } else if (reportType === 'monthly_summary') {
+      filename = `รายงานสรุปอันดับคะแนนประจำเดือน_${summaryMonth}_${summaryYear}`;
+    }
+    exportElementToWord('reports-printable-area', filename, {
+      title: filename,
+      isLandscape: reportType === 'monthly_summary' || reportType === 'monthly'
+    });
+  };
+
   const handleQuickSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!currentStudent || !quickBehavior.trim()) return;
@@ -188,11 +206,20 @@ export const ReportsView: React.FC<ReportsViewProps> = ({ initialStudentId }) =>
 
           <button
             onClick={handlePrint}
-            className="inline-flex items-center gap-1.5 px-4 py-2 text-xs sm:text-sm font-semibold text-white bg-slate-800 hover:bg-slate-900 rounded-xl shadow-xs transition-all cursor-pointer"
-            title="พิมพ์รายงาน / พิมพ์เอกสารราชการ"
+            className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs sm:text-sm font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-xl border border-slate-200 transition-all cursor-pointer shadow-2xs"
+            title="พิมพ์หน้านี้ / บันทึกเป็น PDF"
           >
-            <Printer className="w-4 h-4" />
-            <span>พิมพ์รายงาน / เอกสารราชการ</span>
+            <Printer className="w-4 h-4 text-slate-600" />
+            <span>พิมพ์</span>
+          </button>
+
+          <button
+            onClick={handleExportWord}
+            className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs sm:text-sm font-bold text-blue-800 bg-blue-50 hover:bg-blue-100 border border-blue-200 rounded-xl transition-all cursor-pointer shadow-2xs"
+            title="ส่งออกเอกสารและเปิดด้วย Microsoft Word (.doc)"
+          >
+            <FileText className="w-4 h-4 text-blue-600" />
+            <span>Word</span>
           </button>
         </div>
       </div>
@@ -248,7 +275,9 @@ export const ReportsView: React.FC<ReportsViewProps> = ({ initialStudentId }) =>
         </button>
       </div>
 
-      {/* Formal Header Printed on Page (A4 Paper Standard) */}
+      {/* Printable Report Wrapper Container */}
+      <div id="reports-printable-area" className="space-y-6">
+        {/* Formal Header Printed on Page (A4 Paper Standard) */}
       <div className="hidden print:block text-center border-b-2 border-slate-900 pb-3 mb-5">
         <div className="text-xl font-bold tracking-tight text-slate-900">{settings.school_name}</div>
         <div className="text-xs text-slate-600 font-medium">สำนักงานเขตพื้นที่การศึกษาประถมศึกษา · {settings.system_name}</div>
@@ -1043,6 +1072,7 @@ export const ReportsView: React.FC<ReportsViewProps> = ({ initialStudentId }) =>
             </div>
           </div>
         </div>
+      </div>
       </div>
 
       {/* Quick Action Modal for Individual View (➕ เพิ่มความดีได้เลย / ➖ หักคะแนนได้เลย) */}

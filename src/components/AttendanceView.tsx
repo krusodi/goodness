@@ -26,8 +26,10 @@ import {
   Printer,
   Sparkles,
   FileSpreadsheet,
+  FileText,
   Info
 } from 'lucide-react';
+import { exportElementToWord } from '../utils/exportWord';
 
 const THAI_DAYS = ['อาทิตย์', 'จันทร์', 'อังคาร', 'พุธ', 'พฤหัสบดี', 'ศุกร์', 'เสาร์'];
 const THAI_MONTHS_FULL = [
@@ -976,22 +978,33 @@ export const AttendanceView: React.FC = () => {
               </div>
 
               {/* Leaderboard Table of Student Attendance */}
-              <div className="bg-white rounded-2xl border border-emerald-100 shadow-xs overflow-hidden">
-                <div className="p-4 sm:p-5 border-b border-slate-100 flex items-center justify-between">
+              <div id="attendance-overall-report" className="bg-white rounded-2xl border border-emerald-100 shadow-xs overflow-hidden">
+                <div className="p-4 sm:p-5 border-b border-slate-100 flex items-center justify-between flex-wrap gap-2">
                   <div>
                     <h3 className="text-sm sm:text-base font-bold text-slate-900">
                       ตารางสรุปสถิติการมาเรียนรายบุคคล
                     </h3>
                     <p className="text-xs text-slate-500">เรียงตามเปอร์เซ็นต์การมาเรียนและจำนวนวันที่ขาดน้อยที่สุด</p>
                   </div>
-                  <button
-                    onClick={() => window.print()}
-                    className="no-print inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-lg border border-slate-200 transition-colors cursor-pointer"
-                    title="พิมพ์รายงาน / พิมพ์เอกสารราชการ"
-                  >
-                    <Printer className="w-3.5 h-3.5 text-slate-600" />
-                    <span>พิมพ์รายงาน / เอกสารราชการ</span>
-                  </button>
+                  <div className="no-print flex items-center gap-2">
+                    <button
+                      onClick={() => window.print()}
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-lg border border-slate-200 transition-colors cursor-pointer"
+                      title="พิมพ์หน้านี้ / บันทึกเป็น PDF"
+                    >
+                      <Printer className="w-3.5 h-3.5 text-slate-600" />
+                      <span>พิมพ์</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => exportElementToWord('attendance-overall-report', 'ตารางสรุปสถิติการมาเรียนรายบุคคล', { isLandscape: true })}
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-blue-800 bg-blue-50 hover:bg-blue-100 rounded-lg border border-blue-200 transition-colors cursor-pointer shadow-2xs"
+                      title="ส่งออกและเปิดเอกสารด้วย Microsoft Word (.doc)"
+                    >
+                      <FileText className="w-3.5 h-3.5 text-blue-600" />
+                      <span>Word</span>
+                    </button>
+                  </div>
                 </div>
 
                 <div className="overflow-x-auto">
@@ -1159,7 +1172,7 @@ export const AttendanceView: React.FC = () => {
 
               {/* View 2A: เฉพาะวัน */}
               {reportDailyOrMonthly === 'daily' && (
-                <div className="bg-white rounded-2xl border border-emerald-100 shadow-xs overflow-hidden">
+                <div id="attendance-daily-report" className="bg-white rounded-2xl border border-emerald-100 shadow-xs overflow-hidden">
                   <div className="p-4 sm:p-5 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                     <div>
                       <h3 className="text-base font-bold text-slate-900">
@@ -1169,14 +1182,25 @@ export const AttendanceView: React.FC = () => {
                         แสดงนักเรียนที่มีสถานะ ขาดเรียน, ลาป่วย, ลากิจ, หรือมาสาย ในวันนี้
                       </p>
                     </div>
-                    <button
-                      onClick={() => window.print()}
-                      className="no-print self-start sm:self-auto inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-lg border border-slate-200 cursor-pointer"
-                      title="พิมพ์รายงาน / พิมพ์เอกสารราชการ"
-                    >
-                      <Printer className="w-3.5 h-3.5 text-slate-600" />
-                      <span>พิมพ์รายงาน / เอกสารราชการ</span>
-                    </button>
+                    <div className="no-print flex items-center gap-2 self-start sm:self-auto">
+                      <button
+                        onClick={() => window.print()}
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-lg border border-slate-200 cursor-pointer"
+                        title="พิมพ์หน้านี้ / บันทึกเป็น PDF"
+                      >
+                        <Printer className="w-3.5 h-3.5 text-slate-600" />
+                        <span>พิมพ์</span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => exportElementToWord('attendance-daily-report', `รายงานนักเรียนขาดลา_${reportDate}`, { isLandscape: false })}
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-blue-800 bg-blue-50 hover:bg-blue-100 rounded-lg border border-blue-200 cursor-pointer shadow-2xs"
+                        title="ส่งออกและเปิดเอกสารด้วย Microsoft Word (.doc)"
+                      >
+                        <FileText className="w-3.5 h-3.5 text-blue-600" />
+                        <span>Word</span>
+                      </button>
+                    </div>
                   </div>
 
                   {dailyReportData.absentOrLeave.length === 0 ? (
@@ -1263,7 +1287,7 @@ export const AttendanceView: React.FC = () => {
 
               {/* View 2B: รายเดือน */}
               {reportDailyOrMonthly === 'monthly' && (
-                <div className="bg-white rounded-2xl border border-emerald-100 shadow-xs overflow-hidden">
+                <div id="attendance-monthly-report" className="bg-white rounded-2xl border border-emerald-100 shadow-xs overflow-hidden">
                   <div className="p-4 sm:p-5 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                     <div>
                       <h3 className="text-base font-bold text-slate-900">
@@ -1273,14 +1297,25 @@ export const AttendanceView: React.FC = () => {
                         สรุปจำนวนวันมาเรียน มาสาย ลากิจ ลาป่วย และขาดเรียนของนักเรียนทุกคน
                       </p>
                     </div>
-                    <button
-                      onClick={() => window.print()}
-                      className="no-print self-start sm:self-auto inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-lg border border-slate-200 cursor-pointer"
-                      title="พิมพ์รายงาน / พิมพ์เอกสารราชการ"
-                    >
-                      <Printer className="w-3.5 h-3.5 text-slate-600" />
-                      <span>พิมพ์รายงาน / เอกสารราชการ</span>
-                    </button>
+                    <div className="no-print flex items-center gap-2 self-start sm:self-auto">
+                      <button
+                        onClick={() => window.print()}
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-lg border border-slate-200 cursor-pointer"
+                        title="พิมพ์หน้านี้ / บันทึกเป็น PDF"
+                      >
+                        <Printer className="w-3.5 h-3.5 text-slate-600" />
+                        <span>พิมพ์</span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => exportElementToWord('attendance-monthly-report', `รายงานสรุปการมาเรียนประจำเดือน_${reportMonth}_${reportYear}`, { isLandscape: true })}
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-blue-800 bg-blue-50 hover:bg-blue-100 rounded-lg border border-blue-200 cursor-pointer shadow-2xs"
+                        title="ส่งออกและเปิดเอกสารด้วย Microsoft Word (.doc)"
+                      >
+                        <FileText className="w-3.5 h-3.5 text-blue-600" />
+                        <span>Word</span>
+                      </button>
+                    </div>
                   </div>
 
                   <div className="overflow-x-auto">
@@ -1402,19 +1437,30 @@ export const AttendanceView: React.FC = () => {
                   </select>
                 </div>
 
-                <button
-                  type="button"
-                  onClick={() => window.print()}
-                  className="no-print self-start sm:self-auto inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-xl border border-slate-200 cursor-pointer"
-                  title="พิมพ์ใบบันทึก / พิมพ์เอกสารราชการ"
-                >
-                  <Printer className="w-3.5 h-3.5 text-slate-600" />
-                  <span>พิมพ์รายงาน / เอกสารราชการ</span>
-                </button>
+                <div className="no-print flex items-center gap-2 self-start sm:self-auto">
+                  <button
+                    type="button"
+                    onClick={() => window.print()}
+                    className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-xl border border-slate-200 cursor-pointer"
+                    title="พิมพ์หน้านี้ / บันทึกเป็น PDF"
+                  >
+                    <Printer className="w-3.5 h-3.5 text-slate-600" />
+                    <span>พิมพ์</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => exportElementToWord('attendance-student-detail-card', `ประวัติการขาดเรียน_${targetStudent?.student_name || 'นักเรียน'}`, { isLandscape: false })}
+                    className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-bold text-blue-800 bg-blue-50 hover:bg-blue-100 rounded-xl border border-blue-200 cursor-pointer shadow-2xs"
+                    title="ส่งออกและเปิดเอกสารด้วย Microsoft Word (.doc)"
+                  >
+                    <FileText className="w-3.5 h-3.5 text-blue-600" />
+                    <span>Word</span>
+                  </button>
+                </div>
               </div>
 
               {targetStudent ? (
-                <div className="space-y-6">
+                <div id="attendance-student-detail-card" className="space-y-6">
                   {/* Student Summary Profile Card */}
                   <div className="bg-white rounded-2xl p-5 border border-emerald-100 shadow-xs">
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-100">
