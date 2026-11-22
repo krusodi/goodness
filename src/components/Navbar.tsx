@@ -45,13 +45,13 @@ export const Navbar: React.FC = () => {
   }
 
   const navItems: NavItem[] = [
-    { id: 'dashboard', label: 'หน้าหลัก', icon: Award },
+    { id: 'dashboard', label: 'เมนูหลัก', icon: Award },
     { id: 'attendance', label: 'เช็คชื่อ', icon: UserCheck, requireAuth: true },
-    { id: 'students', label: 'จัดการรายชื่อ', icon: Users, requireAuth: true },
-    { id: 'merit', label: 'ความดี', icon: Star, requireAuth: true, highlight: 'merit' },
+    { id: 'merit', label: 'บันทึกความดี', icon: Star, requireAuth: true, highlight: 'merit' },
     { id: 'demerit', label: 'พฤติกรรมลบ', icon: AlertTriangle, requireAuth: true, highlight: 'demerit' },
     { id: 'reports', label: 'รายงาน', icon: FileText },
-    { id: 'admin', label: 'ระบบจัดการ', icon: Settings, requireAdmin: true }
+    { id: 'students', label: 'เพิ่มชื่อ', icon: Users, requireAuth: true },
+    { id: 'admin', label: 'ตั้งค่าระบบ', icon: Settings, requireAdmin: true }
   ];
 
   const handleNavClick = (tabId: typeof activeTab, requireAuth?: boolean, requireAdmin?: boolean) => {
