@@ -30,6 +30,7 @@ import {
   Info
 } from 'lucide-react';
 import { exportElementToWord } from '../utils/exportWord';
+import { TeachingSchedulePanel } from './TeachingSchedulePanel';
 
 const THAI_DAYS = ['อาทิตย์', 'จันทร์', 'อังคาร', 'พุธ', 'พฤหัสบดี', 'ศุกร์', 'เสาร์'];
 const THAI_MONTHS_FULL = [
@@ -89,8 +90,8 @@ export const AttendanceView: React.FC = () => {
     setActiveTab
   } = useApp();
 
-  // Tab: 'marking' | 'reports'
-  const [activeSubTab, setActiveSubTab] = useState<'marking' | 'reports'>('marking');
+  // Tab: 'marking' | 'reports' | 'schedule'
+  const [activeSubTab, setActiveSubTab] = useState<'marking' | 'reports' | 'schedule'>('marking');
 
   // Report Sub-mode: 'overview' | 'daily_monthly' | 'student_detail'
   const [reportSubMode, setReportSubMode] = useState<'overview' | 'daily_monthly' | 'student_detail'>('overview');
@@ -417,10 +418,10 @@ export const AttendanceView: React.FC = () => {
         </div>
 
         {/* Tab switchers */}
-        <div className="no-print flex items-center bg-slate-100 p-1 rounded-xl self-start md:self-auto">
+        <div className="no-print flex flex-wrap items-center bg-slate-100 p-1 rounded-xl self-start md:self-auto gap-1">
           <button
             onClick={() => setActiveSubTab('marking')}
-            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold transition-all ${
+            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold transition-all cursor-pointer ${
               activeSubTab === 'marking'
                 ? 'bg-white text-emerald-800 shadow-xs'
                 : 'text-slate-600 hover:text-slate-900'
@@ -431,7 +432,7 @@ export const AttendanceView: React.FC = () => {
           </button>
           <button
             onClick={() => setActiveSubTab('reports')}
-            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold transition-all ${
+            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold transition-all cursor-pointer ${
               activeSubTab === 'reports'
                 ? 'bg-white text-emerald-800 shadow-xs'
                 : 'text-slate-600 hover:text-slate-900'
@@ -439,6 +440,17 @@ export const AttendanceView: React.FC = () => {
           >
             <BarChart3 className="w-4 h-4 text-teal-600" />
             <span>รายงานสรุป</span>
+          </button>
+          <button
+            onClick={() => setActiveSubTab('schedule')}
+            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold transition-all cursor-pointer ${
+              activeSubTab === 'schedule'
+                ? 'bg-white text-emerald-800 shadow-xs'
+                : 'text-slate-600 hover:text-slate-900'
+            }`}
+          >
+            <CalendarDays className="w-4 h-4 text-amber-600" />
+            <span>ตารางคาบสอน</span>
           </button>
         </div>
       </div>
@@ -1607,6 +1619,11 @@ export const AttendanceView: React.FC = () => {
           )}
         </div>
       )}
+
+      {/* ============================================================== */}
+      {/* SUB-TAB 3: ตารางคาบสอน (TEACHING SCHEDULE MON-FRI 6 PERIODS)   */}
+      {/* ============================================================== */}
+      {activeSubTab === 'schedule' && <TeachingSchedulePanel />}
     </div>
   );
 };

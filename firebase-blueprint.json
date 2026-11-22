@@ -49,6 +49,7 @@
         "signatory3_name": { "type": "string", "description": "School director name" },
         "merit_behaviors": { "type": "array", "items": { "type": "string" }, "description": "List of standard merit behaviors" },
         "demerit_behaviors": { "type": "array", "items": { "type": "string" }, "description": "List of standard demerit behaviors" },
+        "teaching_schedule": { "type": "object", "description": "Weekly teaching schedule (Mon-Fri, 6 periods + lunch break)" },
         "updated_at": { "type": "string", "description": "Last update timestamp" }
       },
       "required": ["school_name", "system_name", "academic_year"]

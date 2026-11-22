@@ -122,6 +122,33 @@ export interface UserAccount {
   is_default_admin?: boolean;
 }
 
+export type ScheduleDayKey = 'mon' | 'tue' | 'wed' | 'thu' | 'fri';
+
+export interface TeachingPeriodTimes {
+  p1: string;
+  p2: string;
+  p3: string;
+  lunch: string;
+  p4: string;
+  p5: string;
+  p6: string;
+  lunchLabel: string;
+  lunchPosition: 'after_3' | 'after_4';
+}
+
+export interface TeachingScheduleCell {
+  subject: string;
+  room?: string;
+  teacher?: string;
+  color?: string;
+}
+
+export interface TeachingSchedule {
+  title?: string;
+  periodTimes: TeachingPeriodTimes;
+  cells: Record<string, TeachingScheduleCell>;
+}
+
 export interface AppSettings {
   system_name: string;
   system_description?: string;
@@ -147,6 +174,7 @@ export interface AppSettings {
   signatory3_name?: string;
   merit_behaviors?: string[];
   demerit_behaviors?: string[];
+  teaching_schedule?: TeachingSchedule;
 }
 
 export interface Top3ColorPreset {

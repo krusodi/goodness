@@ -4,9 +4,60 @@ import {
   AttendanceRecord,
   UserAccount,
   AppSettings,
+  TeachingPeriodTimes,
+  TeachingSchedule,
   PRESET_MERIT_BEHAVIORS,
   PRESET_DEMERIT_BEHAVIORS
 } from '../types';
+
+export const DEFAULT_TEACHING_PERIOD_TIMES: TeachingPeriodTimes = {
+  p1: '08:30 - 09:30',
+  p2: '09:30 - 10:30',
+  p3: '10:30 - 11:30',
+  lunch: '11:30 - 12:30',
+  p4: '12:30 - 13:30',
+  p5: '13:30 - 14:30',
+  p6: '14:30 - 15:30',
+  lunchLabel: 'พักกลางวัน',
+  lunchPosition: 'after_3'
+};
+
+export const DEFAULT_TEACHING_SCHEDULE: TeachingSchedule = {
+  title: 'ตารางคาบสอน ประจำสัปดาห์ ชั้น ป.5/1',
+  periodTimes: DEFAULT_TEACHING_PERIOD_TIMES,
+  cells: {
+    mon_1: { subject: 'ภาษาไทย', room: 'ป.5/1', color: 'amber' },
+    mon_2: { subject: 'คณิตศาสตร์', room: 'ป.5/1', color: 'sky' },
+    mon_3: { subject: 'วิทยาศาสตร์ฯ', room: 'ป.5/1', color: 'emerald' },
+    mon_4: { subject: 'สังคมศึกษาฯ', room: 'ป.5/1', color: 'purple' },
+    mon_5: { subject: 'ภาษาอังกฤษ', room: 'ป.5/1', color: 'rose' },
+    mon_6: { subject: 'แนะแนว / โฮมรูม', room: 'ป.5/1', color: 'teal' },
+    tue_1: { subject: 'คณิตศาสตร์', room: 'ป.5/1', color: 'sky' },
+    tue_2: { subject: 'ภาษาไทย', room: 'ป.5/1', color: 'amber' },
+    tue_3: { subject: 'ภาษาอังกฤษ', room: 'ป.5/1', color: 'rose' },
+    tue_4: { subject: 'ประวัติศาสตร์', room: 'ป.5/1', color: 'purple' },
+    tue_5: { subject: 'สุขศึกษาและพลศึกษา', room: 'สนาม', color: 'emerald' },
+    tue_6: { subject: 'ศิลปะ', room: 'ป.5/1', color: 'indigo' },
+    wed_1: { subject: 'วิทยาศาสตร์ฯ', room: 'ห้องวิทย์', color: 'emerald' },
+    wed_2: { subject: 'คณิตศาสตร์', room: 'ป.5/1', color: 'sky' },
+    wed_3: { subject: 'ภาษาไทย', room: 'ป.5/1', color: 'amber' },
+    wed_4: { subject: 'วิทยาการคำนวณ', room: 'ห้องคอม', color: 'indigo' },
+    wed_5: { subject: 'ลูกเสือ - เนตรนารี', room: 'สนาม', color: 'teal' },
+    wed_6: { subject: 'กิจกรรมพัฒนาผู้เรียน', room: 'ป.5/1', color: 'slate' },
+    thu_1: { subject: 'ภาษาอังกฤษ', room: 'ป.5/1', color: 'rose' },
+    thu_2: { subject: 'ภาษาไทย', room: 'ป.5/1', color: 'amber' },
+    thu_3: { subject: 'คณิตศาสตร์', room: 'ป.5/1', color: 'sky' },
+    thu_4: { subject: 'การงานอาชีพ', room: 'ป.5/1', color: 'teal' },
+    thu_5: { subject: 'สังคมศึกษาฯ', room: 'ป.5/1', color: 'purple' },
+    thu_6: { subject: 'ชุมนุม', room: 'ป.5/1', color: 'indigo' },
+    fri_1: { subject: 'คณิตศาสตร์', room: 'ป.5/1', color: 'sky' },
+    fri_2: { subject: 'วิทยาศาสตร์ฯ', room: 'ป.5/1', color: 'emerald' },
+    fri_3: { subject: 'ภาษาไทย', room: 'ป.5/1', color: 'amber' },
+    fri_4: { subject: 'ภาษาอังกฤษ', room: 'ป.5/1', color: 'rose' },
+    fri_5: { subject: 'หน้าที่พลเมือง', room: 'ป.5/1', color: 'purple' },
+    fri_6: { subject: 'ซ่อมเสริม / คุณธรรม', room: 'ป.5/1', color: 'teal' }
+  }
+};
 
 export const INITIAL_SETTINGS: AppSettings = {
   system_name: 'ระบบบันทึกความดีนักเรียน ป.5/1',
@@ -32,7 +83,8 @@ export const INITIAL_SETTINGS: AppSettings = {
   signatory3_title: 'ผู้อำนวยการโรงเรียนบ้านยะบะ(อุปการวิทยา)',
   signatory3_name: '',
   merit_behaviors: [...PRESET_MERIT_BEHAVIORS],
-  demerit_behaviors: [...PRESET_DEMERIT_BEHAVIORS]
+  demerit_behaviors: [...PRESET_DEMERIT_BEHAVIORS],
+  teaching_schedule: DEFAULT_TEACHING_SCHEDULE
 };
 
 export const INITIAL_USERS: UserAccount[] = [
