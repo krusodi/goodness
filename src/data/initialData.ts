@@ -14,16 +14,17 @@ export const DEFAULT_TEACHING_PERIOD_TIMES: TeachingPeriodTimes = {
   p1: '08:30 - 09:30',
   p2: '09:30 - 10:30',
   p3: '10:30 - 11:30',
-  lunch: '11:30 - 12:30',
-  p4: '12:30 - 13:30',
+  p4: '11:30 - 12:30',
+  lunch: '12:30 - 13:30',
   p5: '13:30 - 14:30',
   p6: '14:30 - 15:30',
   lunchLabel: 'พักกลางวัน',
-  lunchPosition: 'after_3'
+  lunchPosition: 'after_4'
 };
 
 export const DEFAULT_TEACHING_SCHEDULE: TeachingSchedule = {
   title: 'ตารางคาบสอน ประจำสัปดาห์ ชั้น ป.5/1',
+  layoutVersion: 2,
   periodTimes: DEFAULT_TEACHING_PERIOD_TIMES,
   cells: {
     mon_1: { subject: 'ภาษาไทย', room: 'ป.5/1', color: 'amber' },

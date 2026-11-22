@@ -145,6 +145,7 @@ export interface TeachingScheduleCell {
 
 export interface TeachingSchedule {
   title?: string;
+  layoutVersion?: number;
   periodTimes: TeachingPeriodTimes;
   cells: Record<string, TeachingScheduleCell>;
 }

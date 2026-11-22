@@ -129,15 +129,25 @@ type PeriodSlotItem =
 export const TeachingSchedulePanel: React.FC = () => {
   const { settings, updateSettings, showToast } = useApp();
 
-  // Merge saved teaching_schedule safely with defaults
+  // Merge saved teaching_schedule safely with defaults (auto-upgrade unedited v1 'after_3' defaults to 'after_4')
   const schedule: TeachingSchedule = useMemo(() => {
     const saved = settings.teaching_schedule;
+    const isUneditedV1Default =
+      saved &&
+      (!saved.layoutVersion || saved.layoutVersion < 2) &&
+      saved.periodTimes?.lunchPosition === 'after_3' &&
+      saved.periodTimes?.lunch === '11:30 - 12:30' &&
+      saved.periodTimes?.p4 === '12:30 - 13:30';
+
     return {
       title: saved?.title || DEFAULT_TEACHING_SCHEDULE.title,
-      periodTimes: {
-        ...DEFAULT_TEACHING_PERIOD_TIMES,
-        ...(saved?.periodTimes || {})
-      },
+      layoutVersion: 2,
+      periodTimes: isUneditedV1Default
+        ? { ...DEFAULT_TEACHING_PERIOD_TIMES }
+        : {
+            ...DEFAULT_TEACHING_PERIOD_TIMES,
+            ...(saved?.periodTimes || {})
+          },
       cells: saved?.cells ? { ...saved.cells } : { ...DEFAULT_TEACHING_SCHEDULE.cells }
     };
   }, [settings.teaching_schedule]);
@@ -177,16 +187,17 @@ export const TeachingSchedulePanel: React.FC = () => {
     const updated: TeachingSchedule = {
       ...schedule,
       title: draftTitle.trim() || DEFAULT_TEACHING_SCHEDULE.title,
+      layoutVersion: 2,
       periodTimes: {
         p1: draftTimes.p1.trim() || DEFAULT_TEACHING_PERIOD_TIMES.p1,
         p2: draftTimes.p2.trim() || DEFAULT_TEACHING_PERIOD_TIMES.p2,
         p3: draftTimes.p3.trim() || DEFAULT_TEACHING_PERIOD_TIMES.p3,
-        lunch: draftTimes.lunch.trim() || DEFAULT_TEACHING_PERIOD_TIMES.lunch,
         p4: draftTimes.p4.trim() || DEFAULT_TEACHING_PERIOD_TIMES.p4,
+        lunch: draftTimes.lunch.trim() || DEFAULT_TEACHING_PERIOD_TIMES.lunch,
         p5: draftTimes.p5.trim() || DEFAULT_TEACHING_PERIOD_TIMES.p5,
         p6: draftTimes.p6.trim() || DEFAULT_TEACHING_PERIOD_TIMES.p6,
         lunchLabel: draftTimes.lunchLabel.trim() || 'พักกลางวัน',
-        lunchPosition: draftTimes.lunchPosition === 'after_4' ? 'after_4' : 'after_3'
+        lunchPosition: draftTimes.lunchPosition === 'after_3' ? 'after_3' : 'after_4'
       }
     };
     updateSettings({ teaching_schedule: updated });
@@ -564,43 +575,64 @@ export const TeachingSchedulePanel: React.FC = () => {
                 />
               </div>
 
-              {/* Periods 1 - 3 */}
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1">
-                    เวลา คาบที่ 1
-                  </label>
-                  <input
-                    type="text"
-                    value={draftTimes.p1}
-                    onChange={(e) => setDraftTimes({ ...draftTimes, p1: e.target.value })}
-                    placeholder="08:30 - 09:30"
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm font-semibold text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-white"
-                  />
+              {/* Morning Periods (1-4 when after_4, or 1-3 when after_3) */}
+              <div className="space-y-2">
+                <div className="text-xs font-extrabold text-emerald-800">
+                  {draftTimes.lunchPosition === 'after_3'
+                    ? 'ช่วงเช้า (คาบที่ 1 - 3)'
+                    : 'ช่วงเช้า (คาบที่ 1 - 4)'}
                 </div>
-                <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1">
-                    เวลา คาบที่ 2
-                  </label>
-                  <input
-                    type="text"
-                    value={draftTimes.p2}
-                    onChange={(e) => setDraftTimes({ ...draftTimes, p2: e.target.value })}
-                    placeholder="09:30 - 10:30"
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm font-semibold text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-white"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1">
-                    เวลา คาบที่ 3
-                  </label>
-                  <input
-                    type="text"
-                    value={draftTimes.p3}
-                    onChange={(e) => setDraftTimes({ ...draftTimes, p3: e.target.value })}
-                    placeholder="10:30 - 11:30"
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm font-semibold text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-white"
-                  />
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-xs font-bold text-slate-700 mb-1">
+                      เวลา คาบที่ 1
+                    </label>
+                    <input
+                      type="text"
+                      value={draftTimes.p1}
+                      onChange={(e) => setDraftTimes({ ...draftTimes, p1: e.target.value })}
+                      placeholder="08:30 - 09:30"
+                      className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm font-semibold text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-white"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold text-slate-700 mb-1">
+                      เวลา คาบที่ 2
+                    </label>
+                    <input
+                      type="text"
+                      value={draftTimes.p2}
+                      onChange={(e) => setDraftTimes({ ...draftTimes, p2: e.target.value })}
+                      placeholder="09:30 - 10:30"
+                      className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm font-semibold text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-white"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold text-slate-700 mb-1">
+                      เวลา คาบที่ 3
+                    </label>
+                    <input
+                      type="text"
+                      value={draftTimes.p3}
+                      onChange={(e) => setDraftTimes({ ...draftTimes, p3: e.target.value })}
+                      placeholder="10:30 - 11:30"
+                      className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm font-semibold text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-white"
+                    />
+                  </div>
+                  {draftTimes.lunchPosition !== 'after_3' && (
+                    <div>
+                      <label className="block text-xs font-bold text-slate-700 mb-1">
+                        เวลา คาบที่ 4
+                      </label>
+                      <input
+                        type="text"
+                        value={draftTimes.p4}
+                        onChange={(e) => setDraftTimes({ ...draftTimes, p4: e.target.value })}
+                        placeholder="11:30 - 12:30"
+                        className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm font-semibold text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-white"
+                      />
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -631,7 +663,7 @@ export const TeachingSchedulePanel: React.FC = () => {
                       type="text"
                       value={draftTimes.lunch}
                       onChange={(e) => setDraftTimes({ ...draftTimes, lunch: e.target.value })}
-                      placeholder="11:30 - 12:30"
+                      placeholder="12:30 - 13:30"
                       className="w-full bg-white border border-amber-300 rounded-xl px-3 py-2 text-sm font-semibold text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-500"
                     />
                   </div>
@@ -644,55 +676,64 @@ export const TeachingSchedulePanel: React.FC = () => {
                       onChange={(e) =>
                         setDraftTimes({
                           ...draftTimes,
-                          lunchPosition: e.target.value === 'after_4' ? 'after_4' : 'after_3'
+                          lunchPosition: e.target.value === 'after_3' ? 'after_3' : 'after_4'
                         })
                       }
                       className="w-full bg-white border border-amber-300 rounded-xl px-3 py-2 text-sm font-semibold text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-500 cursor-pointer"
                     >
-                      <option value="after_3">หลังคาบที่ 3 (ก่อนคาบ 4)</option>
-                      <option value="after_4">หลังคาบที่ 4 (ก่อนคาบ 5)</option>
+                      <option value="after_4">หลังคาบที่ 4 (คาบ 1-4 พัก คาบ 5-6)</option>
+                      <option value="after_3">หลังคาบที่ 3 (คาบ 1-3 พัก คาบ 4-6)</option>
                     </select>
                   </div>
                 </div>
               </div>
 
-              {/* Periods 4 - 6 */}
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1">
-                    เวลา คาบที่ 4
-                  </label>
-                  <input
-                    type="text"
-                    value={draftTimes.p4}
-                    onChange={(e) => setDraftTimes({ ...draftTimes, p4: e.target.value })}
-                    placeholder="12:30 - 13:30"
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm font-semibold text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-white"
-                  />
+              {/* Afternoon Periods (5-6 when after_4, or 4-6 when after_3) */}
+              <div className="space-y-2">
+                <div className="text-xs font-extrabold text-sky-800">
+                  {draftTimes.lunchPosition === 'after_3'
+                    ? 'ช่วงบ่าย (คาบที่ 4 - 6)'
+                    : 'ช่วงบ่าย (คาบที่ 5 - 6)'}
                 </div>
-                <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1">
-                    เวลา คาบที่ 5
-                  </label>
-                  <input
-                    type="text"
-                    value={draftTimes.p5}
-                    onChange={(e) => setDraftTimes({ ...draftTimes, p5: e.target.value })}
-                    placeholder="13:30 - 14:30"
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm font-semibold text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-white"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1">
-                    เวลา คาบที่ 6
-                  </label>
-                  <input
-                    type="text"
-                    value={draftTimes.p6}
-                    onChange={(e) => setDraftTimes({ ...draftTimes, p6: e.target.value })}
-                    placeholder="14:30 - 15:30"
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm font-semibold text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-white"
-                  />
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  {draftTimes.lunchPosition === 'after_3' && (
+                    <div>
+                      <label className="block text-xs font-bold text-slate-700 mb-1">
+                        เวลา คาบที่ 4
+                      </label>
+                      <input
+                        type="text"
+                        value={draftTimes.p4}
+                        onChange={(e) => setDraftTimes({ ...draftTimes, p4: e.target.value })}
+                        placeholder="12:30 - 13:30"
+                        className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm font-semibold text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-white"
+                      />
+                    </div>
+                  )}
+                  <div>
+                    <label className="block text-xs font-bold text-slate-700 mb-1">
+                      เวลา คาบที่ 5
+                    </label>
+                    <input
+                      type="text"
+                      value={draftTimes.p5}
+                      onChange={(e) => setDraftTimes({ ...draftTimes, p5: e.target.value })}
+                      placeholder="13:30 - 14:30"
+                      className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm font-semibold text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-white"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold text-slate-700 mb-1">
+                      เวลา คาบที่ 6
+                    </label>
+                    <input
+                      type="text"
+                      value={draftTimes.p6}
+                      onChange={(e) => setDraftTimes({ ...draftTimes, p6: e.target.value })}
+                      placeholder="14:30 - 15:30"
+                      className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-sm font-semibold text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-white"
+                    />
+                  </div>
                 </div>
               </div>
 
