@@ -235,7 +235,7 @@ export const ReportsView: React.FC<ReportsViewProps> = ({ initialStudentId }) =>
           }`}
         >
           <User className="w-4 h-4" />
-          <span>1. รายงานนักเรียน (รายบุคคล)</span>
+          <span>1. ราย(บุคคล)</span>
         </button>
 
         <button
@@ -247,7 +247,7 @@ export const ReportsView: React.FC<ReportsViewProps> = ({ initialStudentId }) =>
           }`}
         >
           <Calendar className="w-4 h-4" />
-          <span>2. รายงานรายวัน</span>
+          <span>2. ราย(วัน)</span>
         </button>
 
         <button
@@ -259,7 +259,7 @@ export const ReportsView: React.FC<ReportsViewProps> = ({ initialStudentId }) =>
           }`}
         >
           <CalendarDays className="w-4 h-4" />
-          <span>3. รายงานรายเดือน</span>
+          <span>3. ราย(เดือน)</span>
         </button>
 
         <button
@@ -271,7 +271,7 @@ export const ReportsView: React.FC<ReportsViewProps> = ({ initialStudentId }) =>
           }`}
         >
           <Trophy className="w-4 h-4" />
-          <span>4. สรุปคะแนนประจำเดือน (อันดับ)</span>
+          <span>4. สรุปจัด(อันดับ)</span>
         </button>
       </div>
 

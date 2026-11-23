@@ -353,7 +353,7 @@ export const AdminManagementView: React.FC = () => {
           }`}
         >
           <Users className="w-4 h-4" />
-          <span>1. จัดการผู้ใช้ ({users.length})</span>
+          <span>1.จัดการผู้ใช้</span>
         </button>
 
         <button
@@ -365,7 +365,7 @@ export const AdminManagementView: React.FC = () => {
           }`}
         >
           <KeyRound className="w-4 h-4" />
-          <span>2. ข้อมูลส่วนตัว & รหัสผ่าน</span>
+          <span>2.ตั้งค่ารหัสผ่าน</span>
         </button>
 
         <button
@@ -377,7 +377,7 @@ export const AdminManagementView: React.FC = () => {
           }`}
         >
           <Database className="w-4 h-4" />
-          <span>3. จัดการข้อมูล & สำรอง/กู้คืน</span>
+          <span>3.สำรอง/กู้คืน</span>
         </button>
 
         <button
@@ -389,7 +389,7 @@ export const AdminManagementView: React.FC = () => {
           }`}
         >
           <Palette className="w-4 h-4" />
-          <span>4. ตั้งค่าระบบ & ธีมสี</span>
+          <span>4.ตั้งค่าระบบ</span>
         </button>
 
         <button

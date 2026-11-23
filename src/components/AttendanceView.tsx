@@ -882,7 +882,7 @@ export const AttendanceView: React.FC = () => {
               }`}
             >
               <BarChart3 className="w-4 h-4" />
-              <span>1. สรุปภาพรวมทั้งหมด</span>
+              <span>1. ภาพรวม</span>
             </button>
 
             <button
@@ -894,7 +894,7 @@ export const AttendanceView: React.FC = () => {
               }`}
             >
               <CalendarDays className="w-4 h-4" />
-              <span>2. ขาด/ลา เฉพาะวัน & รายเดือน</span>
+              <span>2. วัน/เดือน</span>
             </button>
 
             <button
@@ -906,7 +906,7 @@ export const AttendanceView: React.FC = () => {
               }`}
             >
               <UserX className="w-4 h-4" />
-              <span>3. สรุปขาดเรียนรายบุคคล</span>
+              <span>3. รายคน</span>
             </button>
           </div>
 
