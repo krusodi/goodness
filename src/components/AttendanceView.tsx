@@ -428,7 +428,7 @@ export const AttendanceView: React.FC = () => {
             }`}
           >
             <Calendar className="w-4 h-4 text-emerald-600" />
-            <span>บันทึกการเช็คชื่อ</span>
+            <span>เช็คชื่อ</span>
           </button>
           <button
             onClick={() => setActiveSubTab('reports')}
@@ -439,7 +439,7 @@ export const AttendanceView: React.FC = () => {
             }`}
           >
             <BarChart3 className="w-4 h-4 text-teal-600" />
-            <span>รายงานสรุป</span>
+            <span>รายงาน</span>
           </button>
           <button
             onClick={() => setActiveSubTab('schedule')}
@@ -450,7 +450,7 @@ export const AttendanceView: React.FC = () => {
             }`}
           >
             <CalendarDays className="w-4 h-4 text-amber-600" />
-            <span>ตารางคาบสอน</span>
+            <span>ตารางเรียน</span>
           </button>
         </div>
       </div>
